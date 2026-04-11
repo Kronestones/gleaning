@@ -10,19 +10,6 @@ Usage:
 — Krone the Architect · 2026
 """
 
-import argparse
-import sys
-import os
-
-parser = argparse.ArgumentParser(description="Gleaning — food surplus to the people")
-parser.add_argument("--check", action="store_true", help="Check configuration and exit")
-args = parser.parse_args()
-
-from gleaning.config import config
-
-if args.check:
-    config.print_status()
-    sys.exit(0 if config.is_ready() else 1)
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, Request, Form, UploadFile, File
