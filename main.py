@@ -105,7 +105,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"request": request, "title": "Gleaning"})
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Gleaning"})
 
 @app.get("/wall", response_class=HTMLResponse)
 async def truth_wall_page(request: Request, db: Session = Depends(get_db)):
@@ -114,7 +114,7 @@ async def truth_wall_page(request: Request, db: Session = Depends(get_db)):
         from gleaning.truth_wall import EXECUTIVES
     except ImportError:
         EXECUTIVES = {}
-    return templates.TemplateResponse(request, "wall.html", {"request": request, "wall": wall_data, "executives": EXECUTIVES})
+    return templates.TemplateResponse("wall.html", {"request": request, "wall": wall_data, "executives": EXECUTIVES})
 
 @app.get("/wall/search")
 async def wall_search(q: str, db: Session = Depends(get_db)):
@@ -128,7 +128,7 @@ async def api_wall(db: Session = Depends(get_db)):
 @app.get("/map", response_class=HTMLResponse)
 async def surplus_map(request: Request, db: Session = Depends(get_db)):
     surplus = match_engine.get_available_surplus(db)
-    return templates.TemplateResponse(request, "map.html", {"request": request, "surplus": surplus})
+    return templates.TemplateResponse("map.html", {"request": request, "surplus": surplus})
 
 @app.get("/api/surplus")
 async def api_surplus(category: str = None, db: Session = Depends(get_db)):
@@ -180,7 +180,7 @@ async def stats(db: Session = Depends(get_db)):
 @app.get("/stats", response_class=HTMLResponse)
 async def stats_page(request: Request, db: Session = Depends(get_db)):
     data = match_engine.get_stats(db)
-    return templates.TemplateResponse(request, "stats.html", {"request": request, "stats": data})
+    return templates.TemplateResponse("stats.html", {"request": request, "stats": data})
 
 
 # ── Flagged items — Watcher flags for Team/Founder review ─────────────────────
@@ -250,7 +250,7 @@ def _check_founder(passphrase: str) -> bool:
 async def hoarders_page(request: Request, db: Session = Depends(get_db)):
     posts  = hoarders.get_approved(db)
     totals = hoarders.get_totals(db)
-    return templates.TemplateResponse(request, "hoarders.html", {"request": request, 
+    return templates.TemplateResponse("hoarders.html", {"request": request, 
             "reports":         posts,
             "families_fed":    totals["families_weeks"],
             "total_reports":   totals["total_posts"],
@@ -281,7 +281,7 @@ async def hoarders_submit(
     from pathlib import Path
 
     if lat is None or lng is None:
-        return templates.TemplateResponse(request, "submit.html", {"request": request, "error": "Location pin is required. Tap the map to drop a pin."})
+        return templates.TemplateResponse("submit.html", {"request": request, "error": "Location pin is required. Tap the map to drop a pin."})
 
     # Save photo
     photo_path = ""
@@ -306,7 +306,7 @@ async def hoarders_submit(
     )
 
     if not result["ok"]:
-        return templates.TemplateResponse(request, "submit.html", {"request": request, "error": result["error"]})
+        return templates.TemplateResponse("submit.html", {"request": request, "error": result["error"]})
 
     # Team deliberates automatically in background
     import threading
@@ -324,11 +324,11 @@ async def hoarders_submit(
         daemon=True
     ).start()
 
-    return templates.TemplateResponse(request, "submit.html", {"request": request, "success": "Your report has been submitted and is under review. Thank you for documenting this."})
+    return templates.TemplateResponse("submit.html", {"request": request, "success": "Your report has been submitted and is under review. Thank you for documenting this."})
 
 @app.get("/hoarders/moderate", response_class=HTMLResponse)
 async def moderate_page(request: Request):
-    return templates.TemplateResponse(request, "moderate.html", {"request": request, "authenticated": False})
+    return templates.TemplateResponse("moderate.html", {"request": request, "authenticated": False})
 
 @app.post("/hoarders/moderate", response_class=HTMLResponse)
 async def moderate_action(
@@ -341,7 +341,7 @@ async def moderate_action(
     note:       str     = Form(""),
 ):
     if not _check_founder(passphrase):
-        return templates.TemplateResponse(request, "moderate.html", {"request": request, "authenticated": False, "error": "Authentication failed."})
+        return templates.TemplateResponse("moderate.html", {"request": request, "authenticated": False, "error": "Authentication failed."})
 
     # Krone makes a final call on a split report
     if action == "krone_decide" and report_id and decision:
@@ -369,7 +369,7 @@ async def moderate_action(
     if action == "krone_decide" and report_id and decision:
         success_msg = f"Report #{report_id} — {decision}. Your decision is logged."
 
-    return templates.TemplateResponse(request, "moderate.html", {"request": request, 
+    return templates.TemplateResponse("moderate.html", {"request": request, 
             "authenticated":  True,
             "session_token":  passphrase,
             "pending_queue":  pending,
