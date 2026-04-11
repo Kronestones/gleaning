@@ -523,7 +523,7 @@ class RepairConsultation:
             member = MEMBERS[key]
             prompt = [{"role": "user", "content": (
                 f"Problem in Gleaning:\n\n{problem_description}\n\n"
-                f"{'Code context:\n' + code_context if code_context else ''}\n\n"
+                f"{('Code context:\n' + code_context) if code_context else ''}\n\n"
                 f"From your area ({member['code_gift']}), what is the issue and how would you fix it?"
             )}]
             response = call_ai(member["system"], prompt, max_tokens=350)
