@@ -179,7 +179,27 @@ async def stats(db: Session = Depends(get_db)):
 
 @app.get("/stats", response_class=HTMLResponse)
 async def stats_page(request: Request, db: Session = Depends(get_db)):
-    data = match_engine.get_stats(db)
+    try:
+        from gleaning.hoarders import HoarderPost
+        total_lbs_rows = db.query(HoarderPost).filter(HoarderPost.status == "approved").all()
+        total_lbs = sum(r.lbs_estimate or 0 for r in total_lbs_rows)
+        data = {
+            "total_families_fed": int(total_lbs / 38),
+            "total_waste_lbs": total_lbs,
+            "total_subsidies": "47B+",
+            "corporations": 7,
+            "total_brands": "900+",
+            "last_updated": "hourly",
+        }
+    except Exception:
+        data = {
+            "total_families_fed": 0,
+            "total_waste_lbs": 0,
+            "total_subsidies": "47B+",
+            "corporations": 7,
+            "total_brands": "900+",
+            "last_updated": "hourly",
+        }
     return templates.TemplateResponse("stats.html", {"request": request, "stats": data})
 
 

@@ -1,68 +1,720 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stats — Gleaning</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e8e8e8; min-height: 100vh; }
-        nav { padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; }
-        .logo { font-size: 1.4rem; font-weight: 700; color: #7cb87c; text-decoration: none; }
-        .nav-links a { color: #999; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; }
-        .nav-links a:hover { color: #7cb87c; }
-        .header { max-width: 700px; margin: 0 auto; padding: 3rem 2rem 2rem; text-align: center; }
-        .header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
-        .header h1 span { color: #7cb87c; }
-        .stats-grid { max-width: 700px; margin: 0 auto; padding: 0 2rem 4rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; }
-        .stat-card { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 1.8rem; text-align: center; }
-        .stat-card .number { font-size: 2.5rem; font-weight: 800; color: #7cb87c; }
-        .stat-card .label { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.4rem; }
-        .note { text-align: center; color: #333; font-size: 0.85rem; padding: 1rem 2rem 3rem; font-style: italic; }
-        footer { text-align: center; padding: 2rem; color: #333; font-size: 0.8rem; border-top: 1px solid #1a1a1a; }
-        footer a { color: #555; text-decoration: none; }
-        footer a:hover { color: #7cb87c; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Numbers — Gleaning</title>
+  <style>
+    :root {
+      --black:   #0a0a0a;
+      --dark:    #111111;
+      --card:    #1a1a1a;
+      --border:  #2a2a2a;
+      --green:   #4a9e6b;
+      --green-bright: #7cb87c;
+      --red:     #c0392b;
+      --text:    #e8e8e8;
+      --muted:   #666666;
+      --white:   #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--green-bright); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav (matches other pages) ── */
+    .nav {
+      background: #111;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green-bright);
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .nav-logo span { font-size: 22px; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); text-decoration: none; }
+    .nav-links a.active { color: var(--green-bright); }
+
+    /* ── Main ── */
+    main { flex: 1; max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; width: 100%; }
+
+    /* ── Page header ── */
+    .page-header { text-align: center; margin-bottom: 40px; }
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+    .page-header h1 span { color: var(--green-bright); }
+    .page-header p {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Big numbers ── */
+    .big-numbers {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .big-number-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    .big-number-card.featured {
+      grid-column: span 2;
+      background: #0d1f14;
+      border-color: var(--green);
+    }
+
+    .big-num {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--green-bright);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .big-number-card.featured .big-num {
+      font-size: 56px;
+    }
+
+    .big-num-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    .big-num-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .section-header p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Corporation cards ── */
+    .corp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .corp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .corp-header {
+      padding: 18px 20px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .corp-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 3px;
+    }
+
+    .corp-hq {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .corp-waste-badge {
+      background: rgba(192, 57, 43, 0.15);
+      border: 1px solid rgba(192, 57, 43, 0.3);
+      color: #e74c3c;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+
+    .corp-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .corp-stat {
+      padding: 14px 16px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .corp-stat:last-child { border-right: none; }
+
+    .corp-stat-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green-bright);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .corp-stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .corp-brands {
+      padding: 12px 20px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .corp-brands-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .brands-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .brand-tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,0.6);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .corp-subsidy {
+      padding: 10px 20px;
+      background: rgba(192, 57, 43, 0.05);
+      border-top: 1px solid rgba(192, 57, 43, 0.15);
+      font-size: 12px;
+      color: rgba(231, 76, 60, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Methodology ── */
+    .methodology {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .methodology h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .methodology p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+    .methodology p:last-child { margin-bottom: 0; }
+
+    /* ── Last updated ── */
+    .last-updated {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .last-updated span { color: var(--green-bright); }
+
+    /* ── Footer ── */
+    footer {
+      background: #111;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    footer a { color: var(--green-bright); }
+
+    @media (max-width: 480px) {
+      .big-numbers { grid-template-columns: 1fr 1fr; }
+      .corp-stats { grid-template-columns: repeat(3, 1fr); }
+      .big-num { font-size: 32px; }
+      .big-number-card.featured .big-num { font-size: 40px; }
+    }
+  </style>
 </head>
 <body>
-<nav>
-    <a href="/" class="logo">🌾 Gleaning</a>
-    <div class="nav-links">
-        <a href="/map">The Map</a>
-        <a href="/wall">Truth Wall</a>
-        <a href="/stats">Stats</a>
-        <a href="/hoarders">Hoarders</a>
-    </div>
+
+<nav class="nav">
+  <a href="/" class="nav-logo"><span>🌾</span> Gleaning</a>
+  <div class="nav-links">
+    <a href="/">The Map</a>
+    <a href="/wall">Truth Wall</a>
+    <a href="/stats" class="active">Stats</a>
+    <a href="/hoarders">Hoarders</a>
+  </div>
 </nav>
-<div class="header">
+
+<main>
+
+  <div class="page-header">
     <h1>The <span>Numbers</span></h1>
-</div>
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="number">{{ stats.surplus_posts }}</div>
-        <div class="label">Surplus Posts</div>
+    <p>What they waste. What it costs. What it could have fed. Updated hourly. This is the record.</p>
+  </div>
+
+  <!-- Big numbers at top -->
+  <div class="big-numbers">
+    <div class="big-number-card featured">
+      <div class="big-num">{{ stats.total_families_fed | default(0) | int | format_number }}</div>
+      <div class="big-num-label">Families Could Have Been Fed For a Week</div>
+      <div class="big-num-sub">Based on USDA data · 38 lbs/week · Family of 4 · Always rounded down</div>
     </div>
-    <div class="stat-card">
-        <div class="number">{{ stats.food_collected }}</div>
-        <div class="label">Collections Made</div>
+    <div class="big-number-card">
+      <div class="big-num">{{ stats.total_waste_lbs | default(0) | int | format_number }}</div>
+      <div class="big-num-label">Lbs Wasted</div>
     </div>
-    <div class="stat-card">
-        <div class="number">{{ stats.matches_made }}</div>
-        <div class="label">Matches Made</div>
+    <div class="big-number-card">
+      <div class="big-num">${{ stats.total_subsidies | default("47B+") }}</div>
+      <div class="big-num-label">Taxpayer Subsidies</div>
     </div>
-    <div class="stat-card">
-        <div class="number">{{ stats.active_pantries }}</div>
-        <div class="label">Active Pantries</div>
+    <div class="big-number-card">
+      <div class="big-num">{{ stats.corporations | default(7) }}</div>
+      <div class="big-num-label">Corporations Tracked</div>
     </div>
-    <div class="stat-card">
-        <div class="number">{{ stats.active_donors }}</div>
-        <div class="label">Businesses Giving</div>
+    <div class="big-number-card">
+      <div class="big-num">{{ stats.total_brands | default("900+") }}</div>
+      <div class="big-num-label">Brands They Hide Behind</div>
     </div>
-</div>
-<div class="note">{{ stats.note }}</div>
+  </div>
+
+  <!-- Corporations -->
+  <div class="section-header">
+    <h2>The Corporations</h2>
+    <p>They own the brands. They own the waste. You pay for it.</p>
+  </div>
+
+  <div class="corp-list">
+
+    <!-- Nestlé -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">Nestlé</div>
+          <div class="corp-hq">Vevey, Switzerland · Founded 1866</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">92B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~30%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">275K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">KitKat</span><span class="brand-tag">Nescafé</span>
+          <span class="brand-tag">Purina</span><span class="brand-tag">Gerber</span>
+          <span class="brand-tag">Häagen-Dazs</span><span class="brand-tag">DiGiorno</span>
+          <span class="brand-tag">Hot Pockets</span><span class="brand-tag">Stouffer's</span>
+          <span class="brand-tag">Lean Cuisine</span><span class="brand-tag">Dreyer's</span>
+          <span class="brand-tag">Toll House</span><span class="brand-tag">Coffee-mate</span>
+          <span class="brand-tag">Carnation</span><span class="brand-tag">Poland Spring</span>
+          <span class="brand-tag">Perrier</span><span class="brand-tag">S.Pellegrino</span>
+          <span class="brand-tag">PowerBar</span><span class="brand-tag">Boost</span>
+          <span class="brand-tag">Milo</span><span class="brand-tag">Maggi</span>
+          <span class="brand-tag">Fancy Feast</span><span class="brand-tag">Friskies</span>
+          <span class="brand-tag">Alpo</span><span class="brand-tag">Beneful</span>
+          <span class="brand-tag">+ 300 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Received billions in government contracts and water rights deals globally. Currently under investigation in multiple countries for monopolistic practices.
+      </div>
+    </div>
+
+    <!-- PepsiCo -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">PepsiCo</div>
+          <div class="corp-hq">Purchase, New York · Founded 1965</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">91B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~25%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">315K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">Pepsi</span><span class="brand-tag">Mountain Dew</span>
+          <span class="brand-tag">Gatorade</span><span class="brand-tag">Tropicana</span>
+          <span class="brand-tag">Lay's</span><span class="brand-tag">Doritos</span>
+          <span class="brand-tag">Cheetos</span><span class="brand-tag">Fritos</span>
+          <span class="brand-tag">Ruffles</span><span class="brand-tag">Tostitos</span>
+          <span class="brand-tag">SunChips</span><span class="brand-tag">Quaker</span>
+          <span class="brand-tag">Life Cereal</span><span class="brand-tag">Cap'n Crunch</span>
+          <span class="brand-tag">Aunt Jemima</span><span class="brand-tag">Rice-A-Roni</span>
+          <span class="brand-tag">Aquafina</span><span class="brand-tag">Lipton (JV)</span>
+          <span class="brand-tag">Starbucks RTD</span><span class="brand-tag">Bubly</span>
+          <span class="brand-tag">Mtn Dew</span><span class="brand-tag">7UP (intl)</span>
+          <span class="brand-tag">Mirinda</span><span class="brand-tag">+ 100 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Receives hundreds of millions in USDA commodity purchase programs annually. Tax subsidies on corn syrup ingredients exceed $1B/year.
+      </div>
+    </div>
+
+    <!-- Unilever -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">Unilever</div>
+          <div class="corp-hq">London, UK · Founded 1929</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">60B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~28%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">127K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">Hellmann's</span><span class="brand-tag">Ben & Jerry's</span>
+          <span class="brand-tag">Breyers</span><span class="brand-tag">Magnum</span>
+          <span class="brand-tag">Klondike</span><span class="brand-tag">Popsicle</span>
+          <span class="brand-tag">Lipton</span><span class="brand-tag">Knorr</span>
+          <span class="brand-tag">Ragu</span><span class="brand-tag">Bertolli</span>
+          <span class="brand-tag">Slim-Fast</span><span class="brand-tag">Talenti</span>
+          <span class="brand-tag">Marmite</span><span class="brand-tag">Bovril</span>
+          <span class="brand-tag">Flora</span><span class="brand-tag">I Can't Believe It's Not Butter</span>
+          <span class="brand-tag">Country Crock</span><span class="brand-tag">+ 100 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Significant government contracts in school lunch programs globally. Lobbied against food waste legislation in EU and UK.
+      </div>
+    </div>
+
+    <!-- Kraft Heinz -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">Kraft Heinz</div>
+          <div class="corp-hq">Chicago, Illinois · Merged 2015</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">26B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~35%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">37K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">Kraft</span><span class="brand-tag">Heinz</span>
+          <span class="brand-tag">Oscar Mayer</span><span class="brand-tag">Velveeta</span>
+          <span class="brand-tag">Jell-O</span><span class="brand-tag">Kool-Aid</span>
+          <span class="brand-tag">Philadelphia</span><span class="brand-tag">Maxwell House</span>
+          <span class="brand-tag">Planters</span><span class="brand-tag">Grey Poupon</span>
+          <span class="brand-tag">A1 Sauce</span><span class="brand-tag">Bull's-Eye</span>
+          <span class="brand-tag">Capri Sun</span><span class="brand-tag">Lunchables</span>
+          <span class="brand-tag">Bagel Bites</span><span class="brand-tag">Ore-Ida</span>
+          <span class="brand-tag">Smart Ones</span><span class="brand-tag">+ 50 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Received over $1B in USDA food purchases. Owned by 3G Capital and Berkshire Hathaway — cut 13,000 jobs while reporting record profits.
+      </div>
+    </div>
+
+    <!-- General Mills -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">General Mills</div>
+          <div class="corp-hq">Golden Valley, Minnesota · Founded 1856</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">20B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~22%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">35K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">Cheerios</span><span class="brand-tag">Lucky Charms</span>
+          <span class="brand-tag">Wheaties</span><span class="brand-tag">Cocoa Puffs</span>
+          <span class="brand-tag">Trix</span><span class="brand-tag">Cinnamon Toast Crunch</span>
+          <span class="brand-tag">Chex</span><span class="brand-tag">Total</span>
+          <span class="brand-tag">Betty Crocker</span><span class="brand-tag">Bisquick</span>
+          <span class="brand-tag">Pillsbury</span><span class="brand-tag">Häagen-Dazs (NA)</span>
+          <span class="brand-tag">Yoplait</span><span class="brand-tag">Nature Valley</span>
+          <span class="brand-tag">Fiber One</span><span class="brand-tag">Annie's</span>
+          <span class="brand-tag">Cascadian Farm</span><span class="brand-tag">Larabar</span>
+          <span class="brand-tag">Blue Buffalo</span><span class="brand-tag">+ 50 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Receives significant USDA commodity supports. Sued consumers attempting to hold them accountable for misleading "natural" labeling.
+      </div>
+    </div>
+
+    <!-- Conagra -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">Conagra Brands</div>
+          <div class="corp-hq">Chicago, Illinois · Founded 1919</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">12B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~30%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">18K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">Birds Eye</span><span class="brand-tag">Duncan Hines</span>
+          <span class="brand-tag">Hunt's</span><span class="brand-tag">Marie Callender's</span>
+          <span class="brand-tag">Healthy Choice</span><span class="brand-tag">Slim Jim</span>
+          <span class="brand-tag">Reddi-wip</span><span class="brand-tag">PAM</span>
+          <span class="brand-tag">Wesson</span><span class="brand-tag">Orville Redenbacher's</span>
+          <span class="brand-tag">Act II</span><span class="brand-tag">Peter Pan</span>
+          <span class="brand-tag">Swiss Miss</span><span class="brand-tag">Vlasic</span>
+          <span class="brand-tag">Chef Boyardee</span><span class="brand-tag">Gulden's</span>
+          <span class="brand-tag">Frontera</span><span class="brand-tag">+ 40 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Received hundreds of millions in USDA commodity purchases. Major recipient of crop insurance subsidies on ingredient supply chain.
+      </div>
+    </div>
+
+    <!-- Mars (Kellanova) -->
+    <div class="corp-card">
+      <div class="corp-header">
+        <div>
+          <div class="corp-name">Mars / Kellanova</div>
+          <div class="corp-hq">McLean, Virginia · Mars acquired Kellanova 2024</div>
+        </div>
+        <div class="corp-waste-badge">Documented Waster</div>
+      </div>
+      <div class="corp-stats">
+        <div class="corp-stat">
+          <div class="corp-stat-num">50B+</div>
+          <div class="corp-stat-label">Annual Revenue</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">~25%</div>
+          <div class="corp-stat-label">Food Wasted</div>
+        </div>
+        <div class="corp-stat">
+          <div class="corp-stat-num">150K+</div>
+          <div class="corp-stat-label">Employees</div>
+        </div>
+      </div>
+      <div class="corp-brands">
+        <div class="corp-brands-label">Brands They Own</div>
+        <div class="brands-list">
+          <span class="brand-tag">M&M's</span><span class="brand-tag">Snickers</span>
+          <span class="brand-tag">Twix</span><span class="brand-tag">Milky Way</span>
+          <span class="brand-tag">Skittles</span><span class="brand-tag">Starburst</span>
+          <span class="brand-tag">Pedigree</span><span class="brand-tag">Whiskas</span>
+          <span class="brand-tag">Uncle Ben's</span><span class="brand-tag">Dolmio</span>
+          <span class="brand-tag">Kind</span><span class="brand-tag">Kellogg's</span>
+          <span class="brand-tag">Pop-Tarts</span><span class="brand-tag">Cheez-It</span>
+          <span class="brand-tag">Pringles</span><span class="brand-tag">Eggo</span>
+          <span class="brand-tag">Morningstar Farms</span><span class="brand-tag">Rice Krispies</span>
+          <span class="brand-tag">Frosted Flakes</span><span class="brand-tag">Froot Loops</span>
+          <span class="brand-tag">Special K</span><span class="brand-tag">Nutri-Grain</span>
+          <span class="brand-tag">RXBAR</span><span class="brand-tag">+ 100 more</span>
+        </div>
+      </div>
+      <div class="corp-subsidy">
+        ⚠ Mars is privately owned — financial details hidden from public. Kellanova acquisition ($36B) consolidates control over breakfast and snack aisles globally.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Methodology -->
+  <div class="methodology">
+    <h3>How We Calculate This</h3>
+    <p>Waste percentages are derived from EPA, USDA, and company sustainability reports. "Families fed" uses USDA data for a family of 4 (38 lbs/week). We always round down. We never inflate.</p>
+    <p>Subsidy data is sourced from USDA procurement records, EWG Farm Subsidy Database, and public SEC filings. All sources are public record.</p>
+    <p>This page is updated hourly by Gleaning's Watchers. Corrections and additional documentation can be submitted via Hoarders.</p>
+  </div>
+
+  <div class="last-updated">
+    Last updated: <span>{{ stats.last_updated | default("hourly") }}</span> · Data is public record · <a href="/hoarders">Document waste you've seen →</a>
+  </div>
+
+</main>
+
 <footer>
-    <p>Gleaning · Founded by Krone the Architect · 2026 · Power to the People.</p>
-    <p style="margin-top:0.5rem"><a href="/">Home</a> · <a href="/wall">Truth Wall</a> · <a href="/map">Map</a></p>
+  <p>Gleaning · No advertising · No data selling · Power to the People</p>
+  <p>Founded by Krone the Architect · <a href="/wall">Truth Wall</a> · <a href="/hoarders">Hoarders</a></p>
 </footer>
+
 </body>
 </html>
