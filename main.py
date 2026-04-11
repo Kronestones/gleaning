@@ -280,11 +280,7 @@ async def hoarders_page(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/hoarders/submit", response_class=HTMLResponse)
 async def hoarders_submit_page(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="submit.html",
-        context={}
-    )
+    return templates.TemplateResponse("submit.html", {"request": request})
 
 @app.post("/hoarders/submit", response_class=HTMLResponse)
 async def hoarders_submit(
