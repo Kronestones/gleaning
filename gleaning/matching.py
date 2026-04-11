@@ -288,31 +288,38 @@ class MatchEngine:
         return [self._format_post(db, p) for p in posts]
 
     def get_stats(self, db: Session) -> dict:
-        """Platform-wide gleaning statistics."""
-        total_posts     = db.query(SurplusPost).count()
-        collected       = db.query(SurplusPost).filter(
-            SurplusPost.status == "COLLECTED"
-        ).count()
-        total_matches   = db.query(Match).count()
-        confirmed       = db.query(Match).filter(
-            Match.status.in_(["CONFIRMED", "COLLECTED"])
-        ).count()
-        active_pantries = db.query(User).filter(
-            and_(User.org_type == "PANTRY", User.active == True)
-        ).count()
-        active_donors   = db.query(User).filter(
-            and_(User.org_type == "BUSINESS", User.active == True)
-        ).count()
-
-        return {
-            "surplus_posts":    total_posts,
-            "food_collected":   collected,
-            "matches_made":     total_matches,
-            "matches_confirmed": confirmed,
-            "active_pantries":  active_pantries,
-            "active_donors":    active_donors,
-            "note": "Every number here is food that didn't go to a landfill."
-        }
+        """Gleaning platform statistics."""
+        from gleaning.hoarders import HoarderPost, ModerationAction
+        try:
+            total_reports = db.query(HoarderPost).count()
+            approved = db.query(HoarderPost).filter(
+                HoarderPost.status == "approved"
+            ).count()
+            pending = db.query(HoarderPost).filter(
+                HoarderPost.status == "pending"
+            ).count()
+            total_lbs = db.query(HoarderPost).filter(
+                HoarderPost.status == "approved"
+            ).all()
+            lbs_sum = sum(r.lbs_estimate or 0 for r in total_lbs)
+            families_fed = int(lbs_sum / 38)
+            return {
+                "total_reports": total_reports,
+                "approved": approved,
+                "pending": pending,
+                "total_lbs": lbs_sum,
+                "families_fed": families_fed,
+                "note": "Every number here is food that didn't go to a landfill."
+            }
+        except Exception as e:
+            return {
+                "total_reports": 0,
+                "approved": 0,
+                "pending": 0,
+                "total_lbs": 0,
+                "families_fed": 0,
+                "note": "Stats unavailable."
+            }
 
     def _format_post(self, db: Session,
                      post: SurplusPost) -> dict:
