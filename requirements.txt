@@ -9,4 +9,4 @@ python-dotenv
 sqlalchemy
 aiosqlite
 httpx
-uvicorn[standard]==0.27.1
+uvicorn[standard]==0.24.0
