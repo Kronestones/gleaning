@@ -9,3 +9,4 @@ sqlalchemy
 aiosqlite
 httpx
 uvicorn[standard]==0.24.0
+psycopg2-binary
