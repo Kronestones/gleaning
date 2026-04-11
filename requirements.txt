@@ -1,4 +1,4 @@
-fastapi
+fastapi==0.104.1
 gunicorn
 python-multipart
 jinja2
