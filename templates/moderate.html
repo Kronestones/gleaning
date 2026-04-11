@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moderation — Gleaning</title>
+  <style>
+    :root {
+      --green-dark:   #1a3a2a;
+      --green-mid:    #2e7d4f;
+      --green-light:  #eaf4ee;
+      --green-accent: #7cb87c;
+      --text:         #1a1a1a;
+      --text-muted:   #5a6672;
+      --bg:           #f4f7f5;
+      --white:        #ffffff;
+      --border:       #d4e8db;
+      --error:        #c0392b;
+      --warn:         #e67e22;
+      --radius:       10px;
+      --shadow:       0 1px 4px rgba(0,0,0,0.07);
+      --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--text); font-size: 16px;
+      line-height: 1.65; min-height: 100vh; display: flex;
+      flex-direction: column; -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--green-mid); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nav {
+      background: var(--green-dark); padding: 0 20px; height: 56px;
+      display: flex; align-items: center; gap: 12px; position: sticky;
+      top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .nav-logo { color: white; font-size: 18px; font-weight: 700; text-decoration: none; flex-shrink: 0; }
+    .nav-spirit { color: var(--green-accent); font-size: 12px; font-style: italic; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-links { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { color: rgba(255,255,255,0.85); font-size: 13px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; transition: background 0.15s; }
+    .nav-links a:hover { color: white; background: rgba(255,255,255,0.1); text-decoration: none; }
+    .main { flex: 1; max-width: 800px; margin: 0 auto; padding: 28px 16px 48px; width: 100%; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-size: 28px; font-weight: 700; color: var(--green-dark); letter-spacing: -0.02em; margin-bottom: 6px; }
+    .page-header p { font-size: 15px; color: var(--text-muted); }
+
+    /* Auth gate */
+    .auth-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow); max-width: 420px; }
+    .auth-card h2 { font-size: 20px; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .auth-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 14px; font-weight: 600; color: var(--green-dark); margin-bottom: 6px; }
+    input[type="password"] { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 15px; color: var(--text); background: var(--white); transition: border-color 0.15s; font-family: inherit; }
+    input:focus { outline: none; border-color: var(--green-mid); }
+    textarea, select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 15px; color: var(--text); background: var(--white); font-family: inherit; }
+    textarea { resize: vertical; min-height: 70px; }
+    textarea:focus, select:focus { outline: none; border-color: var(--green-mid); }
+
+    .btn-primary { background: var(--green-mid); color: white; border: none; padding: 11px 22px; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; display: inline-block; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-full { width: 100%; padding: 13px; font-size: 16px; }
+
+    .form-error { background: #fdf2f2; border: 1px solid #f5c6c6; border-radius: var(--radius); padding: 12px 16px; color: var(--error); font-size: 14px; margin-bottom: 18px; }
+    .form-success { background: var(--green-light); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; color: var(--green-dark); font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+
+    /* Krone queue banner */
+    .krone-queue-banner { background: var(--green-dark); color: white; padding: 14px 20px; border-radius: var(--radius); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+    .krone-queue-banner h2 { font-size: 16px; font-weight: 700; color: var(--green-accent); }
+    .krone-queue-count { background: var(--error); color: white; font-size: 13px; font-weight: 700; padding: 3px 12px; border-radius: 20px; }
+
+    /* Queue */
+    .queue-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .queue-header h2 { font-size: 18px; font-weight: 700; color: var(--green-dark); }
+    .queue-count { background: var(--error); color: white; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+    .queue-count.empty { background: var(--green-mid); }
+
+    .report-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+    .report-header { padding: 12px 18px; border-bottom: 1px solid var(--border); background: var(--green-light); display: flex; align-items: center; justify-content: space-between; }
+    .report-id { font-size: 13px; font-weight: 700; color: var(--green-dark); }
+    .report-submitted { font-size: 12px; color: var(--text-muted); }
+    .report-body { padding: 18px; }
+    .report-photo { width: 100%; max-height: 280px; object-fit: cover; border-radius: 8px; margin-bottom: 14px; display: block; }
+    .field-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+    .field-label { font-weight: 600; color: var(--green-dark); min-width: 80px; flex-shrink: 0; }
+
+    /* Team deliberation */
+    .team-verdict { background: var(--bg); border-top: 1px solid var(--border); padding: 14px 18px; }
+    .team-verdict h4 { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .verdict-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+    .verdict-approved { background: var(--green-light); color: var(--green-mid); }
+    .verdict-denied { background: #fdf2f2; color: var(--error); }
+    .verdict-split { background: #fef5ec; color: var(--warn); }
+    .vote-summary { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .deliberation-log { font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px; max-height: 140px; overflow-y: auto; }
+    .delib-entry { margin-bottom: 6px; }
+    .delib-name { font-weight: 700; color: var(--green-dark); }
+
+    /* Krone final call form */
+    .krone-call { background: #fff8e6; border: 1.5px solid var(--warn); border-radius: var(--radius); padding: 16px 18px; margin-top: 12px; }
+    .krone-call h4 { font-size: 14px; font-weight: 700; color: var(--warn); margin-bottom: 12px; }
+    .krone-call-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+    .btn-approve { background: var(--green-mid); color: white; border: none; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-approve:hover { background: var(--green-dark); }
+    .btn-deny { background: var(--error); color: white; border: none; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-deny:hover { background: #a93226; }
+
+    /* Log */
+    .log-section { margin-top: 40px; }
+    .log-section h2 { font-size: 18px; font-weight: 700; color: var(--green-dark); margin-bottom: 14px; }
+    .log-entry { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 8px; font-size: 13px; display: flex; gap: 12px; }
+    .log-action { font-weight: 700; min-width: 80px; }
+    .log-action.approve { color: var(--green-mid); }
+    .log-action.deny { color: var(--error); }
+    .log-action.krone { color: var(--warn); }
+    .log-meta { color: var(--text-muted); flex: 1; }
+
+    .empty-queue { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+    .empty-queue .icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-queue h3 { font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 6px; }
+
+    .footer { background: var(--green-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 24px 16px; font-size: 13px; line-height: 1.8; margin-top: auto; }
+    .footer a { color: var(--green-accent); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">🌾 Gleaning</a>
+    <span class="nav-spirit">The harvest was never only theirs.</span>
+    <div class="nav-links">
+      <a href="/">Map</a>
+      <a href="/wall">Truth Wall</a>
+      <a href="/hoarders">Hoarders</a>
+      <a href="/stats">Stats</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="page-header">
+      <h1>Moderation</h1>
+      <p>Founder access only. The Team has already deliberated on each report.</p>
+    </div>
+
+    {% if error %}
+    <div class="form-error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="form-success">✓ {{ success }}</div>
+    {% endif %}
+
+    {% if not authenticated %}
+    <!-- Founder auth gate -->
+    <div class="auth-card">
+      <h2>Founder Access</h2>
+      <p>Enter your founder passphrase to view the queue.</p>
+      <form method="POST" action="/hoarders/moderate">
+        <input type="hidden" name="action" value="login">
+        <div class="form-group">
+          <label>Passphrase</label>
+          <input type="password" name="passphrase" placeholder="Your founder passphrase" required autocomplete="off">
+        </div>
+        <button type="submit" class="btn-primary btn-full">Enter</button>
+      </form>
+    </div>
+
+    {% else %}
+
+    <!-- Krone queue — reports needing final call -->
+    {% if krone_queue %}
+    <div class="krone-queue-banner">
+      <h2>⚠ Awaiting your decision</h2>
+      <span class="krone-queue-count">{{ krone_queue | length }} report(s)</span>
+    </div>
+
+    {% for item in krone_queue %}
+    <div class="report-card">
+      <div class="report-header">
+        <span class="report-id">Report #{{ item.report_id }} — Team split, your call</span>
+      </div>
+      <div class="report-body">
+        {% if item.report and item.report.photo_path %}
+        <img class="report-photo" src="/media/{{ item.report.photo_path }}" alt="Report photo">
+        {% endif %}
+        <div class="field-row"><span class="field-label">Lbs:</span><span>{{ item.report.estimated_lbs if item.report else "?" }}</span></div>
+        <div class="field-row"><span class="field-label">Location:</span><span>{{ item.report.latitude if item.report else "?" }}, {{ item.report.longitude if item.report else "?" }}</span></div>
+        {% if item.report and item.report.description %}
+        <div class="field-row"><span class="field-label">Note:</span><span>{{ item.report.description }}</span></div>
+        {% endif %}
+
+        <div class="deliberation-log">
+          {% for entry in item.deliberation %}
+          <div class="delib-entry"><span class="delib-name">{{ entry.member }}</span> ({{ entry.vote or "no vote" }}): {{ entry.message[:120] }}...</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="krone-call">
+        <h4>The Team could not reach majority. Your final call:</h4>
+        <form method="POST" action="/hoarders/moderate">
+          <input type="hidden" name="action" value="krone_decide">
+          <input type="hidden" name="report_id" value="{{ item.report_id }}">
+          <input type="hidden" name="passphrase" value="{{ session_token }}">
+          <div class="krone-call-btns">
+            <button type="submit" name="decision" value="APPROVED" class="btn-approve">✓ Approve</button>
+            <button type="submit" name="decision" value="DENIED" class="btn-deny">✕ Deny</button>
+          </div>
+          <textarea name="note" placeholder="Your reasoning (optional but logged)"></textarea>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Regular pending queue -->
+    <div class="queue-header">
+      <h2>Pending Reports</h2>
+      {% if pending_queue %}
+        <span class="queue-count">{{ pending_queue | length }} pending</span>
+      {% else %}
+        <span class="queue-count empty">Clear</span>
+      {% endif %}
+    </div>
+
+    {% if pending_queue %}
+      {% for report in pending_queue %}
+      <div class="report-card">
+        <div class="report-header">
+          <span class="report-id">Report #{{ report.id }}</span>
+          <span class="report-submitted">{{ report.posted_at.strftime("%b %d, %Y at %H:%M") if report.posted_at else "" }} (server time)</span>
+        </div>
+        <div class="report-body">
+          {% if report.photo_path %}
+          <img class="report-photo" src="/media/{{ report.photo_path }}" alt="Report photo">
+          {% endif %}
+          <div class="field-row"><span class="field-label">Lbs:</span><span>{{ report.estimated_lbs }} lbs</span></div>
+          <div class="field-row"><span class="field-label">Location:</span><span>{{ report.latitude }}, {{ report.longitude }}</span></div>
+          {% if report.description %}
+          <div class="field-row"><span class="field-label">Note:</span><span>{{ report.description }}</span></div>
+          {% endif %}
+        </div>
+
+        <!-- Team deliberation result -->
+        {% set delib = deliberations.get(report.id) %}
+        {% if delib %}
+        <div class="team-verdict">
+          <h4>Team deliberation</h4>
+          {% set outcome = delib.get("status", "OPEN") %}
+          <span class="verdict-badge {% if outcome == "APPROVED" %}verdict-approved{% elif outcome == "DENIED" %}verdict-denied{% else %}verdict-split{% endif %}">
+            {{ outcome }}
+          </span>
+          <div class="vote-summary">
+            Approve: {{ delib.votes | selectattr("vote", "equalto", "approve") | list | length }} ·
+            Deny: {{ delib.votes | selectattr("vote", "equalto", "deny") | list | length }}
+          </div>
+          <div class="deliberation-log">
+            {% for entry in delib.deliberation %}
+            <div class="delib-entry"><span class="delib-name">{{ entry.member }}</span> ({{ entry.vote or "—" }}): {{ entry.message[:100] }}...</div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty-queue">
+      <div class="icon">✓</div>
+      <h3>Queue is clear.</h3>
+      <p>No reports waiting for review.</p>
+    </div>
+    {% endif %}
+
+    <!-- Decision log -->
+    {% if decision_log %}
+    <div class="log-section">
+      <h2>Recent Decisions</h2>
+      {% for entry in decision_log %}
+      <div class="log-entry">
+        <span class="log-action {% if "APPROV" in entry.outcome %}approve{% elif "DENI" in entry.outcome %}deny{% else %}krone{% endif %}">{{ entry.outcome }}</span>
+        <span class="log-meta">
+          Report #{{ entry.report_id }} · {{ entry.decided_by }} · {{ entry.closed_at[:16] if entry.closed_at else "" }}
+          {% if entry.get("krone_note") %} · "{{ entry.krone_note }}"{% endif %}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% endif %}{# end auth check #}
+
+  </main>
+
+  <footer class="footer">
+    <p>Gleaning · Founder access only · Every decision logged permanently</p>
+    <p>Founded by Krone the Architect · <a href="/hoarders">Back to Hoarders</a></p>
+  </footer>
+
+</body>
+</html>

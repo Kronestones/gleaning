@@ -1,0 +1,192 @@
+{"time": "2026-04-10T05:17:12.550649+00:00", "watcher": "AcquisitionWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T05:17:12.551619+00:00", "watcher": "WasteWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T05:17:12.556882+00:00", "watcher": "CorporationWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T05:17:12.555242+00:00", "watcher": "HungerWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T05:17:12.556120+00:00", "watcher": "PriceWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T05:17:13.261523+00:00", "watcher": "PriceWatch", "event": "CHECK_COMPLETE", "detail": ""}
+{"time": "2026-04-10T05:17:13.356521+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Less Left Over: How Local Small Businesses and Carnival Corporation Work Togethe"}
+{"time": "2026-04-10T05:17:13.358959+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Less Left Over: How Local Small Businesses and Carnival Corp"}
+{"time": "2026-04-10T05:17:13.359596+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Corporation Pilots Food Waste Bio-Digester Technology to Improve Enviro"}
+{"time": "2026-04-10T05:17:13.360883+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Corporation Pilots Food Waste Bio-Digester Technolo"}
+{"time": "2026-04-10T05:17:13.361360+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "US Food Waste Pact reports progress on diversion - Waste Dive"}
+{"time": "2026-04-10T05:17:13.362444+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: US Food Waste Pact reports progress on diversion - Waste Div"}
+{"time": "2026-04-10T05:17:13.362975+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Highlights Food Waste Cuts And Fleet Upkeep In Sustainability Push - Ya"}
+{"time": "2026-04-10T05:17:13.365257+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Highlights Food Waste Cuts And Fleet Upkeep In Sust"}
+{"time": "2026-04-10T05:17:13.365897+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Divert Inc., General Produce partner to divert food waste from landfills in Cali"}
+{"time": "2026-04-10T05:17:13.367426+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Divert Inc., General Produce partner to divert food waste fr"}
+{"time": "2026-04-10T05:17:13.367947+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Food Waste Management Market Size, Share and Trends, 2034 - Market Data Forecast"}
+{"time": "2026-04-10T05:17:13.369452+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Food Waste Management Market Size, Share and Trends, 2034 - "}
+{"time": "2026-04-10T05:17:13.370017+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Mill and Amazon team up to launch industry-first food waste innovation at Whole "}
+{"time": "2026-04-10T05:17:13.371331+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Mill and Amazon team up to launch industry-first food waste "}
+{"time": "2026-04-10T05:17:13.371738+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Monster Organics Announces Expansion of Food Waste Collection & Organics Recycli"}
+{"time": "2026-04-10T05:17:13.372869+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Monster Organics Announces Expansion of Food Waste Collectio"}
+{"time": "2026-04-10T05:17:13.373349+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How Carnival Corporation\u2019s Less Left Over Food Waste Reduction Strategy Has Cut "}
+{"time": "2026-04-10T05:17:13.374759+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How Carnival Corporation\u2019s Less Left Over Food Waste Reducti"}
+{"time": "2026-04-10T05:17:13.375184+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Goodr, The Tech-Driven Food Waste Company, Launches Fund To Support Families As "}
+{"time": "2026-04-10T05:17:13.376385+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Goodr, The Tech-Driven Food Waste Company, Launches Fund To "}
+{"time": "2026-04-10T05:17:13.376730+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Bhubaneswar Municipal Corporation to divert food waste to piggeries for sustaina"}
+{"time": "2026-04-10T05:17:13.377853+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Bhubaneswar Municipal Corporation to divert food waste to pi"}
+{"time": "2026-04-10T05:17:13.378144+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "11 Effective Solutions for Food Waste - Earth.Org"}
+{"time": "2026-04-10T05:17:13.379403+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: 11 Effective Solutions for Food Waste - Earth.Org"}
+{"time": "2026-04-10T05:17:13.379745+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Zero food waste: Corporate commitments to waste reduction - S&P Global"}
+{"time": "2026-04-10T05:17:13.380992+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Zero food waste: Corporate commitments to waste reduction - "}
+{"time": "2026-04-10T05:17:13.381377+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Corporation Reports Favorable Food Waste Reduction Progress - Waste360"}
+{"time": "2026-04-10T05:17:13.382986+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Corporation Reports Favorable Food Waste Reduction "}
+{"time": "2026-04-10T05:17:13.383436+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Raley\u2019s ramps up food waste prevention efforts - Grocery Dive"}
+{"time": "2026-04-10T05:17:13.384762+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Raley\u2019s ramps up food waste prevention efforts - Grocery Div"}
+{"time": "2026-04-10T05:17:13.385097+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Less Left Over, More Impact: Carnival Corporation\u2019s Recipe for Food Waste Reduct"}
+{"time": "2026-04-10T05:17:13.386509+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Less Left Over, More Impact: Carnival Corporation\u2019s Recipe f"}
+{"time": "2026-04-10T05:17:13.386916+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Corporation\u2019s \u2018Less Left Over\u2019 Food Waste Reduction Strategy Catches th"}
+{"time": "2026-04-10T05:17:13.388403+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Corporation\u2019s \u2018Less Left Over\u2019 Food Waste Reduction"}
+{"time": "2026-04-10T05:17:13.388814+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How Carnival Corp. is surpassing its food waste reduction goals - Seatrade Cruis"}
+{"time": "2026-04-10T05:17:13.390473+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How Carnival Corp. is surpassing its food waste reduction go"}
+{"time": "2026-04-10T05:17:13.391008+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Ikea, Vanguard Renewables team up to turn food waste into renewable energy - ESG"}
+{"time": "2026-04-10T05:17:13.392504+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Ikea, Vanguard Renewables team up to turn food waste into re"}
+{"time": "2026-04-10T05:17:13.392959+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Freshr Sustainable Technologies Inc. and Mitsubishi Chemical Corporation Announc"}
+{"time": "2026-04-10T05:17:13.394517+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Freshr Sustainable Technologies Inc. and Mitsubishi Chemical"}
+{"time": "2026-04-10T05:17:13.394862+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How This Company Helps Walmart Turn Food Waste Into Revenue - inc.com"}
+{"time": "2026-04-10T05:17:13.396249+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How This Company Helps Walmart Turn Food Waste Into Revenue "}
+{"time": "2026-04-10T05:17:13.396622+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Biotech startup Symbio Bioculinary engineers the elimination of food waste in Bl"}
+{"time": "2026-04-10T05:17:13.398584+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Biotech startup Symbio Bioculinary engineers the elimination"}
+{"time": "2026-04-10T05:17:13.399136+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Kroger trials food waste reduction tech in Mid-Atlantic stores - Grocery Dive"}
+{"time": "2026-04-10T05:17:13.400562+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Kroger trials food waste reduction tech in Mid-Atlantic stor"}
+{"time": "2026-04-10T05:17:13.400833+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Chick-fil-A , Inc. joins U.S. Food Waste Pact - Chick-fil-A"}
+{"time": "2026-04-10T05:17:13.402171+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Chick-fil-A , Inc. joins U.S. Food Waste Pact - Chick-fil-A"}
+{"time": "2026-04-10T05:17:13.402452+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How 3 Hot Startups Are Monetizing the Booming Food Waste Business - U.S. Chamber"}
+{"time": "2026-04-10T05:17:13.403904+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How 3 Hot Startups Are Monetizing the Booming Food Waste Bus"}
+{"time": "2026-04-10T05:17:13.404261+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Slashes Food Waste and Saves Millions - Cruise Hive"}
+{"time": "2026-04-10T05:17:13.405811+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Slashes Food Waste and Saves Millions - Cruise Hive"}
+{"time": "2026-04-10T05:17:13.406148+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Walmart reaches settlement with food waste tech company - Grocery Dive"}
+{"time": "2026-04-10T05:17:13.407894+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Walmart reaches settlement with food waste tech company - Gr"}
+{"time": "2026-04-10T05:17:13.408299+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Where Food Waste Goes In Southern California - KQED"}
+{"time": "2026-04-10T05:17:13.410025+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Where Food Waste Goes In Southern California - KQED"}
+{"time": "2026-04-10T05:17:13.410340+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Del Monte Foods Advances Food Waste Reduction Efforts with Upcycled-Certified Be"}
+{"time": "2026-04-10T05:17:13.412030+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Del Monte Foods Advances Food Waste Reduction Efforts with U"}
+{"time": "2026-04-10T05:17:13.412319+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Food Waste Management Market Size & Trends 2025-2035 - Future Market Insights"}
+{"time": "2026-04-10T05:17:13.413886+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Food Waste Management Market Size & Trends 2025-2035 - Futur"}
+{"time": "2026-04-10T05:17:13.414178+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Divert secures $90M for wasted food facility - Waste Today -"}
+{"time": "2026-04-10T05:17:13.415932+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Divert secures $90M for wasted food facility - Waste Today -"}
+{"time": "2026-04-10T05:17:13.416283+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Can This Chicken Company Solve America\u2019s Food Waste Problem? - Civil Eats"}
+{"time": "2026-04-10T05:17:13.417963+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Can This Chicken Company Solve America\u2019s Food Waste Problem?"}
+{"time": "2026-04-10T05:17:13.418314+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Rhode Island \u2013 Food Waste Recycling Requirements - Institute for Local Self-Reli"}
+{"time": "2026-04-10T05:17:13.420112+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Rhode Island \u2013 Food Waste Recycling Requirements - Institute"}
+{"time": "2026-04-10T05:17:13.420454+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival\u2019s Less Left Over Strategy Beats Food Waste Targets - Cruise Industry Ne"}
+{"time": "2026-04-10T05:17:13.422232+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival\u2019s Less Left Over Strategy Beats Food Waste Targets "}
+{"time": "2026-04-10T05:17:13.422665+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Waste Connections, Food Science Corp. partner with Texas city to recycle food wa"}
+{"time": "2026-04-10T05:17:13.424757+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Waste Connections, Food Science Corp. partner with Texas cit"}
+{"time": "2026-04-10T05:17:13.425216+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Divert Inc. announces first food waste processing plant in Ohio - Waste Today -"}
+{"time": "2026-04-10T05:17:13.427394+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Divert Inc. announces first food waste processing plant in O"}
+{"time": "2026-04-10T05:17:13.427723+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Starbucks joins U.S. Food Waste Pact - Restaurant Business"}
+{"time": "2026-04-10T05:17:13.429764+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Starbucks joins U.S. Food Waste Pact - Restaurant Business"}
+{"time": "2026-04-10T05:17:13.430105+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Corp. tests food waste bio-digester machines - Seatrade Cruise News"}
+{"time": "2026-04-10T05:17:13.432136+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Corp. tests food waste bio-digester machines - Seat"}
+{"time": "2026-04-10T05:17:13.432480+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Mass. attorney general sues Grafton food waste company over odor emissions - Wor"}
+{"time": "2026-04-10T05:17:13.434389+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Mass. attorney general sues Grafton food waste company over "}
+{"time": "2026-04-10T05:17:13.434740+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "The Supply Side: Crisp acquires Shelf Engine, plans to further reduce food waste"}
+{"time": "2026-04-10T05:17:13.436540+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: The Supply Side: Crisp acquires Shelf Engine, plans to furth"}
+{"time": "2026-04-10T05:17:13.436765+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "The Supply Side: Crisp acquires Shelf Engine, plans to further reduce food waste"}
+{"time": "2026-04-10T05:17:13.438662+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: The Supply Side: Crisp acquires Shelf Engine, plans to furth"}
+{"time": "2026-04-10T05:17:13.439050+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Rhode Island\u2019s Last Landfill Is Running Out of Room - ecoRI News"}
+{"time": "2026-04-10T05:17:13.441224+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Rhode Island\u2019s Last Landfill Is Running Out of Room - ecoRI "}
+{"time": "2026-04-10T05:17:13.441643+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Travel takes on food waste - Travel Weekly"}
+{"time": "2026-04-10T05:17:13.443793+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Travel takes on food waste - Travel Weekly"}
+{"time": "2026-04-10T05:17:13.444112+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How AI can unlock a $127B opportunity by reducing food waste - McKinsey & Compan"}
+{"time": "2026-04-10T05:17:13.446194+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How AI can unlock a $127B opportunity by reducing food waste"}
+{"time": "2026-04-10T05:17:13.446519+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Analysis: Nine of America's 10 Biggest Supermarkets Fail to Publicly Report Food"}
+{"time": "2026-04-10T05:17:13.448822+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Analysis: Nine of America's 10 Biggest Supermarkets Fail to "}
+{"time": "2026-04-10T05:17:13.449134+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "New Whole Foods partnership aims to reduce food waste - Grocery Dive"}
+{"time": "2026-04-10T05:17:13.451254+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: New Whole Foods partnership aims to reduce food waste - Groc"}
+{"time": "2026-04-10T05:17:13.451558+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Food Waste Tech Company Looks to Major Expansion with $1 Billion Deal - Food On "}
+{"time": "2026-04-10T05:17:13.454330+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Food Waste Tech Company Looks to Major Expansion with $1 Bil"}
+{"time": "2026-04-10T05:17:13.454920+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Dunkin\u2019s Commitment to Lessening Food Waste - Dunkin' Donuts"}
+{"time": "2026-04-10T05:17:13.457502+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Dunkin\u2019s Commitment to Lessening Food Waste - Dunkin' Donuts"}
+{"time": "2026-04-10T05:17:13.457914+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Meet 2 Companies Upcycling Food Waste to Make Beauty More Sustainable - Sustaina"}
+{"time": "2026-04-10T05:17:13.460324+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Meet 2 Companies Upcycling Food Waste to Make Beauty More Su"}
+{"time": "2026-04-10T05:17:13.460665+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Utah Company Turning Food Waste into Fuel to Power Homes, Businesses - Waste360"}
+{"time": "2026-04-10T05:17:13.462982+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Utah Company Turning Food Waste into Fuel to Power Homes, Bu"}
+{"time": "2026-04-10T05:17:13.463353+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Danone joins corporate alliance to turn food waste into renewable energy - Agric"}
+{"time": "2026-04-10T05:17:13.466140+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Danone joins corporate alliance to turn food waste into rene"}
+{"time": "2026-04-10T05:17:13.466544+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Too Good To Go reducing food waste one click at a time - Food Business News"}
+{"time": "2026-04-10T05:17:13.468881+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Too Good To Go reducing food waste one click at a time - Foo"}
+{"time": "2026-04-10T05:17:13.469193+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Newly launched Do Good Foods raises $169M to turn food waste into animal feed - "}
+{"time": "2026-04-10T05:17:13.471667+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Newly launched Do Good Foods raises $169M to turn food waste"}
+{"time": "2026-04-10T05:17:13.472026+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Global Food Waste Management Market Report 2023: Increasing Usage of Organic Was"}
+{"time": "2026-04-10T05:17:13.474630+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Global Food Waste Management Market Report 2023: Increasing "}
+{"time": "2026-04-10T05:17:13.475079+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "Natural Upcycling acquires food scrap recycling company - Waste Today -"}
+{"time": "2026-04-10T05:17:13.477679+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: Natural Upcycling acquires food scrap recycling company - Wa"}
+{"time": "2026-04-10T05:17:13.478006+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How Southeastern Grocers tapped tech to reduce food waste - Grocery Dive"}
+{"time": "2026-04-10T05:17:13.480505+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How Southeastern Grocers tapped tech to reduce food waste - "}
+{"time": "2026-04-10T05:17:13.480832+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Carnival Announces Significant Reduction in Food Waste on Their Cruise Ships - C"}
+{"time": "2026-04-10T05:17:13.483346+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Carnival Announces Significant Reduction in Food Waste on Th"}
+{"time": "2026-04-10T05:17:13.483670+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "The food waste management market is projected to grow by USD 9.13 Billion from 2"}
+{"time": "2026-04-10T05:17:13.486084+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: The food waste management market is projected to grow by USD"}
+{"time": "2026-04-10T05:17:13.486372+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Jollibee Group enters partnership to convert food waste into sustainable fertili"}
+{"time": "2026-04-10T05:17:13.488972+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Jollibee Group enters partnership to convert food waste into"}
+{"time": "2026-04-10T05:17:13.489366+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "The war on food waste is a waste of time - The Outline"}
+{"time": "2026-04-10T05:17:13.492240+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: The war on food waste is a waste of time - The Outline"}
+{"time": "2026-04-10T05:17:13.492646+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Chick-fil-A partners with food waste company to convert used cooking oil into fu"}
+{"time": "2026-04-10T05:17:13.495391+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Chick-fil-A partners with food waste company to convert used"}
+{"time": "2026-04-10T05:17:13.495724+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Aldi Extends Company Shop Group Partnership to Help Reduce Food Waste; Liz Fox a"}
+{"time": "2026-04-10T05:17:13.498277+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Aldi Extends Company Shop Group Partnership to Help Reduce F"}
+{"time": "2026-04-10T05:17:13.498607+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "RTS acquires Ambrosia - Waste Today -"}
+{"time": "2026-04-10T05:17:13.501235+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: RTS acquires Ambrosia - Waste Today -"}
+{"time": "2026-04-10T05:17:13.501550+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Google Is Trying to Reduce Its Food Waste Without Irritating Employees - Bloombe"}
+{"time": "2026-04-10T05:17:13.504302+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Google Is Trying to Reduce Its Food Waste Without Irritating"}
+{"time": "2026-04-10T05:17:13.504733+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "UNFI Opts for Quest\u2019s Waste, Recycling and Food Waste Diversion Solutions - Prog"}
+{"time": "2026-04-10T05:17:13.507812+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: UNFI Opts for Quest\u2019s Waste, Recycling and Food Waste Divers"}
+{"time": "2026-04-10T05:17:13.508244+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Meet the Miami company transforming food waste into carbon credits - Refresh Mia"}
+{"time": "2026-04-10T05:17:13.512888+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Meet the Miami company transforming food waste into carbon c"}
+{"time": "2026-04-10T05:17:13.513358+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "11 Most Innovative Food Waste Startups Around the World - Earth.Org"}
+{"time": "2026-04-10T05:17:13.516469+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: 11 Most Innovative Food Waste Startups Around the World - Ea"}
+{"time": "2026-04-10T05:17:13.516875+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Tyson Foods partners with Food Loops of Rogers to compost cafeteria food waste -"}
+{"time": "2026-04-10T05:17:13.519975+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Tyson Foods partners with Food Loops of Rogers to compost ca"}
+{"time": "2026-04-10T05:17:13.520383+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Creating a Circular Economy through Food Waste - Gamuda Berhad"}
+{"time": "2026-04-10T05:17:13.523657+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Creating a Circular Economy through Food Waste - Gamuda Berh"}
+{"time": "2026-04-10T05:17:13.524114+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "UK Dairy Company Reaches 4 Million Meals Donated \u2013 Tackling Hunger AND Food Wast"}
+{"time": "2026-04-10T05:17:13.527502+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: UK Dairy Company Reaches 4 Million Meals Donated \u2013 Tackling "}
+{"time": "2026-04-10T05:17:13.527848+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Sodexo: first global food services company to connect its financing to action to"}
+{"time": "2026-04-10T05:17:13.531012+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Sodexo: first global food services company to connect its fi"}
+{"time": "2026-04-10T05:17:13.531371+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Kroger collaborator expands facilities to address food waste - The Packer"}
+{"time": "2026-04-10T05:17:13.534627+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Kroger collaborator expands facilities to address food waste"}
+{"time": "2026-04-10T05:17:13.534988+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Minus Global acquires food waste company Planet Earth - Recycling Product News"}
+{"time": "2026-04-10T05:17:13.538149+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Minus Global acquires food waste company Planet Earth - Recy"}
+{"time": "2026-04-10T05:17:13.538540+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "Minus Global acquires food waste company Planet Earth - Recycling Product News"}
+{"time": "2026-04-10T05:17:13.542025+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: Minus Global acquires food waste company Planet Earth - Recy"}
+{"time": "2026-04-10T05:17:13.542462+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How Ferrero uses data to streamline its supply chain and reduce food waste - Foo"}
+{"time": "2026-04-10T05:17:13.545883+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How Ferrero uses data to streamline its supply chain and red"}
+{"time": "2026-04-10T05:17:13.546237+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "12 Companies Turning Food Waste Into Fashion Statements - Food Tank"}
+{"time": "2026-04-10T05:17:13.549611+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: 12 Companies Turning Food Waste Into Fashion Statements - Fo"}
+{"time": "2026-04-10T05:17:13.550003+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Good Company: Renewal Mill Is Turning Food Waste Into Sweet Delights - Barron's"}
+{"time": "2026-04-10T05:17:13.553532+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Good Company: Renewal Mill Is Turning Food Waste Into Sweet "}
+{"time": "2026-04-10T05:17:13.553932+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "National Movement to Turn Food Waste Into Renewable Energy Gains Momentum - Busi"}
+{"time": "2026-04-10T05:17:13.557534+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: National Movement to Turn Food Waste Into Renewable Energy G"}
+{"time": "2026-04-10T05:17:13.558061+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "Electrolux and Karma introduce a smart fridge to reduce food waste - Electrolux "}
+{"time": "2026-04-10T05:17:13.561701+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: Electrolux and Karma introduce a smart fridge to reduce food"}
+{"time": "2026-04-10T05:17:13.562043+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "How Ikea Plans To Cut Its Food Waste In Half - Fast Company"}
+{"time": "2026-04-10T05:17:13.566331+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: How Ikea Plans To Cut Its Food Waste In Half - Fast Company"}
+{"time": "2026-04-10T05:17:13.583514+00:00", "watcher": "WasteWatch", "event": "CHECK_COMPLETE", "detail": ""}
+{"time": "2026-04-10T05:17:14.020076+00:00", "watcher": "HungerWatch", "event": "HUNGER_DATA", "detail": "FRAC Warns Cuts to SNAP Will Negatively Impact Child Nutrition Programs"}
+{"time": "2026-04-10T05:17:14.021743+00:00", "watcher": "HungerWatch", "event": "CHECK_COMPLETE", "detail": "1 items found"}
+{"time": "2026-04-10T05:17:14.441976+00:00", "watcher": "CorporationWatch", "event": "WASTE_STORY", "detail": "As US hunger rises, Trump administration\u2019s \u2018efficiency\u2019 goals cause massive food"}
+{"time": "2026-04-10T05:17:14.453116+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Waste story: As US hunger rises, Trump administration\u2019s \u2018efficiency\u2019 goal"}
+{"time": "2026-04-10T05:17:14.455474+00:00", "watcher": "CorporationWatch", "event": "CHECK_COMPLETE", "detail": "81 flagged"}
+{"time": "2026-04-10T05:17:14.575921+00:00", "watcher": "AcquisitionWatch", "event": "CHECK_COMPLETE", "detail": ""}
+{"time": "2026-04-10T19:22:26.650294+00:00", "watcher": "AcquisitionWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T19:22:26.651631+00:00", "watcher": "HungerWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T19:22:26.650974+00:00", "watcher": "WasteWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T19:22:26.656345+00:00", "watcher": "CorporationWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T19:22:26.655282+00:00", "watcher": "PriceWatch", "event": "CHECK_START", "detail": ""}
+{"time": "2026-04-10T19:22:27.489673+00:00", "watcher": "PriceWatch", "event": "CHECK_COMPLETE", "detail": ""}
+{"time": "2026-04-10T19:22:27.937839+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "The Supply Side: Crisp acquires Shelf Engine, plans to further reduce food waste"}
+{"time": "2026-04-10T19:22:27.943881+00:00", "watcher": "HungerWatch", "event": "HUNGER_DATA", "detail": "FRAC Warns Cuts to SNAP Will Negatively Impact Child Nutrition Programs"}
+{"time": "2026-04-10T19:22:27.960213+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: The Supply Side: Crisp acquires Shelf Engine, plans to furth"}
+{"time": "2026-04-10T19:22:27.956132+00:00", "watcher": "HungerWatch", "event": "CHECK_COMPLETE", "detail": "1 items found"}
+{"time": "2026-04-10T19:22:27.962391+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "Natural Upcycling acquires food scrap recycling company - Waste Today -"}
+{"time": "2026-04-10T19:22:27.976379+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: Natural Upcycling acquires food scrap recycling company - Wa"}
+{"time": "2026-04-10T19:22:27.978372+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "RTS acquires Ambrosia - Waste Today -"}
+{"time": "2026-04-10T19:22:27.986933+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: RTS acquires Ambrosia - Waste Today -"}
+{"time": "2026-04-10T19:22:27.988013+00:00", "watcher": "CorporationWatch", "event": "ACQUISITION_STORY", "detail": "Minus Global acquires food waste company Planet Earth - Recycling Product News"}
+{"time": "2026-04-10T19:22:27.993392+00:00", "watcher": "CorporationWatch", "event": "FLAGGED_FOR_FOUNDER", "detail": "Possible acquisition: Minus Global acquires food waste company Planet Earth - Recy"}
+{"time": "2026-04-10T19:22:28.953135+00:00", "watcher": "WasteWatch", "event": "CHECK_COMPLETE", "detail": ""}
+{"time": "2026-04-10T19:22:29.060102+00:00", "watcher": "CorporationWatch", "event": "CHECK_COMPLETE", "detail": "4 flagged"}
+{"time": "2026-04-10T19:22:29.890861+00:00", "watcher": "AcquisitionWatch", "event": "CHECK_COMPLETE", "detail": ""}

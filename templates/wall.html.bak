@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Truth Wall — Gleaning</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        nav {
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #7cb87c;
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            color: #999;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover { color: #7cb87c; }
+
+        .header {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 span { color: #7cb87c; }
+
+        .header p {
+            color: #888;
+            font-size: 1rem;
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: #7cb87c;
+        }
+
+        .search-bar input::placeholder { color: #444; }
+
+        .stats-bar {
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .num {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #7cb87c;
+        }
+
+        .stat .lbl {
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .wall {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .corporation {
+            margin-bottom: 2.5rem;
+            border: 1px solid #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .corp-header {
+            background: #111;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #1e1e1e;
+        }
+
+        .corp-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .corp-count {
+            font-size: 0.8rem;
+            color: #7cb87c;
+            background: #0d1f0d;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .brand-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0;
+        }
+
+        .brand {
+            padding: 0.9rem 1.2rem;
+            border-right: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .brand-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ddd;
+            margin-bottom: 0.2rem;
+        }
+
+        .brand-cat {
+            font-size: 0.75rem;
+            color: #555;
+        }
+
+        .brand-since {
+            font-size: 0.7rem;
+            color: #444;
+            margin-top: 0.2rem;
+        }
+
+        .wall-note {
+            text-align: center;
+            color: #333;
+            font-size: 0.8rem;
+            padding: 2rem;
+            border-top: 1px solid #1a1a1a;
+            margin-top: 2rem;
+        }
+
+        .hidden { display: none; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #333;
+            font-size: 0.8rem;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        footer a { color: #555; text-decoration: none; }
+        footer a:hover { color: #7cb87c; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">🌾 Gleaning</a>
+    <div class="nav-links">
+        <a href="/map">The Map</a>
+        <a href="/wall">Truth Wall</a>
+        <a href="/stats">Stats</a>
+        <a href="/hoarders">Hoarders</a>
+    </div>
+</nav>
+
+<div class="header">
+    <h1>The <span>Truth Wall</span></h1>
+    <p>
+        You think you're choosing between forty brands.
+        You're choosing between a handful of owners.
+        This wall names them.
+        It does not come down.
+        No corporation may buy their way off it.
+    </p>
+</div>
+
+<div class="search-bar">
+    <input
+        type="text"
+        id="search"
+        placeholder="Search a brand or corporation..."
+        oninput="filterWall(this.value)"
+    />
+</div>
+
+<div class="stats-bar">
+    <div class="stat">
+        <div class="num">{{ wall.corporations }}</div>
+        <div class="lbl">Corporations</div>
+    </div>
+    <div class="stat">
+        <div class="num">{{ wall.brands }}</div>
+        <div class="lbl">Brands they own</div>
+    </div>
+    <div class="stat">
+        <div class="num">1</div>
+        <div class="lbl">Truth Wall</div>
+    </div>
+</div>
+
+<div class="wall" id="wall">
+    {% for corp_name, brands in wall.wall.items() %}
+    <div class="corporation" data-corp="{{ corp_name | lower }}">
+        <div class="corp-header" onclick="toggleCorp(this)">
+            <div class="corp-name">{{ corp_name }}</div>
+            <div class="corp-count">{{ brands | length }} brands</div>
+        </div>
+        <div class="brand-grid">
+            {% for brand in brands %}
+            <div class="brand" data-brand="{{ brand.brand | lower }}" data-cat="{{ brand.category | lower }}">
+                <div class="brand-name">{{ brand.brand }}</div>
+                <div class="brand-cat">{{ brand.category }}</div>
+                <div class="brand-since">Est. {{ brand.owned_since }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="wall-note">
+    All data is public record. Sources: SEC filings, corporate annual reports, public databases.<br>
+    The Truth Wall is hash-chained and tamper-evident. Every entry is permanent.<br>
+    <strong style="color:#444">The harvest was never only theirs.</strong>
+</div>
+
+<footer>
+    <p>Gleaning · Founded by Krone the Architect · 2026 · Power to the People.</p>
+    <p style="margin-top:0.5rem">
+        <a href="/">Home</a> ·
+        <a href="/map">Map</a> ·
+        <a href="/stats">Stats</a>
+        <a href="/hoarders">Hoarders</a>
+    </p>
+</footer>
+
+<script>
+function toggleCorp(header) {
+    const grid = header.nextElementSibling;
+    grid.classList.toggle('hidden');
+}
+
+function filterWall(query) {
+    query = query.toLowerCase().trim();
+    const corps = document.querySelectorAll('.corporation');
+
+    corps.forEach(corp => {
+        const corpName = corp.dataset.corp;
+        const brands = corp.querySelectorAll('.brand');
+        let anyVisible = false;
+
+        brands.forEach(brand => {
+            const brandName = brand.dataset.brand;
+            const cat = brand.dataset.cat;
+            const match = !query ||
+                brandName.includes(query) ||
+                corpName.includes(query) ||
+                cat.includes(query);
+
+            brand.style.display = match ? '' : 'none';
+            if (match) anyVisible = true;
+        });
+
+        corp.style.display = anyVisible ? '' : 'none';
+
+        // Show grid when searching
+        if (query) {
+            corp.querySelector('.brand-grid').classList.remove('hidden');
+        }
+    });
+}
+</script>
+
+</body>
+</html>

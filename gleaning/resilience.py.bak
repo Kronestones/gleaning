@@ -1,0 +1,303 @@
+"""
+resilience.py — Gleaning Resilience System
+
+They will try to knock it down.
+It gets back up.
+
+Automatically. Silently. As if it never stopped.
+
+— Krone the Architect · 2026
+"""
+
+import os
+import json
+import time
+import shutil
+import threading
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+from .config import config
+
+HEARTBEAT_FILE   = "gleaning_heartbeat.json"
+SHUTDOWN_FILE    = "gleaning_shutdown.json"
+REVIVAL_LOG      = "gleaning_revival.log"
+HEARTBEAT_INTERVAL = 30   # seconds
+STALE_THRESHOLD    = 120  # unclean shutdown if older than this
+
+
+class HeartbeatMonitor:
+    """
+    Writes a heartbeat every 30 seconds.
+    On startup, checks if last heartbeat was recent.
+    If not — unclean shutdown. Revival runs.
+    """
+
+    def __init__(self):
+        self._stop  = threading.Event()
+        self._thread = None
+
+    def start(self):
+        self._thread = threading.Thread(
+            target=self._beat, daemon=True
+        )
+        self._thread.start()
+        print("[RESILIENCE] Heartbeat started.")
+
+    def stop(self):
+        self._stop.set()
+        self._write_clean_shutdown()
+
+    def _beat(self):
+        while not self._stop.is_set():
+            self._write_heartbeat()
+            self._stop.wait(HEARTBEAT_INTERVAL)
+
+    def _write_heartbeat(self):
+        record = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status":    "ALIVE",
+        }
+        try:
+            with open(HEARTBEAT_FILE, "w") as f:
+                json.dump(record, f)
+        except Exception:
+            pass
+
+    def _write_clean_shutdown(self):
+        record = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status":    "CLEAN_SHUTDOWN",
+        }
+        try:
+            with open(SHUTDOWN_FILE, "w") as f:
+                json.dump(record, f)
+        except Exception:
+            pass
+
+    def check_last_heartbeat(self) -> dict:
+        """
+        On startup — was the last shutdown clean?
+        """
+        # Clean shutdown file exists — all good
+        if os.path.exists(SHUTDOWN_FILE):
+            os.remove(SHUTDOWN_FILE)
+            return {"clean": True}
+
+        # No heartbeat file — first run
+        if not os.path.exists(HEARTBEAT_FILE):
+            return {"clean": True, "note": "First run."}
+
+        try:
+            with open(HEARTBEAT_FILE) as f:
+                data = json.load(f)
+            last = datetime.fromisoformat(data["timestamp"])
+            age  = (datetime.now(timezone.utc) - last).total_seconds()
+            if age > STALE_THRESHOLD:
+                return {
+                    "clean": False,
+                    "age_seconds": age,
+                    "note": "Unclean shutdown detected."
+                }
+            return {"clean": True}
+        except Exception as e:
+            return {"clean": False, "note": str(e)}
+
+
+class BackupSystem:
+    """
+    Regular backups of the database and immutable logs.
+    If the database is destroyed, we restore from backup.
+    Backup survives even if the main database is wiped.
+    """
+
+    def __init__(self):
+        self.backup_path = config.backup_path
+        self._stop       = threading.Event()
+        self._thread     = None
+
+    def start(self):
+        self._thread = threading.Thread(
+            target=self._backup_loop, daemon=True
+        )
+        self._thread.start()
+        print("[RESILIENCE] Backup system started.")
+
+    def stop(self):
+        self._stop.set()
+
+    def _backup_loop(self):
+        while not self._stop.is_set():
+            self._stop.wait(3600)  # backup every hour
+            if not self._stop.is_set():
+                self.run_backup()
+
+    def run_backup(self):
+        """Back up database and logs."""
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        backed_up = []
+
+        files_to_backup = [
+            "gleaning.db",
+            "gleaning_immutable.log",
+            "gleaning_mirror.log",
+        ]
+
+        for filename in files_to_backup:
+            if os.path.exists(filename):
+                dest = self.backup_path / f"{timestamp}_{filename}"
+                try:
+                    shutil.copy2(filename, dest)
+                    backed_up.append(filename)
+                except Exception as e:
+                    print(f"[RESILIENCE] Backup failed for {filename}: {e}")
+
+        # Keep only last 24 backups per file
+        self._prune_backups()
+
+        if backed_up:
+            print(f"[RESILIENCE] Backup complete: {', '.join(backed_up)}")
+
+        return backed_up
+
+    def _prune_backups(self):
+        """Keep only the 24 most recent backups."""
+        try:
+            backups = sorted(self.backup_path.glob("*_gleaning.db"))
+            if len(backups) > 24:
+                for old in backups[:-24]:
+                    old.unlink()
+        except Exception:
+            pass
+
+    def restore_latest(self) -> bool:
+        """Restore from most recent backup if database is missing."""
+        try:
+            backups = sorted(self.backup_path.glob("*_gleaning.db"))
+            if not backups:
+                return False
+            latest = backups[-1]
+            shutil.copy2(latest, "gleaning.db")
+            print(f"[RESILIENCE] Database restored from {latest.name}")
+            return True
+        except Exception as e:
+            print(f"[RESILIENCE] Restore failed: {e}")
+            return False
+
+
+class IntegrityMonitor:
+    """
+    Hourly integrity checks.
+    Verifies hash chains on immutable log and Truth Wall.
+    Alerts if tampered.
+    """
+
+    def __init__(self):
+        self._stop   = threading.Event()
+        self._thread = None
+
+    def start(self):
+        self._thread = threading.Thread(
+            target=self._monitor_loop, daemon=True
+        )
+        self._thread.start()
+        print("[RESILIENCE] Integrity monitor started.")
+
+    def stop(self):
+        self._stop.set()
+
+    def _monitor_loop(self):
+        while not self._stop.is_set():
+            self._stop.wait(config.integrity_check_interval)
+            if not self._stop.is_set():
+                self._run_checks()
+
+    def _run_checks(self):
+        from .database import SessionLocal, verify_log_integrity
+        db = SessionLocal()
+        try:
+            result = verify_log_integrity(db)
+            if not result["ok"]:
+                self._alert(result)
+            else:
+                print(f"[INTEGRITY] Log chain intact — "
+                      f"{result.get('records', 0)} records.")
+        except Exception as e:
+            print(f"[INTEGRITY] Check failed: {e}")
+        finally:
+            db.close()
+
+    def _alert(self, result: dict):
+        """Log tamper detection alert."""
+        print(f"\n[INTEGRITY] ⚠  TAMPER DETECTED")
+        print(f"[INTEGRITY]    {result.get('error', 'Unknown')}")
+        print(f"[INTEGRITY]    Gleaning's record has been touched.")
+        print(f"[INTEGRITY]    The Truth Wall knows.\n")
+        try:
+            with open("gleaning_tamper_alerts.log", "a") as f:
+                f.write(json.dumps({
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "alert":     result,
+                }) + "\n")
+        except Exception:
+            pass
+
+
+class ResilienceManager:
+    """
+    The full resilience system.
+    Heartbeat. Backup. Integrity.
+    Gleaning stays up.
+    """
+
+    def __init__(self):
+        self.heartbeat = HeartbeatMonitor()
+        self.backup    = BackupSystem()
+        self.integrity = IntegrityMonitor()
+
+    def startup_check(self) -> dict:
+        """
+        Run on startup. Detect unclean shutdown.
+        Restore if needed. Report status.
+        """
+        print("[RESILIENCE] Running startup checks...")
+
+        # Check last heartbeat
+        hb = self.heartbeat.check_last_heartbeat()
+        if not hb["clean"]:
+            print(f"[RESILIENCE] Unclean shutdown detected: {hb.get('note')}")
+            self._log_revival(hb)
+
+            # Attempt database restore if missing
+            if not os.path.exists("gleaning.db"):
+                print("[RESILIENCE] Database missing — attempting restore...")
+                if self.backup.restore_latest():
+                    print("[RESILIENCE] Database restored successfully.")
+                else:
+                    print("[RESILIENCE] No backup available — starting fresh.")
+        else:
+            print("[RESILIENCE] Clean startup.")
+
+        return hb
+
+    def start(self):
+        self.heartbeat.start()
+        self.backup.start()
+        self.integrity.start()
+        print("[RESILIENCE] All systems running.")
+
+    def stop(self):
+        self.heartbeat.stop()
+        self.backup.stop()
+        self.integrity.stop()
+        print("[RESILIENCE] Clean shutdown recorded.")
+
+    def _log_revival(self, details: dict):
+        try:
+            with open(REVIVAL_LOG, "a") as f:
+                f.write(json.dumps({
+                    "revived_at": datetime.now(timezone.utc).isoformat(),
+                    "details":    details,
+                }) + "\n")
+        except Exception:
+            pass
