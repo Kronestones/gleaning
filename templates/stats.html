@@ -360,12 +360,12 @@
   <!-- Big numbers at top -->
   <div class="big-numbers">
     <div class="big-number-card featured">
-      <div class="big-num">{{ stats.total_families_fed | default(0) | int | format_number }}</div>
+      <div class="big-num">{{ stats.total_families_fed | default(0) | int }}</div>
       <div class="big-num-label">Families Could Have Been Fed For a Week</div>
       <div class="big-num-sub">Based on USDA data · 38 lbs/week · Family of 4 · Always rounded down</div>
     </div>
     <div class="big-number-card">
-      <div class="big-num">{{ stats.total_waste_lbs | default(0) | int | format_number }}</div>
+      <div class="big-num">{{ stats.total_waste_lbs | default(0) | int }}</div>
       <div class="big-num-label">Lbs Wasted</div>
     </div>
     <div class="big-number-card">
