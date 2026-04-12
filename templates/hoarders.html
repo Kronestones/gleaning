@@ -4,331 +4,225 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project Themis — Gleaning</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
-      --green-dark:   #1a3a2a;
-      --green-mid:    #2e7d4f;
-      --green-light:  #eaf4ee;
-      --green-accent: #7cb87c;
-      --text:         #1a1a1a;
-      --text-muted:   #5a6672;
-      --bg:           #f4f7f5;
-      --white:        #ffffff;
-      --border:       #d4e8db;
-      --red:          #c0392b;
-      --radius:       10px;
-      --shadow:       0 1px 4px rgba(0,0,0,0.07);
-      --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+      --black:#0a0a0a;--card:#1a1a1a;--border:#2a2a2a;
+      --green:#4a9e6b;--green-bright:#7cb87c;
+      --text:#e8e8e8;--muted:#666;--white:#fff;
+      --radius:10px;
     }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--black);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.65;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+    a{color:var(--green-bright);text-decoration:none}
+    a:hover{text-decoration:underline}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .nav{background:#111;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    .nav-logo{color:var(--green-bright);font-size:18px;font-weight:700;text-decoration:none;letter-spacing:-0.02em;flex-shrink:0}
+    .nav-spirit{color:var(--muted);font-size:12px;font-style:italic;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-links{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+    .nav-links::-webkit-scrollbar{display:none}
+    .nav-links a{color:rgba(255,255,255,0.7);font-size:13px;padding:6px 10px;border-radius:6px;white-space:nowrap;transition:all 0.15s}
+    .nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08);text-decoration:none}
+    .nav-links a.active{color:var(--green-bright)}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 16px;
-      line-height: 1.65;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
+    main{flex:1;max-width:900px;margin:0 auto;padding:32px 16px 64px;width:100%}
 
-    a { color: var(--green-mid); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    .page-header{margin-bottom:28px}
+    .page-header h1{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-0.03em;margin-bottom:8px}
+    .page-header h1 span{color:var(--green-bright)}
+    .page-header p{font-size:15px;color:var(--muted);line-height:1.6;max-width:600px}
 
-    /* ── Nav ── */
-    .nav {
-      background: var(--green-dark);
-      padding: 0 20px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .nav-logo { color: white; font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: -0.02em; flex-shrink: 0; }
-    .nav-spirit { color: var(--green-accent); font-size: 12px; font-style: italic; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .nav-links { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
-    .nav-links::-webkit-scrollbar { display: none; }
-    .nav-links a { color: rgba(255,255,255,0.85); font-size: 13px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; transition: background 0.15s; }
-    .nav-links a:hover { color: white; background: rgba(255,255,255,0.1); text-decoration: none; }
-    .nav-links a.active { color: white; background: rgba(255,255,255,0.15); }
+    .disclaimer{background:#0d1f14;border:1px solid rgba(74,158,107,0.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:28px}
+    .disclaimer p{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:6px}
+    .disclaimer p:last-child{margin-bottom:0}
+    .disclaimer strong{color:var(--green-bright)}
 
-    /* ── Main ── */
-    .main { flex: 1; max-width: 900px; margin: 0 auto; padding: 28px 16px 48px; width: 100%; }
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center}
+    .stat-number{font-size:28px;font-weight:700;color:var(--green-bright);line-height:1}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.05em}
 
-    /* ── Page header ── */
-    .page-header { margin-bottom: 28px; }
-    .page-header h1 { font-size: 28px; font-weight: 700; color: var(--green-dark); letter-spacing: -0.02em; margin-bottom: 6px; }
-    .page-header p { font-size: 15px; color: var(--text-muted); line-height: 1.5; }
+    .map-section{margin-bottom:32px}
+    .map-section h2{font-size:18px;font-weight:700;color:var(--white);margin-bottom:12px}
+    #themis-map{width:100%;height:380px;border-radius:var(--radius);border:1px solid var(--border);background:#111}
 
-    /* ── Families fed banner ── */
-    .families-banner {
-      background: var(--green-dark);
-      color: white;
-      border-radius: var(--radius);
-      padding: 24px 28px;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .families-number {
-      font-size: 48px;
-      font-weight: 800;
-      color: var(--green-accent);
-      line-height: 1;
-      letter-spacing: -0.03em;
-    }
-    .families-label {
-      font-size: 15px;
-      color: rgba(255,255,255,0.8);
-      margin-top: 4px;
-    }
-    .families-method {
-      font-size: 13px;
-      color: rgba(255,255,255,0.55);
-      max-width: 280px;
-      line-height: 1.5;
-    }
-    .families-method a { color: var(--green-accent); }
+    .actions-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+    .actions-bar h2{font-size:18px;font-weight:700;color:var(--white)}
+    .btn-primary{background:var(--green);color:white;border:none;padding:10px 20px;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s;display:inline-block;text-decoration:none}
+    .btn-primary:hover{background:#3a8a5a;transform:translateY(-1px);text-decoration:none;color:white}
 
-    /* ── Stats row ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-    .stat-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .stat-number { font-size: 28px; font-weight: 700; color: var(--green-dark); line-height: 1; }
-    .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    .report-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow 0.15s,transform 0.15s}
+    .report-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.3);transform:translateY(-2px)}
+    .report-photo{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+    .report-photo-placeholder{width:100%;aspect-ratio:4/3;background:#111;display:flex;align-items:center;justify-content:center;font-size:40px}
+    .report-body{padding:14px 16px}
+    .report-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .report-lbs{font-size:18px;font-weight:700;color:var(--green-bright)}
+    .report-date{font-size:12px;color:var(--muted)}
+    .report-location{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .report-note{font-size:14px;color:var(--text);line-height:1.45}
+    .report-families{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:13px;color:var(--green-bright);font-weight:600}
 
-    /* ── Actions bar ── */
-    .actions-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .actions-bar h2 { font-size: 18px; font-weight: 700; color: var(--green-dark); }
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-state .empty-icon{font-size:48px;margin-bottom:16px}
+    .empty-state h3{font-size:20px;font-weight:600;color:var(--white);margin-bottom:8px}
+    .empty-state p{font-size:15px;margin-bottom:24px}
 
-    .btn-primary {
-      background: var(--green-mid);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: var(--radius);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-      display: inline-block;
-      text-decoration: none;
-    }
-    .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); text-decoration: none; color: white; }
+    footer{background:#111;border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:24px 16px;font-size:13px;line-height:1.8}
+    footer a{color:var(--green-bright)}
 
-    /* ── Photo grid ── */
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .report-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.15s, transform 0.15s;
-    }
-    .report-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-
-    .report-photo {
-      width: 100%;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-      display: block;
-      background: var(--green-light);
-    }
-
-    .report-photo-placeholder {
-      width: 100%;
-      aspect-ratio: 4/3;
-      background: var(--green-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      color: var(--green-accent);
-    }
-
-    .report-body { padding: 14px 16px; }
-    .report-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .report-lbs { font-size: 18px; font-weight: 700; color: var(--green-dark); }
-    .report-date { font-size: 12px; color: var(--text-muted); }
-    .report-location { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-    .report-note { font-size: 14px; color: var(--text); line-height: 1.45; }
-    .report-families {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-      font-size: 13px;
-      color: var(--green-mid);
-      font-weight: 600;
-    }
-
-    /* ── Empty state ── */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
-    .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 20px; font-weight: 600; color: var(--green-dark); margin-bottom: 8px; }
-    .empty-state p { font-size: 15px; margin-bottom: 24px; }
-
-    /* ── Methodology ── */
-    .methodology {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      margin-top: 40px;
-      box-shadow: var(--shadow);
-    }
-    .methodology h3 { font-size: 16px; font-weight: 700; color: var(--green-dark); margin-bottom: 10px; }
-    .methodology p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 8px; }
-    .methodology p:last-child { margin-bottom: 0; }
-    .methodology strong { color: var(--text); }
-
-    /* ── Footer ── */
-    .footer {
-      background: var(--green-dark);
-      color: rgba(255,255,255,0.7);
-      text-align: center;
-      padding: 24px 16px;
-      font-size: 13px;
-      line-height: 1.8;
-      margin-top: auto;
-    }
-    .footer a { color: var(--green-accent); }
-
-    @media (max-width: 600px) {
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
-      .families-banner { flex-direction: column; text-align: center; }
-      .families-method { max-width: 100%; }
+    @media(max-width:600px){
+      .stats-row{grid-template-columns:repeat(2,1fr)}
+      #themis-map{height:260px}
     }
   </style>
 </head>
 <body>
 
-  <nav class="nav">
-    <a href="/" class="nav-logo">🌾 Gleaning</a>
-    <span class="nav-spirit">The harvest was never only theirs.</span>
-    <div class="nav-links"><a href="/stats">Hoarders</a><a href="/hoarders" class="active">Project Themis</a></div>
-  </nav>
+<nav class="nav">
+  <a href="/" class="nav-logo">🌾 Gleaning</a>
+  <span class="nav-spirit">The harvest was never only theirs.</span>
+  <div class="nav-links">
+    <a href="/stats">Wealth Hoarders</a>
+    <a href="/hoarders" class="active">Project Themis</a>
+  </div>
+</nav>
 
-  <main class="main">
+<main>
 
-    <div class="page-header">
-      <h1>Project Themis</h1>
-      <p>Food that would be wasted. Documented by the community. Yours if you can use it. Redistribution not waste.</p>
+  <div class="page-header">
+    <h1>Project <span>Themis</span></h1>
+    <p>Food waste documented by the community. Verified by the Team. Pinned on the map. Redistribution not waste.</p>
+  </div>
+
+  <div class="disclaimer">
+    <p><strong>We document manufactured violence against people. Gleaning is a witness. We are not responsible for any activities that occur as a result of information posted here.</strong></p>
+    <p>Dumpster diving is legal in all 50 states under <em>California v. Greenwood</em> (1988). Once discarded, food is in the public domain. Know your local ordinances.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number">{{ total_reports | default(0) }}</div>
+      <div class="stat-label">Reports Documented</div>
     </div>
-
-    
-      <div class="families-method">
-        Based on USDA data: a family of 4 needs 38 lbs/week.
-        We round down. We never inflate.
-        <br><a href="#methodology">See full methodology ↓</a>
-      </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ total_lbs | default(0) | int }}</div>
+      <div class="stat-label">Lbs Recorded</div>
     </div>
-
-    <!-- Stats Row -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-number">{{ total_reports | default(0) }}</div>
-        <div class="stat-label">reports documented</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ total_lbs | default(0) | int }} lbs</div>
-        <div class="stat-label">food waste recorded</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ locations_count | default(0) }}</div>
-        <div class="stat-label">locations documented</div>
-      </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ locations_count | default(0) }}</div>
+      <div class="stat-label">Locations</div>
     </div>
+  </div>
 
-    <!-- Actions Bar -->
-    <div class="actions-bar">
-      <h2>Documented Waste</h2>
-      <a href="/hoarders/submit" class="btn-primary">📷 Report Waste</a>
-    </div>
+  <div class="map-section">
+    <h2>Redistribution Map</h2>
+    <div id="themis-map"></div>
+  </div>
 
-    <!-- Photo Grid -->
-    {% if reports %}
-    <div class="photo-grid">
-      {% for report in reports %}
-      <div class="report-card">
-        {% if report.photo_path %}
-          <img class="report-photo" src="/uploads/{{ report.photo_path }}" alt="Food waste at {{ report.location_label }}">
-        {% else %}
-          <div class="report-photo-placeholder">🗑️</div>
+  <div class="actions-bar">
+    <h2>Documented Waste</h2>
+    <a href="/hoarders/submit" class="btn-primary">📷 Report Waste</a>
+  </div>
+
+  {% if reports %}
+  <div class="photo-grid">
+    {% for report in reports %}
+    <div class="report-card">
+      {% if report.photo_path %}
+        <img class="report-photo" src="/media/{{ report.photo_path }}" alt="Food waste report">
+      {% else %}
+        <div class="report-photo-placeholder">🗑️</div>
+      {% endif %}
+      <div class="report-body">
+        <div class="report-meta">
+          <span class="report-lbs">{{ report.lbs_estimate }} lbs</span>
+          <span class="report-date">{{ report.submitted_at.strftime('%b %d, %Y') if report.submitted_at else '' }}</span>
+        </div>
+        {% if report.location_label %}
+        <div class="report-location">📍 {{ report.location_label }}</div>
         {% endif %}
-        <div class="report-body">
-          <div class="report-meta">
-            <span class="report-lbs">{{ report.lbs_estimate }} lbs</span>
-            <span class="report-date">{{ report.submitted_at.strftime('%b %d, %Y') if report.submitted_at else '' }}</span>
-          </div>
-          {% if report.location_label %}
-          <div class="report-location">📍 {{ report.location_label }}</div>
-          {% endif %}
-          {% if report.note %}
-          <div class="report-note">{{ report.note }}</div>
-          {% endif %}
-          <div class="report-families">
-            ~{{ (report.lbs_estimate / 38) | int }} families fed for a week
-          </div>
+        {% if report.note %}
+        <div class="report-note">{{ report.note }}</div>
+        {% endif %}
+        <div class="report-families">
+          ~{{ (report.lbs_estimate / 38) | int }} families fed for a week
         </div>
       </div>
-      {% endfor %}
     </div>
+    {% endfor %}
+  </div>
 
-    {% else %}
-    <div class="empty-state">
-      <div class="empty-icon">📷</div>
-      <h3>No reports yet.</h3>
-      <p>Be the first to document food waste in your area.<br>No account required. Just a photo and a location.</p>
-      <a href="/hoarders/submit" class="btn-primary">Report Waste</a>
-    </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📷</div>
+    <h3>No reports yet.</h3>
+    <p>Be the first to document food waste in your area.<br>No account required. Just a photo and a location.</p>
+    <a href="/hoarders/submit" class="btn-primary">Report Waste</a>
+  </div>
+  {% endif %}
+
+</main>
+
+<footer>
+  <p>Gleaning · No advertising · No data selling · Power to the People</p>
+  <p>Founded by Krone the Architect · <a href="/stats">Wealth Hoarders</a> · <a href="/">Home</a></p>
+</footer>
+
+<script>
+  const map = L.map('themis-map', {
+    center: [39.5, -98.35],
+    zoom: 4,
+    zoomControl: true
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    maxZoom: 19
+  });
+
+  map.addLayer(L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19}));
+
+  const reports = [
+    {% for report in reports %}
+    {% if report.latitude and report.longitude %}
+    {
+      lat: {{ report.latitude }},
+      lng: {{ report.longitude }},
+      lbs: {{ report.lbs_estimate }},
+      note: {{ (report.note or '') | tojson }},
+      date: "{{ report.submitted_at.strftime('%b %d, %Y') if report.submitted_at else '' }}"
+    },
     {% endif %}
+    {% endfor %}
+  ];
 
-    
+  const icon = L.divIcon({
+    className: '',
+    html: '<div style="background:#7cb87c;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px rgba(124,184,124,0.8)"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
 
-  </main>
+  reports.forEach(r => {
+    const families = Math.floor(r.lbs / 38);
+    const popup = `<div style="font-family:sans-serif;font-size:13px;min-width:160px">
+      <strong style="color:#7cb87c">${r.lbs} lbs documented</strong><br>
+      ${families > 0 ? `~${families} families fed for a week<br>` : ''}
+      ${r.note ? `<span style="color:#aaa">${r.note}</span><br>` : ''}
+      <span style="color:#666;font-size:11px">${r.date}</span>
+    </div>`;
+    L.marker([r.lat, r.lng], {icon}).addTo(map).bindPopup(popup);
+  });
 
-  <footer class="footer">
-    <p>Gleaning · No advertising · No data selling · Power to the People</p>
-    <p>Founded by Krone the Architect ·  · <a href="/stats">Hoarders</a></p>
-  </footer>
+  if (reports.length > 0) {
+    const bounds = reports.map(r => [r.lat, r.lng]);
+    map.fitBounds(bounds, {padding: [40, 40]});
+  }
+</script>
 
 </body>
 </html>
