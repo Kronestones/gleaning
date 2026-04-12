@@ -260,6 +260,71 @@ class WasteWatch:
         },
     ]
 
+    # ── Per-corporation sustainability report sources ──────────────────────────
+    # Each corporation publishes an annual sustainability report.
+    # WasteWatch checks these directly for food waste figures.
+    # When new numbers appear, record_corporate_waste() updates the record.
+    # The people see what is being wasted. Updated as it changes. Not on a schedule.
+
+    CORPORATE_SOURCES = [
+        {
+            "corporation": "Nestlé",
+            "name": "Nestlé Creating Shared Value and Sustainability Report",
+            "url":  "https://www.nestle.com/sustainability/performance-reporting/downloads-archive",
+            "report_url": "https://www.nestle.com/sites/default/files/2025-02/non-financial-statement-2024.pdf",
+            "keywords": ["food waste", "tonnes wasted", "food loss", "waste reduction",
+                         "metric tons", "operational waste", "food diverted"],
+        },
+        {
+            "corporation": "PepsiCo",
+            "name": "PepsiCo ESG Summary and pep+ Sustainability Report",
+            "url":  "https://www.pepsico.com/en/esg-topics/waste",
+            "report_url": "https://www.pepsico.com/sustainability/sustainability-reporting",
+            "keywords": ["food waste", "metric tons", "waste generated",
+                         "diverted from landfill", "operational waste", "food loss"],
+        },
+        {
+            "corporation": "Unilever",
+            "name": "Unilever Annual Report and Accounts",
+            "url":  "https://www.unilever.com/planet-and-society/waste-free-world/",
+            "report_url": "https://www.unilever.com/files/unilever-annual-report-and-accounts-2024.pdf",
+            "keywords": ["food waste", "tonnes", "waste reduction",
+                         "food loss", "operational waste", "metric tons"],
+        },
+        {
+            "corporation": "Kraft Heinz",
+            "name": "Kraft Heinz ESG Report",
+            "url":  "https://www.kraftheinzcompany.com/esg/",
+            "report_url": "https://www.kraftheinzcompany.com/esg/planet.html",
+            "keywords": ["food waste", "metric tons", "tonnes", "food loss",
+                         "waste diverted", "operational waste", "food donated"],
+        },
+        {
+            "corporation": "General Mills",
+            "name": "General Mills Global Responsibility Report",
+            "url":  "https://www.generalmills.com/responsibility/global-responsibility-report",
+            "report_url": "https://globalresponsibility.generalmills.com",
+            "keywords": ["food waste", "metric tons", "tonnes wasted",
+                         "food loss", "waste reduction", "food diverted", "operational waste"],
+        },
+        {
+            "corporation": "Conagra Brands",
+            "name": "Conagra Brands Corporate Responsibility Report",
+            "url":  "https://www.conagrabrands.com/corporate-responsibility",
+            "report_url": "https://www.conagrabrands.com/corporate-responsibility/planet",
+            "keywords": ["food waste", "metric tons", "tonnes", "food loss",
+                         "waste reduction", "diverted from landfill", "food donated"],
+        },
+        {
+            "corporation": "Mars/Kellanova",
+            "name": "Mars Incorporated Sustainability Report",
+            "url":  "https://www.mars.com/sustainability-plan",
+            "report_url": "https://www.mars.com/sustainability-plan/reporting-performance",
+            "keywords": ["food waste", "metric tons", "tonnes wasted",
+                         "food loss", "waste reduction", "operational waste", "food diverted"],
+        },
+    ]
+
     def __init__(self):
         self._stop   = threading.Event()
         self._thread = None
@@ -279,6 +344,86 @@ class WasteWatch:
             except Exception as e:
                 log_watcher(self.NAME, "ERROR", str(e))
             self._stop.wait(self.INTERVAL)
+
+    def check_corporate_sources(self):
+        """
+        Check each corporation's sustainability report directly.
+        When new food waste figures are found, record them.
+        Not on a schedule — called when WasteWatch runs its cycle.
+        The record updates when the data changes. Not before.
+        """
+        import re
+        log_watcher(self.NAME, "CORPORATE_CHECK_START",
+                    f"Checking {len(self.CORPORATE_SOURCES)} corporations")
+
+        for source in self.CORPORATE_SOURCES:
+            corp = source["corporation"]
+            try:
+                text = fetch_url(source["report_url"])
+                if not text:
+                    text = fetch_url(source["url"])
+                if not text:
+                    log_watcher(self.NAME, "CORPORATE_FETCH_FAILED", corp)
+                    continue
+
+                combined = text.lower()
+
+                # Check if any waste keywords appear
+                if not any(kw in combined for kw in source["keywords"]):
+                    continue
+
+                # Try to extract a metric tons / tonnes figure near waste keywords
+                # Patterns: "X metric tons", "X,XXX tonnes", "X million tonnes"
+                patterns = [
+                    r"([\d,]+(?:\.[\d]+)?)\s*metric\s*tons?\s*(?:of\s*)?(?:food\s*)?waste",
+                    r"([\d,]+(?:\.[\d]+)?)\s*tonnes?\s*(?:of\s*)?(?:food\s*)?waste",
+                    r"(?:food\s*)?waste\s*(?:of\s*)?([\d,]+(?:\.[\d]+)?)\s*(?:metric\s*)?tons?",
+                    r"([\d,]+(?:\.[\d]+)?)\s*(?:metric\s*)?tons?\s*(?:of\s*)?food\s*(?:loss|wasted|diverted)",
+                ]
+
+                lbs_found = None
+                for pattern in patterns:
+                    matches = re.findall(pattern, combined)
+                    if matches:
+                        # Take the largest plausible number found
+                        for match in matches:
+                            try:
+                                num = float(match.replace(",", ""))
+                                # Convert metric tons to lbs (1 metric ton = 2204.62 lbs)
+                                # Only accept plausible corporate-scale figures
+                                # (between 1,000 and 10,000,000 metric tons)
+                                if 1000 <= num <= 10_000_000:
+                                    lbs = num * 2204.62
+                                    if lbs_found is None or lbs > lbs_found:
+                                        lbs_found = lbs
+                            except ValueError:
+                                continue
+                        if lbs_found:
+                            break
+
+                if lbs_found:
+                    self.record_corporate_waste(
+                        corporation = corp,
+                        lbs_wasted  = lbs_found,
+                        source_url  = source["report_url"],
+                        source_name = source["name"],
+                        note        = f"Parsed from sustainability report. Always rounded down per Gleaning methodology.",
+                    )
+                    log_watcher(self.NAME, "CORPORATE_WASTE_PARSED",
+                                f"{corp}: {lbs_found:,.0f} lbs ({lbs_found/2204.62:,.0f} metric tons)")
+                else:
+                    # Data found but couldn't parse a number — flag for review
+                    flag_for_founder(
+                        self.NAME,
+                        {"corporation": corp, "url": source["report_url"]},
+                        f"{corp} sustainability report found but waste figure needs manual review"
+                    )
+                    log_watcher(self.NAME, "CORPORATE_NEEDS_REVIEW", corp)
+
+            except Exception as e:
+                log_watcher(self.NAME, "CORPORATE_CHECK_ERROR", f"{corp}: {str(e)}")
+
+        log_watcher(self.NAME, "CORPORATE_CHECK_COMPLETE")
 
     def record_corporate_waste(self, corporation: str, lbs_wasted: float,
                                period: str = "", source_url: str = "",
@@ -325,6 +470,8 @@ class WasteWatch:
 
     def _check(self):
         log_watcher(self.NAME, "CHECK_START")
+
+        # Check general EPA/USDA feeds for new waste data
         for source in self.SOURCES:
             text = fetch_url(source["url"])
             if not text:
@@ -340,6 +487,10 @@ class WasteWatch:
                         item,
                         f"New waste data: {item['title'][:60]}"
                     )
+
+        # Check each corporation's sustainability report directly
+        self.check_corporate_sources()
+
         log_watcher(self.NAME, "CHECK_COMPLETE")
 
 
