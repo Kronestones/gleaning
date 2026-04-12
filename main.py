@@ -75,7 +75,7 @@ async def lifespan(app: FastAPI):
     display_team()
 
     print("[GLEANING] The map is open.")
-        print("[GLEANING] The match engine is running.")
+    print("[GLEANING] The match engine is running.")
     print("[GLEANING] The Team is present.")
     print("[GLEANING] Gleaning is live.\n")
 
