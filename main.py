@@ -75,8 +75,7 @@ async def lifespan(app: FastAPI):
     display_team()
 
     print("[GLEANING] The map is open.")
-    print("[GLEANING] The wall is standing.")
-    print("[GLEANING] The match engine is running.")
+        print("[GLEANING] The match engine is running.")
     print("[GLEANING] The Team is present.")
     print("[GLEANING] Gleaning is live.\n")
 
@@ -86,8 +85,7 @@ async def lifespan(app: FastAPI):
     resilience.stop()
     guardian.stop()
     watcher_coordinator.stop()
-    print("[GLEANING] Clean shutdown. The wall stands.")
-
+    
 app = FastAPI(
     title       = "Gleaning",
     description = "Food surplus to the people. The harvest was never only theirs.",
@@ -108,6 +106,11 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "title": "Gleaning"})
 
 @app.get("/wall", response_class=HTMLResponse)
+async def wall_redirect(request: Request):
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/stats")
+
+@app.get("/wall_old", response_class=HTMLResponse)
 async def truth_wall_page(request: Request, db: Session = Depends(get_db)):
     wall_data = truth_wall.get_all(db)
     try:
@@ -126,6 +129,11 @@ async def api_wall(db: Session = Depends(get_db)):
     return truth_wall.get_all(db)
 
 @app.get("/map", response_class=HTMLResponse)
+async def map_redirect(request: Request):
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/hoarders")
+
+@app.get("/map_old", response_class=HTMLResponse)
 async def surplus_map(request: Request, db: Session = Depends(get_db)):
     surplus = match_engine.get_available_surplus(db)
     return templates.TemplateResponse("map.html", {"request": request, "surplus": surplus})
