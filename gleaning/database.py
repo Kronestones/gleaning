@@ -273,3 +273,24 @@ def verify_log_integrity(db) -> dict:
         prev_hash = entry.entry_hash
 
     return {"ok": True, "records": len(entries), "chain": "intact"}
+
+
+class CorporateWasteRecord(Base):
+    """
+    Corporate food waste — documented from public record.
+    WasteWatch writes here. Wealth Hoarders reads from here.
+    The people see what was thrown away.
+    Every entry sourced. Every entry permanent.
+    """
+    __tablename__ = "corporate_waste"
+
+    id            = Column(Integer, primary_key=True, index=True)
+    corporation   = Column(String(300), nullable=False, index=True)
+    lbs_wasted    = Column(Float, nullable=False)
+    period        = Column(String(100), default="")
+    source_url    = Column(Text, default="")
+    source_name   = Column(String(300), default="")
+    recorded_by   = Column(String(100), default="WasteWatch")
+    recorded_at   = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    verified      = Column(Boolean, default=True)
+    note          = Column(Text, default="")

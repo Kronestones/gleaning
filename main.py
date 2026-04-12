@@ -188,16 +188,19 @@ async def stats(db: Session = Depends(get_db)):
 @app.get("/stats", response_class=HTMLResponse)
 async def stats_page(request: Request, db: Session = Depends(get_db)):
     try:
-        from gleaning.hoarders import HoarderPost
-        total_lbs_rows = db.query(HoarderPost).filter(HoarderPost.status == "approved").all()
-        total_lbs = sum(r.lbs_estimate or 0 for r in total_lbs_rows)
+        from gleaning.database import CorporateWasteRecord
+        waste_rows = db.query(CorporateWasteRecord).filter(
+            CorporateWasteRecord.verified == True
+        ).all()
+        total_lbs = sum(r.lbs_wasted or 0 for r in waste_rows)
+        last_updated = max((r.recorded_at for r in waste_rows), default=None)
         data = {
             "total_families_fed": int(total_lbs / 38),
-            "total_waste_lbs": total_lbs,
+            "total_waste_lbs": int(total_lbs),
             "total_subsidies": "47B+",
             "corporations": 7,
             "total_brands": "900+",
-            "last_updated": "hourly",
+            "last_updated": last_updated.strftime("%b %d, %Y") if last_updated else "pending",
         }
     except Exception:
         data = {
@@ -206,7 +209,7 @@ async def stats_page(request: Request, db: Session = Depends(get_db)):
             "total_subsidies": "47B+",
             "corporations": 7,
             "total_brands": "900+",
-            "last_updated": "hourly",
+            "last_updated": "pending",
         }
     return templates.TemplateResponse("stats.html", {"request": request, "stats": data})
 
