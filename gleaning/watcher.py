@@ -280,6 +280,49 @@ class WasteWatch:
                 log_watcher(self.NAME, "ERROR", str(e))
             self._stop.wait(self.INTERVAL)
 
+    def record_corporate_waste(self, corporation: str, lbs_wasted: float,
+                               period: str = "", source_url: str = "",
+                               source_name: str = "", note: str = "") -> bool:
+        """
+        Upsert corporate waste figure.
+        One row per corporation — overwrite when new data arrives.
+        No history kept. Just the current truth.
+        """
+        try:
+            from .database import SessionLocal, CorporateWasteRecord
+            from datetime import datetime, timezone
+            db = SessionLocal()
+            try:
+                existing = db.query(CorporateWasteRecord).filter(
+                    CorporateWasteRecord.corporation == corporation
+                ).first()
+                if existing:
+                    existing.lbs_wasted  = lbs_wasted
+                    existing.period      = period
+                    existing.source_url  = source_url
+                    existing.source_name = source_name
+                    existing.recorded_at = datetime.now(timezone.utc)
+                    existing.note        = note
+                else:
+                    db.add(CorporateWasteRecord(
+                        corporation = corporation,
+                        lbs_wasted  = lbs_wasted,
+                        period      = period,
+                        source_url  = source_url,
+                        source_name = source_name,
+                        note        = note,
+                    ))
+                db.commit()
+                log_watcher(self.NAME, "WASTE_RECORDED",
+                            f"{corporation}: {lbs_wasted:,.0f} lbs")
+                print(f"[{self.NAME}] {corporation}: {lbs_wasted:,.0f} lbs recorded.")
+                return True
+            finally:
+                db.close()
+        except Exception as e:
+            log_watcher(self.NAME, "WASTE_RECORD_ERROR", str(e))
+            return False
+
     def _check(self):
         log_watcher(self.NAME, "CHECK_START")
         for source in self.SOURCES:

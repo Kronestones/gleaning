@@ -279,13 +279,14 @@ class CorporateWasteRecord(Base):
     """
     Corporate food waste — documented from public record.
     WasteWatch writes here. Wealth Hoarders reads from here.
-    The people see what was thrown away.
-    Every entry sourced. Every entry permanent.
+    One row per corporation. Overwritten when new data arrives.
+    No history. No accumulation. Just the current truth.
+    The people see what is being wasted right now.
     """
     __tablename__ = "corporate_waste"
 
     id            = Column(Integer, primary_key=True, index=True)
-    corporation   = Column(String(300), nullable=False, index=True)
+    corporation   = Column(String(300), nullable=False, unique=True, index=True)
     lbs_wasted    = Column(Float, nullable=False)
     period        = Column(String(100), default="")
     source_url    = Column(Text, default="")
