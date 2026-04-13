@@ -4,418 +4,258 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Report Waste — Gleaning</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
-      --green-dark:   #1a3a2a;
-      --green-mid:    #2e7d4f;
-      --green-light:  #eaf4ee;
-      --green-accent: #7cb87c;
-      --text:         #1a1a1a;
-      --text-muted:   #5a6672;
-      --bg:           #f4f7f5;
-      --white:        #ffffff;
-      --border:       #d4e8db;
-      --error:        #c0392b;
-      --radius:       10px;
-      --shadow:       0 1px 4px rgba(0,0,0,0.07);
-      --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+      --black:#0a0a0a;--card:#1a1a1a;--border:#2a2a2a;
+      --green:#4a9e6b;--green-bright:#7cb87c;
+      --text:#e8e8e8;--muted:#666;--white:#fff;
+      --red:#c0392b;--radius:10px;
     }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--black);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.65;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+    a{color:var(--green-bright);text-decoration:none}
+    a:hover{text-decoration:underline}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .nav{background:#111;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    .nav-logo{color:var(--green-bright);font-size:18px;font-weight:700;text-decoration:none;letter-spacing:-0.02em;flex-shrink:0}
+    .nav-spirit{color:var(--muted);font-size:12px;font-style:italic;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-links{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+    .nav-links::-webkit-scrollbar{display:none}
+    .nav-links a{color:rgba(255,255,255,0.7);font-size:13px;padding:6px 10px;border-radius:6px;white-space:nowrap;transition:all 0.15s}
+    .nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08);text-decoration:none}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 16px;
-      line-height: 1.65;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
+    main{flex:1;max-width:600px;margin:0 auto;padding:32px 16px 64px;width:100%}
 
-    a { color: var(--green-mid); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    .page-header{margin-bottom:24px}
+    .page-header h1{font-size:28px;font-weight:800;color:var(--white);letter-spacing:-0.03em;margin-bottom:6px}
+    .page-header p{font-size:15px;color:var(--muted)}
 
-    /* ── Nav ── */
-    .nav {
-      background: var(--green-dark);
-      padding: 0 20px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .nav-logo { color: white; font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: -0.02em; flex-shrink: 0; }
-    .nav-spirit { color: var(--green-accent); font-size: 12px; font-style: italic; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .nav-links { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
-    .nav-links::-webkit-scrollbar { display: none; }
-    .nav-links a { color: rgba(255,255,255,0.85); font-size: 13px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; transition: background 0.15s; }
-    .nav-links a:hover { color: white; background: rgba(255,255,255,0.1); text-decoration: none; }
+    .notice{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:13px;line-height:1.6}
+    .notice-privacy{background:#111;border:1px solid var(--border);color:var(--muted)}
+    .notice-privacy strong{color:var(--green-bright)}
+    .notice-mission{background:#0d1f14;border:1px solid rgba(74,158,107,0.25);color:rgba(255,255,255,0.6)}
+    .notice-mission strong{color:var(--green-bright)}
 
-    /* ── Main ── */
-    .main { flex: 1; max-width: 600px; margin: 0 auto; padding: 28px 16px 48px; width: 100%; }
+    .form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
 
-    /* ── Page header ── */
-    .page-header { margin-bottom: 28px; }
-    .page-header h1 { font-size: 28px; font-weight: 700; color: var(--green-dark); letter-spacing: -0.02em; margin-bottom: 6px; }
-    .page-header p { font-size: 15px; color: var(--text-muted); }
+    .form-group{margin-bottom:22px}
+    .form-group:last-child{margin-bottom:0}
 
-    /* ── Privacy note ── */
-    .privacy-note {
-      background: var(--green-light);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      line-height: 1.6;
-    }
-    .privacy-note strong { color: var(--green-dark); }
+    label{display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:6px}
+    label .required{color:#e74c3c;margin-left:3px}
+    label .hint{font-weight:400;color:var(--muted);margin-left:6px;font-size:13px}
 
-    /* ── Form ── */
-    .form-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      box-shadow: var(--shadow);
-    }
+    input[type="text"],input[type="email"],input[type="number"],textarea{
+      width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);
+      font-size:15px;color:var(--text);background:#111;transition:border-color 0.15s;
+      font-family:inherit;line-height:1.5}
+    input:focus,textarea:focus{outline:none;border-color:var(--green)}
+    textarea{resize:vertical;min-height:80px}
 
-    .form-group { margin-bottom: 22px; }
-    .form-group:last-child { margin-bottom: 0; }
+    .photo-upload{border:2px dashed var(--border);border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s;position:relative;background:#111}
+    .photo-upload:hover{border-color:var(--green);background:#0d1f14}
+    .photo-upload input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .photo-upload-icon{font-size:36px;margin-bottom:10px}
+    .photo-upload-text{font-size:15px;font-weight:600;color:var(--green-bright);margin-bottom:4px}
+    .photo-upload-sub{font-size:13px;color:var(--muted)}
+    .photo-preview{display:none;margin-top:12px}
+    .photo-preview img{max-width:100%;border-radius:var(--radius);max-height:240px;object-fit:cover}
 
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--green-dark);
-      margin-bottom: 6px;
-    }
-    label .required { color: var(--error); margin-left: 3px; }
-    label .hint { font-weight: 400; color: var(--text-muted); margin-left: 6px; font-size: 13px; }
+    .map-container{border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;height:240px;background:#111;position:relative}
+    #map{width:100%;height:100%}
+    .map-instruction{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,10,10,0.85);color:white;padding:10px 18px;border-radius:var(--radius);font-size:14px;text-align:center;pointer-events:none;transition:opacity 0.3s;z-index:1000}
+    .map-instruction.hidden{opacity:0}
+    .location-status{margin-top:8px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+    .location-status.pinned{color:var(--green-bright);font-weight:600}
+    .locate-btn{background:#111;border:1.5px solid var(--border);color:var(--green-bright);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;transition:background 0.15s}
+    .locate-btn:hover{background:#1a1a1a}
 
-    input[type="text"],
-    input[type="email"],
-    input[type="number"],
-    textarea {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 15px;
-      color: var(--text);
-      background: var(--white);
-      transition: border-color 0.15s;
-      font-family: inherit;
-      line-height: 1.5;
-    }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--green-mid);
-    }
-    textarea { resize: vertical; min-height: 80px; }
+    .btn-primary{background:var(--green);color:white;border:none;padding:13px 24px;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s;width:100%;display:block}
+    .btn-primary:hover{background:#3a8a5a;transform:translateY(-1px)}
+    .btn-primary:disabled{background:var(--muted);cursor:not-allowed;transform:none}
 
-    /* ── Photo upload ── */
-    .photo-upload {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 32px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      position: relative;
-    }
-    .photo-upload:hover { border-color: var(--green-mid); background: var(--green-light); }
-    .photo-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .photo-upload-icon { font-size: 36px; margin-bottom: 10px; }
-    .photo-upload-text { font-size: 15px; font-weight: 600; color: var(--green-mid); margin-bottom: 4px; }
-    .photo-upload-sub { font-size: 13px; color: var(--text-muted); }
-    .photo-preview { display: none; margin-top: 12px; }
-    .photo-preview img { max-width: 100%; border-radius: var(--radius); max-height: 240px; object-fit: cover; }
+    .form-error{background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.3);border-radius:var(--radius);padding:12px 16px;color:#e74c3c;font-size:14px;margin-bottom:18px}
+    .form-success{background:#0d1f14;border:1px solid rgba(74,158,107,0.3);border-radius:var(--radius);padding:16px 20px;color:var(--green-bright);font-size:15px;margin-bottom:18px;text-align:center;font-weight:600}
 
-    /* ── Map pin ── */
-    .map-container {
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      height: 240px;
-      background: var(--green-light);
-      position: relative;
-    }
-    #map { width: 100%; height: 100%; }
-    .map-instruction {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(26,58,42,0.85);
-      color: white;
-      padding: 10px 18px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      text-align: center;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .map-instruction.hidden { opacity: 0; }
-    .location-status {
-      margin-top: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .location-status.pinned { color: var(--green-mid); font-weight: 600; }
-    .locate-btn {
-      background: var(--green-light);
-      border: 1.5px solid var(--border);
-      color: var(--green-dark);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.15s;
-    }
-    .locate-btn:hover { background: var(--border); }
+    .rules{font-size:13px;color:var(--muted);margin-top:16px;line-height:1.7;text-align:center}
+    .rules strong{color:var(--text)}
 
-    /* ── Submit ── */
-    .submit-section { margin-top: 28px; }
-    .btn-primary {
-      background: var(--green-mid);
-      color: white;
-      border: none;
-      padding: 13px 24px;
-      border-radius: var(--radius);
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-      width: 100%;
-      display: block;
-    }
-    .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
-    .btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
-
-    .form-error {
-      background: #fdf2f2;
-      border: 1px solid #f5c6c6;
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      color: var(--error);
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
-
-    /* ── Rules reminder ── */
-    .rules {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 16px;
-      line-height: 1.7;
-      text-align: center;
-    }
-    .rules strong { color: var(--text); }
-
-    /* ── Footer ── */
-    .footer {
-      background: var(--green-dark);
-      color: rgba(255,255,255,0.7);
-      text-align: center;
-      padding: 24px 16px;
-      font-size: 13px;
-      line-height: 1.8;
-      margin-top: auto;
-    }
-    .footer a { color: var(--green-accent); }
+    footer{background:#111;border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:24px 16px;font-size:13px;line-height:1.8}
+    footer a{color:var(--green-bright)}
   </style>
-  <!-- Leaflet for map pin -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 </head>
 <body>
 
-  <nav class="nav">
-    <a href="/" class="nav-logo">🌾 Gleaning</a>
-    <span class="nav-spirit">The harvest was never only theirs.</span>
-    <div class="nav-links"><a href="/stats">Hoarders</a><a href="/hoarders">The Gleaning</a></div>
-  </nav>
+<nav class="nav">
+  <a href="/" class="nav-logo">🌾 Gleaning</a>
+  <span class="nav-spirit">The harvest was never only theirs.</span>
+  <div class="nav-links">
+    <a href="/stats">Wealth Hoarders</a>
+    <a href="/hoarders">Project Themis</a>
+  </div>
+</nav>
 
-  <main class="main">
+<main>
+  <div class="page-header">
+    <h1>Report Waste</h1>
+    <p>Document food being wasted near you. No account required.</p>
+  </div>
 
-    <div class="page-header">
-      <h1>Report Waste</h1>
-      <p>Document food being wasted near you. No account required.</p>
-    </div>
+  <div class="notice notice-privacy">
+    <strong>Your privacy:</strong> Your email is used only to notify you when your report is reviewed. It is not stored after notification is sent. No account is created. No data is kept.
+  </div>
 
-    <!-- Privacy note -->
-    <div class="privacy-note">
-      <strong>Your privacy:</strong> Your email is used only to notify you when your report is reviewed.
-      It is not stored after notification is sent. No account is created. No data is kept.
-    </div>
-    <div class="privacy-note" style="border-left: 3px solid #2e7d4f;">
-      <strong>Our mission:</strong> We document manufactured violence against people —
-      the deliberate wasting of food while communities go hungry.
-      Gleaning is a witness. We are not responsible for any activities
-      that occur as a result of information posted here.
-      Always exercise good judgment and stay safe.
-    </div>
+  <div class="notice notice-mission">
+    <strong>Food is a human right.</strong> This is a record, not a directive. Project Themis documents edible food wasted by businesses, witnessed by community members in their area. We are not responsible for any activities that occur as a result of information posted here.
+  </div>
 
-    {% if error %}
-    <div class="form-error">{{ error }}</div>
-    {% endif %}
+  {% if error %}
+  <div class="form-error">{{ error }}</div>
+  {% endif %}
 
-    <div class="form-card">
-      <form method="POST" action="/hoarders/submit" enctype="multipart/form-data" id="submit-form">
+  {% if success %}
+  <div class="form-success">{{ success }}</div>
+  {% endif %}
 
-        <!-- Photo -->
-        <div class="form-group">
-          <label>Photo <span class="required">*</span></label>
-          <div class="photo-upload" id="photo-drop">
-            <input type="file" name="photo" id="photo-input" accept="image/*" capture="environment" required>
-            <div class="photo-upload-icon">📷</div>
-            <div class="photo-upload-text">Tap to take a photo or upload one</div>
-            <div class="photo-upload-sub">Required — the photo is the evidence</div>
-          </div>
-          <div class="photo-preview" id="photo-preview">
-            <img id="preview-img" src="" alt="Preview">
-          </div>
+  <div class="form-card">
+    <form method="POST" action="/hoarders/submit" enctype="multipart/form-data" id="submit-form">
+
+      <div class="form-group">
+        <label>Photo <span class="required">*</span></label>
+        <div class="photo-upload" id="photo-drop">
+          <input type="file" name="photo" id="photo-input" accept="image/*" capture="environment" required>
+          <div class="photo-upload-icon">📷</div>
+          <div class="photo-upload-text">Tap to take a photo or upload one</div>
+          <div class="photo-upload-sub">Required — the photo is the evidence</div>
         </div>
-
-        <!-- Location pin -->
-        <div class="form-group">
-          <label>Location <span class="required">*</span> <span class="hint">— tap the map to pin it</span></label>
-          <div class="map-container">
-            <div id="map"></div>
-            <div class="map-instruction" id="map-instruction">📍 Tap map to drop a pin</div>
-          </div>
-          <div class="location-status" id="location-status">No pin dropped yet</div>
-          <button type="button" class="locate-btn" id="locate-btn">📍 Use my current location</button>
-          <input type="hidden" name="lat" id="lat-input">
-          <input type="hidden" name="lng" id="lng-input">
+        <div class="photo-preview" id="photo-preview">
+          <img id="preview-img" src="" alt="Preview">
         </div>
+      </div>
 
-        <!-- Lbs estimate -->
-        <div class="form-group">
-          <label>Estimated weight (lbs) <span class="required">*</span></label>
-          <input type="number" name="lbs_estimate" min="1" max="100000" placeholder="e.g. 200" required>
+      <div class="form-group">
+        <label>Location <span class="required">*</span> <span class="hint">— tap the map to pin it</span></label>
+        <div class="map-container">
+          <div id="map"></div>
+          <div class="map-instruction" id="map-instruction">📍 Tap map to drop a pin</div>
         </div>
+        <div class="location-status" id="location-status">No pin dropped yet</div>
+        <button type="button" class="locate-btn" id="locate-btn">📍 Use my current location</button>
+        <input type="hidden" name="lat" id="lat-input">
+        <input type="hidden" name="lng" id="lng-input">
+      </div>
 
-        <!-- Note -->
-        <div class="form-group">
-          <label>What did you see? <span class="hint">— optional</span></label>
-          <textarea name="note" placeholder="Describe what you saw — produce, bread, packaged goods, dumpster contents..."></textarea>
-        </div>
+      <div class="form-group">
+        <label>Estimated weight (lbs) <span class="required">*</span></label>
+        <input type="number" name="lbs_estimate" min="1" max="100000" placeholder="e.g. 200" required>
+      </div>
 
-        <!-- Email -->
-        <div class="form-group">
-          <label>Your email <span class="required">*</span> <span class="hint">— notification only, then discarded</span></label>
-          <input type="email" name="email" placeholder="you@example.com" required>
-        </div>
+      <div class="form-group">
+        <label>What did you see? <span class="hint">— optional</span></label>
+        <textarea name="note" placeholder="Describe what you saw — produce, bread, packaged goods, dumpster contents..."></textarea>
+      </div>
 
-        <div class="submit-section">
-          <button type="submit" class="btn-primary" id="submit-btn">Submit Report</button>
-          <p class="rules">
-            Reports must show <strong>actual food waste</strong>. Must include a photo. Must include a location pin.
-            All reports are reviewed by the Team before publishing. Timestamp is set by the server — it cannot be faked.
-          </p>
-        </div>
+      <div class="form-group">
+        <label>Your email <span class="required">*</span> <span class="hint">— notification only, then discarded</span></label>
+        <input type="email" name="email" placeholder="you@example.com" required>
+      </div>
 
-      </form>
-    </div>
+      <div style="margin-top:24px">
+        <button type="submit" class="btn-primary" id="submit-btn">Submit Report</button>
+        <p class="rules">
+          Reports must show <strong>actual food waste</strong>. Must include a photo and a location pin.
+          All reports are reviewed by the Team before publishing.
+          Timestamp is set by the server — it cannot be faked.
+        </p>
+      </div>
 
-  </main>
+    </form>
+  </div>
+</main>
 
-  <footer class="footer">
-    <p>Gleaning · No advertising · No data selling · Power to the People</p>
-    <p>Founded by Krone the Architect · <a href="/hoarders">Back to Hoarders</a></p>
-  </footer>
+<footer>
+  <p>Gleaning · No advertising · No data selling · Power to the People</p>
+  <p>Founded by Krone the Architect · <a href="/hoarders">Project Themis</a></p>
+</footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script>
-    // ── Photo preview ──────────────────────────────────────────────────────
-    const photoInput   = document.getElementById('photo-input');
-    const photoPreview = document.getElementById('photo-preview');
-    const previewImg   = document.getElementById('preview-img');
+<script>
+  const photoInput   = document.getElementById('photo-input');
+  const photoPreview = document.getElementById('photo-preview');
+  const previewImg   = document.getElementById('preview-img');
 
-    photoInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImg.src = e.target.result;
-        photoPreview.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
+  photoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      photoPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const map = L.map('map').setView([39.5, -98.35], 4);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_lite/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    maxZoom: 19
+  }).addTo(map);
+
+  let marker = null;
+  const latInput    = document.getElementById('lat-input');
+  const lngInput    = document.getElementById('lng-input');
+  const statusEl    = document.getElementById('location-status');
+  const instruction = document.getElementById('map-instruction');
+
+  function dropPin(lat, lng) {
+    if (marker) map.removeLayer(marker);
+    const icon = L.divIcon({
+      className: '',
+      html: '<div style="background:#7cb87c;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px rgba(124,184,124,0.8)"></div>',
+      iconSize: [14,14], iconAnchor: [7,7]
     });
+    marker = L.marker([lat, lng], {icon}).addTo(map);
+    latInput.value = lat.toFixed(6);
+    lngInput.value = lng.toFixed(6);
+    statusEl.textContent = `📍 Pin dropped at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    statusEl.className = 'location-status pinned';
+    instruction.classList.add('hidden');
+  }
 
-    // ── Map ────────────────────────────────────────────────────────────────
-    const map = L.map('map').setView([39.5, -98.35], 4);  // US center default
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(map);
+  map.on('click', (e) => dropPin(e.latlng.lat, e.latlng.lng));
 
-    let marker = null;
-    const latInput   = document.getElementById('lat-input');
-    const lngInput   = document.getElementById('lng-input');
-    const statusEl   = document.getElementById('location-status');
-    const instruction = document.getElementById('map-instruction');
-
-    function dropPin(lat, lng) {
-      if (marker) map.removeLayer(marker);
-      marker = L.marker([lat, lng]).addTo(map);
-      latInput.value = lat.toFixed(6);
-      lngInput.value = lng.toFixed(6);
-      statusEl.textContent = `📍 Pin dropped at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      statusEl.className = 'location-status pinned';
-      instruction.classList.add('hidden');
+  document.getElementById('locate-btn').addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      statusEl.textContent = 'Geolocation not available.';
+      return;
     }
-
-    map.on('click', (e) => dropPin(e.latlng.lat, e.latlng.lng));
-
-    // Use current location
-    document.getElementById('locate-btn').addEventListener('click', () => {
-      if (!navigator.geolocation) {
-        statusEl.textContent = 'Geolocation not available on this device.';
-        return;
+    statusEl.textContent = 'Getting your location...';
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const {latitude, longitude} = pos.coords;
+        map.setView([latitude, longitude], 16);
+        dropPin(latitude, longitude);
+      },
+      () => {
+        statusEl.textContent = 'Could not get location. Tap the map to drop a pin.';
       }
-      statusEl.textContent = 'Getting your location...';
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          map.setView([latitude, longitude], 16);
-          dropPin(latitude, longitude);
-        },
-        () => {
-          statusEl.textContent = 'Could not get location. Tap the map to drop a pin.';
-          statusEl.className = 'location-status';
-        }
-      );
-    });
+    );
+  });
 
-    // ── Form validation ────────────────────────────────────────────────────
-    document.getElementById('submit-form').addEventListener('submit', function (e) {
-      if (!latInput.value || !lngInput.value) {
-        e.preventDefault();
-        statusEl.textContent = '⚠ Location pin required. Tap the map to drop a pin.';
-        statusEl.className   = 'location-status';
-        statusEl.style.color = '#c0392b';
-        statusEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      document.getElementById('submit-btn').disabled = true;
-      document.getElementById('submit-btn').textContent = 'Submitting...';
-    });
-  </script>
+  document.getElementById('submit-form').addEventListener('submit', function(e) {
+    if (!latInput.value || !lngInput.value) {
+      e.preventDefault();
+      statusEl.textContent = '⚠ Location pin required. Tap the map to drop a pin.';
+      statusEl.className = 'location-status';
+      statusEl.style.color = '#e74c3c';
+      statusEl.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').textContent = 'Submitting...';
+  });
+</script>
 
 </body>
 </html>
