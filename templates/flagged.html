@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flagged Items — Gleaning</title>
+  <style>
+    :root {
+      --black:#0a0a0a;--card:#1a1a1a;--border:#2a2a2a;
+      --green:#4a9e6b;--green-bright:#7cb87c;
+      --text:#e8e8e8;--muted:#666;--white:#fff;
+      --red:rgba(192,57,43,0.15);--red-border:rgba(192,57,43,0.3);
+      --radius:10px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--black);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.65;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+    a{color:var(--green-bright);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .nav{background:#111;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    .nav-logo{color:var(--green-bright);font-size:18px;font-weight:700;text-decoration:none;letter-spacing:-0.02em}
+    .nav-links{display:flex;align-items:center;gap:4px;margin-left:auto}
+    .nav-links a{color:rgba(255,255,255,0.7);font-size:13px;padding:6px 10px;border-radius:6px;white-space:nowrap;transition:all 0.15s}
+    .nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08);text-decoration:none}
+    main{flex:1;max-width:860px;margin:0 auto;padding:32px 16px 64px;width:100%}
+    .page-header{margin-bottom:32px}
+    .page-header h1{font-size:28px;font-weight:800;color:var(--white);letter-spacing:-0.03em;margin-bottom:8px}
+    .page-header h1 span{color:var(--green-bright)}
+    .page-header p{font-size:15px;color:var(--muted);line-height:1.6}
+    .flag-count{background:#0d1f14;border:1px solid rgba(74,158,107,0.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:28px;font-size:14px;color:var(--muted)}
+    .flag-count span{color:var(--green-bright);font-weight:700;font-size:20px}
+    .flag-list{display:flex;flex-direction:column;gap:16px;margin-bottom:40px}
+    .flag-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .flag-card.saved{border-color:rgba(74,158,107,0.3)}
+    .flag-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .flag-watcher{font-size:11px;color:var(--green-bright);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:4px}
+    .flag-reason{font-size:14px;color:var(--white);font-weight:600}
+    .flag-time{font-size:11px;color:var(--muted);flex-shrink:0}
+    .flag-body{padding:14px 18px}
+    .flag-detail{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+    .flag-link a{font-size:12px;color:var(--green-bright)}
+    .flag-actions{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+    .btn{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+    .btn-save{background:rgba(74,158,107,0.15);color:var(--green-bright);border:1px solid rgba(74,158,107,0.3)}
+    .btn-save:hover{background:rgba(74,158,107,0.25)}
+    .btn-delete{background:var(--red);color:rgba(231,76,60,0.9);border:1px solid var(--red-border)}
+    .btn-delete:hover{background:rgba(192,57,43,0.25)}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-state .icon{font-size:48px;margin-bottom:16px}
+    .empty-state h3{font-size:20px;font-weight:600;color:var(--white);margin-bottom:8px}
+    .saved-section{margin-top:40px}
+    .saved-section h2{font-size:18px;font-weight:700;color:var(--white);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    footer{background:#111;border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:24px 16px;font-size:13px;line-height:1.8}
+    footer a{color:var(--green-bright)}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">🌾 Gleaning</a>
+  <div class="nav-links">
+    <a href="/stats">Wealth Hoarders</a>
+    <a href="/hoarders">Project Themis</a>
+    <a href="/hoarders/moderate">Moderate</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1>Flagged <span>Items</span></h1>
+    <p>Items flagged by the Watchers for review. Save what matters. Delete what doesn't. The record stays current.</p>
+  </div>
+
+  <div class="flag-count">
+    <span id="flag-count">—</span> active flags awaiting review
+  </div>
+
+  <div class="flag-list" id="flag-list">
+    <div class="empty-state">
+      <div class="icon">⏳</div>
+      <h3>Loading flags...</h3>
+    </div>
+  </div>
+
+  <div class="saved-section">
+    <h2>Saved Flags</h2>
+    <div class="flag-list" id="saved-list">
+      <div class="empty-state">
+        <div class="icon">📌</div>
+        <h3>No saved flags yet.</h3>
+        <p>Flags saved by the Team appear here for future reference.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Gleaning · No advertising · No data selling · Power to the People</p>
+  <p>Founded by Krone the Architect · <a href="/stats">Wealth Hoarders</a> · <a href="/hoarders">Project Themis</a></p>
+</footer>
+
+<script>
+async function loadFlags() {
+  try {
+    const [activeRes, savedRes] = await Promise.all([
+      fetch('/api/flagged'),
+      fetch('/api/flagged/saved')
+    ]);
+    const active = await activeRes.json();
+    const saved  = await savedRes.json();
+
+    document.getElementById('flag-count').textContent = active.count || 0;
+    renderFlags('flag-list', active.flags || [], false);
+    renderFlags('saved-list', saved.flags || [], true);
+  } catch(e) {
+    document.getElementById('flag-list').innerHTML =
+      '<div class="empty-state"><div class="icon">⚠️</div><h3>Could not load flags.</h3></div>';
+  }
+}
+
+function renderFlags(containerId, flags, isSaved) {
+  const container = document.getElementById(containerId);
+  if (!flags.length) {
+    container.innerHTML = isSaved
+      ? '<div class="empty-state"><div class="icon">📌</div><h3>No saved flags.</h3></div>'
+      : '<div class="empty-state"><div class="icon">✅</div><h3>No active flags.</h3><p>The Watchers are watching. Nothing needs review right now.</p></div>';
+    return;
+  }
+
+  container.innerHTML = flags.map((flag, i) => {
+    const item = flag.item || {};
+    const time = flag.flagged_at ? new Date(flag.flagged_at).toLocaleString() : '';
+    const link = item.link ? `<div class="flag-link"><a href="${item.link}" target="_blank">View source →</a></div>` : '';
+    const summary = item.summary || item.description || '';
+    const actions = isSaved ? '' : `
+      <div class="flag-actions">
+        <button class="btn btn-save" onclick="saveFlag(${i})">📌 Save</button>
+        <button class="btn btn-delete" onclick="deleteFlag(${i})">✕ Delete</button>
+      </div>`;
+    return `
+      <div class="flag-card${isSaved ? ' saved' : ''}">
+        <div class="flag-header">
+          <div>
+            <div class="flag-watcher">${flag.watcher || 'Watcher'}</div>
+            <div class="flag-reason">${flag.reason || 'Flagged for review'}</div>
+          </div>
+          <div class="flag-time">${time}</div>
+        </div>
+        <div class="flag-body">
+          ${summary ? `<div class="flag-detail">${summary}</div>` : ''}
+          ${link}
+        </div>
+        ${actions}
+      </div>`;
+  }).join('');
+}
+
+async function saveFlag(index) {
+  await fetch(`/api/flagged/${index}/save`, {method: 'POST'});
+  loadFlags();
+}
+
+async function deleteFlag(index) {
+  await fetch(`/api/flagged/${index}/delete`, {method: 'POST'});
+  loadFlags();
+}
+
+loadFlags();
+</script>
+
+</body>
+</html>

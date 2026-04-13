@@ -249,6 +249,10 @@ async def stats_page(request: Request, db: Session = Depends(get_db)):
 
 # ── Flagged items — Watcher flags for Team/Founder review ─────────────────────
 
+@app.get("/flagged", response_class=HTMLResponse)
+async def flagged_page(request: Request):
+    return templates.TemplateResponse("flagged.html", {"request": request})
+
 @app.get("/api/flagged")
 async def get_flagged():
     """Active flags — not deleted, not reviewed."""
