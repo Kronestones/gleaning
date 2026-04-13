@@ -91,12 +91,12 @@
   </div>
   <div class="big-numbers">
     <div class="big-number-card featured">
-      <div class="big-num">{{ stats.total_families_fed | default(0) | int }}</div>
+      <div class="big-num">{{ "{:,}".format(stats.total_families_fed | default(0) | int) }}</div>
       <div class="big-num-label">Families Could Have Been Fed For a Week</div>
       <div class="big-num-sub">Based on USDA data · 38 lbs/week · Family of 4 · Always rounded down</div>
     </div>
     <div class="big-number-card">
-      <div class="big-num">{{ stats.total_waste_lbs | default(0) | int }}</div>
+      <div class="big-num">{{ "{:,}".format(stats.total_waste_lbs | default(0) | int) }}</div>
       <div class="big-num-label">Lbs Wasted</div>
     </div>
     <div class="big-number-card">
@@ -106,19 +106,15 @@
     <div class="big-number-card">
       <div class="big-num">{{ stats.corporations | default(7) }}</div>
       <div class="big-num-label">Corporations Tracked</div>
+      <div class="big-num-sub" style="font-size:10px;margin-top:6px;color:#444;font-style:italic">The list is expanding.</div>
     </div>
     <div class="big-number-card">
       <div class="big-num">{{ stats.total_brands | default("900+") }}</div>
       <div class="big-num-label">Brands They Hide Behind</div>
     </div>
   </div>
-  <div class="methodology">
-    <h3>How We Calculate This</h3>
-    <p>Waste percentages are derived from <strong>EPA, USDA, and company sustainability reports</strong>. "Families fed" uses USDA data for a family of 4 — <strong>5.5 lbs/day · 38 lbs/week · 2,000 lbs/year</strong>. We divide documented waste by 38 lbs to calculate weekly family equivalents.</p>
-    <p><strong>We always round down. We never inflate.</strong> If the math doesn't produce a whole family, we don't count it. This methodology is public and locked. It cannot be changed without founder review.</p>
-    <p>Subsidy data is sourced from USDA procurement records, EWG Farm Subsidy Database, and public SEC filings. All sources are public record.</p>
-  </div>
-  <div class="section-header">
+
+<div class="section-header">
     <h2>The Corporations</h2>
     <p>They own the brands. They own the waste. They chose not to feed people. These are their names.</p>
   </div>
@@ -285,7 +281,14 @@
       <div class="corp-subsidy">⚠ Mars is privately owned — financial details hidden from public. Kellanova acquisition ($36B) consolidates control over breakfast and snack aisles globally.</div>
     </div>
   </div>
-  <div class="sources">
+  <div class="methodology">
+    <h3>How We Calculate This</h3>
+    <p>Waste percentages are derived from <strong>EPA, USDA, and company sustainability reports</strong>. "Families fed" uses USDA data for a family of 4 — <strong>5.5 lbs/day · 38 lbs/week · 2,000 lbs/year</strong>. We divide documented waste by 38 lbs to calculate weekly family equivalents.</p>
+    <p><strong>We always round down. We never inflate.</strong> If the math doesn't produce a whole family, we don't count it. This methodology is public and locked. It cannot be changed without founder review.</p>
+    <p>Subsidy data is sourced from USDA procurement records, EWG Farm Subsidy Database, and public SEC filings. All sources are public record.</p>
+  </div>
+
+    <div class="sources">
     <h3>Sources — All Public Record</h3>
     <p>Waste percentages: EPA Food Recovery Hierarchy, USDA Economic Research Service, company sustainability reports and SEC filings.</p>
     <p>Subsidy data: USDA Agricultural Marketing Service procurement records, Environmental Working Group Farm Subsidy Database, company 10-K filings.</p>
