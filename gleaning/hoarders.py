@@ -221,6 +221,14 @@ class Hoarders:
         print(f"[HOARDERS] Post submitted: {estimated_lbs}lbs "
               f"at {location_label} — pending review")
 
+        # Send confirmation email — discarded after send
+        if contact:
+            try:
+                from .hoarders_email import on_submit
+                on_submit(contact, post.id, estimated_lbs)
+            except Exception as e:
+                print(f"[HOARDERS] Email error on submit: {e}")
+
         return {
             "ok":      True,
             "post_id": post.id,
@@ -256,6 +264,13 @@ class Hoarders:
             if verified_lbs:
                 post.verified_lbs = verified_lbs
             print(f"[HOARDERS] Post {post_id} approved by {moderator}")
+            # Notify reporter — email discarded after send
+            if post.contact:
+                try:
+                    from .hoarders_email import on_approve
+                    on_approve(post.contact, post_id, post.estimated_lbs or 0)
+                except Exception as e:
+                    print(f"[HOARDERS] Email error on approve: {e}")
 
         elif action == "REJECT":
             post.status           = STATUS_REJECTED
@@ -263,6 +278,13 @@ class Hoarders:
             post.reviewed_at      = datetime.now(timezone.utc)
             post.rejection_reason = note
             print(f"[HOARDERS] Post {post_id} rejected by {moderator}")
+            # Notify reporter — email discarded after send
+            if post.contact:
+                try:
+                    from .hoarders_email import on_deny
+                    on_deny(post.contact, post_id)
+                except Exception as e:
+                    print(f"[HOARDERS] Email error on deny: {e}")
 
         elif action == "ESCALATE":
             post.escalated       = True
