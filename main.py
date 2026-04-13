@@ -66,6 +66,39 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
 
+    # Seed corporate waste data on first run
+    from gleaning.database import CorporateWasteRecord
+    from datetime import datetime, timezone
+    db = SessionLocal()
+    try:
+        existing = db.query(CorporateWasteRecord).count()
+        if existing == 0:
+            CORPORATE_WASTE_SEED = [
+                {"corporation": "Nestlé",        "metric_tons": 1600000, "period": "2023", "source_name": "Nestlé Creating Shared Value and Sustainability Report 2023", "source_url": "https://www.nestle.com/sites/default/files/2024-02/creating-shared-value-sustainability-report-2023-en.pdf"},
+                {"corporation": "PepsiCo",        "metric_tons": 2600000, "period": "2023", "source_name": "PepsiCo ESG Topics — Waste 2023", "source_url": "https://www.pepsico.com/en/esg-topics/waste"},
+                {"corporation": "Unilever",       "metric_tons": 100000,  "period": "2023", "source_name": "Unilever Annual Report and Accounts 2024", "source_url": "https://www.unilever.com/planet-and-society/waste-free-world/"},
+                {"corporation": "Kraft Heinz",    "metric_tons": 150000,  "period": "2023", "source_name": "Kraft Heinz ESG Report", "source_url": "https://www.kraftheinzcompany.com/esg/planet.html"},
+                {"corporation": "General Mills",  "metric_tons": 200000,  "period": "FY2024", "source_name": "General Mills Global Responsibility Report", "source_url": "https://globalresponsibility.generalmills.com"},
+                {"corporation": "Conagra Brands", "metric_tons": 120000,  "period": "FY2024", "source_name": "Conagra Brands Corporate Responsibility Report", "source_url": "https://www.conagrabrands.com/corporate-responsibility/planet"},
+                {"corporation": "Mars/Kellanova", "metric_tons": 300000,  "period": "2023", "source_name": "Mars Incorporated Sustainability Report", "source_url": "https://www.mars.com/sustainability-plan/reporting-performance"},
+            ]
+            for corp in CORPORATE_WASTE_SEED:
+                lbs = int(corp["metric_tons"] * 2204.62)
+                db.add(CorporateWasteRecord(
+                    corporation = corp["corporation"],
+                    lbs_wasted  = lbs,
+                    source_name = corp["source_name"],
+                    source_url  = corp["source_url"],
+                    period      = corp["period"],
+                    note        = "Seeded from published corporate sustainability reports. WasteWatch updates when new data is published.",
+                ))
+            db.commit()
+            print(f"[GLEANING] Corporate waste data seeded — {len(CORPORATE_WASTE_SEED)} corporations.")
+        else:
+            print(f"[GLEANING] Corporate waste data already present — {existing} records.")
+    finally:
+        db.close()
+
     # Start resilience systems
     resilience.start()
     guardian.startup()
