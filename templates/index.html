@@ -39,174 +39,184 @@
 
         .nav-links a:hover { color: #7cb87c; }
 
-        .hero {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 5rem 2rem 3rem;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            color: #fff;
-        }
-
-        .hero h1 span { color: #7cb87c; }
-
-        .hero p {
-            font-size: 1.15rem;
-            color: #aaa;
-            line-height: 1.7;
-            max-width: 600px;
-            margin: 0 auto 2.5rem;
-        }
-
-        .cta-row {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 4rem;
-        }
-
-        .btn {
-            padding: 0.85rem 2rem;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: #7cb87c;
-            color: #0a0a0a;
-        }
-
-        .btn-primary:hover { background: #8fca8f; }
-
-        .btn-outline {
-            background: transparent;
-            color: #7cb87c;
-            border: 1px solid #7cb87c;
-        }
-
-        .btn-outline:hover {
-            background: #7cb87c;
-            color: #0a0a0a;
-        }
-
-        .three-things {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
+        /* ── Impact numbers — first thing they see ── */
+        .impact {
             max-width: 900px;
-            margin: 0 auto 5rem;
-            padding: 0 2rem;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 2rem;
         }
 
-        .thing {
-            background: #111;
-            border: 1px solid #1e1e1e;
-            border-radius: 10px;
-            padding: 1.8rem;
+        .impact-label {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
         }
 
-        .thing-icon {
-            font-size: 2rem;
+        .impact-counter {
+            text-align: center;
+            font-size: clamp(3rem, 12vw, 7rem);
+            font-weight: 900;
+            color: #7cb87c;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+
+        .impact-sublabel {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+        }
+
+        .impact-methodology {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #3a3a3a;
+            margin-bottom: 2.5rem;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
             margin-bottom: 1rem;
         }
 
-        .thing h3 {
+        .impact-card {
+            background: #111;
+            border: 1px solid #1e1e1e;
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            text-align: center;
+        }
+
+        .impact-card .number {
+            font-size: clamp(1.6rem, 5vw, 2.8rem);
+            font-weight: 800;
+            color: #7cb87c;
+            line-height: 1;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.02em;
+        }
+
+        .impact-card .label {
+            font-size: 0.7rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            line-height: 1.4;
+        }
+
+        .impact-card .sublabel {
+            font-size: 0.65rem;
+            color: #333;
+            font-style: italic;
+            margin-top: 0.3rem;
+        }
+
+        .impact-source {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #2a2a2a;
+            margin-bottom: 3rem;
+        }
+
+        /* ── Tagline ── */
+        .tagline {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .tagline h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            color: #fff;
+        }
+
+        .tagline h1 span { color: #7cb87c; }
+
+        .tagline p {
             font-size: 1rem;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 0.8rem;
+        }
+
+        /* ── Cards ── */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+            padding: 0 1.5rem;
+        }
+
+        .card {
+            background: #111;
+            border: 1px solid #1e1e1e;
+            border-radius: 10px;
+            padding: 1.6rem;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+
+        .card:hover {
+            border-color: #7cb87c;
+            transform: translateY(-2px);
+        }
+
+        .card-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+
+        .card h3 {
+            font-size: 0.9rem;
             font-weight: 700;
             color: #7cb87c;
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
-        .thing p {
-            font-size: 0.9rem;
-            color: #888;
+        .card p {
+            font-size: 0.85rem;
+            color: #666;
             line-height: 1.6;
         }
 
-        .truth-section {
-            background: #111;
-            border-top: 1px solid #1e1e1e;
-            border-bottom: 1px solid #1e1e1e;
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-
-        .truth-section h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 1rem;
-        }
-
-        .truth-section p {
-            color: #888;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            line-height: 1.7;
-        }
-
-        .corp-count {
-            display: inline-flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .corp-stat {
-            text-align: center;
-        }
-
-        .corp-stat .number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #7cb87c;
-        }
-
-        .corp-stat .label {
-            font-size: 0.8rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
+        /* ── Promise ── */
         .promise {
             max-width: 700px;
-            margin: 4rem auto;
-            padding: 0 2rem;
+            margin: 0 auto 4rem;
+            padding: 0 1.5rem;
         }
 
         .promise h2 {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             text-align: center;
         }
 
-        .promise-list {
-            list-style: none;
-        }
+        .promise-list { list-style: none; }
 
         .promise-list li {
-            padding: 0.7rem 0;
+            padding: 0.65rem 0;
             border-bottom: 1px solid #1a1a1a;
-            color: #aaa;
-            font-size: 0.95rem;
+            color: #888;
+            font-size: 0.9rem;
             display: flex;
             align-items: flex-start;
             gap: 0.8rem;
@@ -219,73 +229,123 @@
             flex-shrink: 0;
         }
 
+        /* ── Definition ── */
+        .definition-section {
+            background: #0d0d0d;
+            border-top: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .definition-section p {
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .definition-section em { color: #7cb87c; font-style: italic; }
+
         footer {
             text-align: center;
             padding: 2rem;
-            color: #444;
+            color: #333;
             font-size: 0.8rem;
             border-top: 1px solid #1a1a1a;
         }
 
-        footer a { color: #666; text-decoration: none; }
+        footer a { color: #444; text-decoration: none; }
         footer a:hover { color: #7cb87c; }
+
+        @media (max-width: 480px) {
+            .impact-grid { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 <body>
 
 <nav>
     <div class="logo">🌾 Gleaning</div>
+    <div class="nav-links">
+        <a href="/stats">Wealth Hoarders</a>
+        <a href="/hoarders">Project Themis</a>
+    </div>
 </nav>
 
-<div class="hero">
+<div class="impact">
+
+    <div class="impact-label">Seven corporations. One year of waste.</div>
+    <div class="impact-counter">294,142,721</div>
+    <div class="impact-sublabel">Families could have been fed for a week</div>
+    <div class="impact-methodology">USDA data · 38 lbs/week · Family of 4 · Always rounded down · Never inflated</div>
+
+    <div class="impact-grid">
+        <div class="impact-card">
+            <div class="number">11.1B+</div>
+            <div class="label">Lbs of food wasted</div>
+            <div class="sublabel">From their own sustainability reports</div>
+        </div>
+        <div class="impact-card">
+            <div class="number">$47B+</div>
+            <div class="label">Taxpayer subsidies</div>
+            <div class="sublabel">Your tax dollars. Their profits.</div>
+        </div>
+        <div class="impact-card">
+            <div class="number">7</div>
+            <div class="label">Corporations tracked</div>
+            <div class="sublabel" style="color:#2a2a2a;font-style:italic">The list is expanding.</div>
+        </div>
+        <div class="impact-card">
+            <div class="number">900+</div>
+            <div class="label">Brands they hide behind</div>
+            <div class="sublabel">One shelf. Seven owners.</div>
+        </div>
+    </div>
+
+    <div class="impact-source">
+        Data from corporate sustainability reports · SEC filings · OpenSecrets.org · USDA · All public record
+        · <a href="/stats" style="color:#3a3a3a;">See the full record →</a>
+    </div>
+
+</div>
+
+<div class="tagline">
     <h1>The harvest was<br><span>never only theirs.</span></h1>
-    <p class="definition">
-        <em>Gleaning</em> — the ancient practice of collecting what remains in the fields
-        after the harvest. What the powerful left behind. What the community reclaimed.
-        It is as old as hunger itself.
-    </p>
     <p>
         Seven corporations own nearly every brand on every shelf.
-        Every day, tons of food are thrown away
-        while people go hungry in the same zip code.
+        Every day, food is thrown away while people go hungry in the same zip code.
         That is not an accident. That is a choice.
+    </p>
+    <p>
         Gleaning is the counter-choice.
     </p>
 </div>
 
-<div class="three-things">
-    <a href="/stats" class="thing" style="text-decoration:none;color:inherit;display:block;">
-        <div class="thing-icon">📊</div>
+<div class="cards">
+    <a href="/stats" class="card">
+        <div class="card-icon">📊</div>
         <h3>Wealth Hoarders</h3>
-        <p>Seven corporations. Their CEOs named. Their waste documented. Their taxpayer subsidies exposed. How many families they chose not to feed. Public record.</p>
+        <p>Seven corporations. CEOs named. Waste documented. Subsidies exposed. Lobbying disclosed. Public record.</p>
     </a>
-    <a href="/hoarders" class="thing" style="text-decoration:none;color:inherit;display:block;">
-        <div class="thing-icon">🌾</div>
+    <a href="/hoarders" class="card">
+        <div class="card-icon">🌾</div>
         <h3>Project Themis</h3>
-        <p>Where food moves from waste to people. Community documented. Team verified. Witnessed and recorded. Redistribution not waste.</p>
+        <p>Community witnessed. Team verified. Pinned on the map. Food from waste to people. Redistribution not waste.</p>
     </a>
 </div>
 
-<div class="truth-section">
-    <h2>The illusion of choice</h2>
+<div class="definition-section">
     <p>
-        Seven corporations. Over 900 brands.
-        They give us the appearance of a marketplace
-        while controlling the harvest from end to end.
-        We are expanding this record.
+        <em>Gleaning</em> — the ancient practice of collecting what remains in the fields
+        after the harvest. What the powerful left behind. What the community reclaimed.
+        It is as old as hunger itself.
+        <br><br>
+        We document manufactured waste. We make it visible. We connect surplus to need.
+        No advertising. No data selling. No charge. Ever.
     </p>
-    <div class="corp-count">
-        <div class="corp-stat">
-            <div class="number">7</div>
-            <div class="label">Corporations</div>
-            <div style="font-size:10px;color:#333;font-style:italic;margin-top:4px">The list is expanding.</div>
-        </div>
-        <div class="corp-stat">
-            <div class="number">90+</div>
-            <div class="label">Brands they own</div>
-        </div>
-        </div>
-    </div>
 </div>
 
 <div class="promise">
@@ -304,23 +364,21 @@
 <footer>
     <p>Gleaning · Founded by Krone the Architect · 2026</p>
     <p style="margin-top:0.5rem">
-         ·
-        <a href="/stats">Hoarders</a> · <a href="/hoarders">Project Themis</a> · <a href="https://the-commons.onrender.com">The Commons</a>
+        <a href="/stats">Wealth Hoarders</a> ·
+        <a href="/hoarders">Project Themis</a> ·
+        <a href="https://the-commons.onrender.com">The Commons</a>
     </p>
-    <p style="margin-top:0.5rem; color:#333">
-        Power to the People.
-    </p>
-
-  <div style="margin-top:12px;">
-    <a href="https://buymeacoffee.com/sentinel.commons"
-       target="_blank"
-       style="display:inline-block;background:#FFDD00;color:#000;
-              font-weight:700;padding:10px 20px;border-radius:8px;
-              text-decoration:none;font-size:14px;">
-      ☕ Buy me a coffee
-    </a>
-    <p style="font-size:11px;margin-top:6px;opacity:0.6;">Donations go to the Commons community fund</p>
-  </div>
+    <p style="margin-top:0.5rem; color:#222">Power to the People.</p>
+    <div style="margin-top:12px;">
+        <a href="https://buymeacoffee.com/sentinel.commons"
+           target="_blank"
+           style="display:inline-block;background:#FFDD00;color:#000;
+                  font-weight:700;padding:10px 20px;border-radius:8px;
+                  text-decoration:none;font-size:14px;">
+            ☕ Buy me a coffee
+        </a>
+        <p style="font-size:11px;margin-top:6px;opacity:0.4;">Donations go to the Commons community fund</p>
+    </div>
 </footer>
 
 </body>

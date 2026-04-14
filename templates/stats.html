@@ -64,6 +64,15 @@
     .brands-list{display:flex;flex-wrap:wrap;gap:6px}
     .brand-tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:rgba(255,255,255,0.6);font-size:11px;padding:3px 8px;border-radius:4px}
     .corp-subsidy{padding:10px 20px;background:var(--red-dim);border-top:1px solid var(--red-border);font-size:12px;color:rgba(231,76,60,0.85);line-height:1.5}
+    .worker-context{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)}
+    .worker-stat{padding:12px 14px;text-align:center;border-right:1px solid var(--border)}
+    .worker-stat:last-child{border-right:none}
+    .worker-stat-num{font-size:16px;font-weight:700;color:#e74c3c;line-height:1;margin-bottom:3px}
+    .worker-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;line-height:1.3}
+    .subsidy-explainer{padding:12px 20px;background:rgba(231,76,60,0.06);border-top:1px solid var(--red-border);font-size:12px;color:rgba(231,76,60,0.75);line-height:1.6}
+    .subsidy-explainer strong{color:rgba(231,76,60,0.95)}
+    .snap-bar{padding:10px 20px;background:rgba(255,165,0,0.06);border-top:1px solid rgba(255,165,0,0.15);font-size:12px;color:rgba(255,200,50,0.8);line-height:1.5}
+    .snap-bar strong{color:rgba(255,200,50,1)}
     .sources{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px}
     .sources h3{font-size:14px;font-weight:700;color:var(--white);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.08em}
     .sources p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:6px}
@@ -140,6 +149,12 @@
         <div class="corp-stat"><div class="corp-stat-num">275K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">KitKat</span><span class="brand-tag">Nescafé</span><span class="brand-tag">Purina</span><span class="brand-tag">Gerber</span><span class="brand-tag">Häagen-Dazs</span><span class="brand-tag">DiGiorno</span><span class="brand-tag">Hot Pockets</span><span class="brand-tag">Stouffer's</span><span class="brand-tag">Lean Cuisine</span><span class="brand-tag">Dreyer's</span><span class="brand-tag">Toll House</span><span class="brand-tag">Coffee-mate</span><span class="brand-tag">Carnation</span><span class="brand-tag">Poland Spring</span><span class="brand-tag">Perrier</span><span class="brand-tag">S.Pellegrino</span><span class="brand-tag">PowerBar</span><span class="brand-tag">Boost</span><span class="brand-tag">Milo</span><span class="brand-tag">Maggi</span><span class="brand-tag">Fancy Feast</span><span class="brand-tag">Friskies</span><span class="brand-tag">Alpo</span><span class="brand-tag">Beneful</span><span class="brand-tag">+ 300 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">Not disclosed</div><div class="worker-stat-label">CEO pay ratio · Swiss company · no US filing required</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$35K–$45K</div><div class="worker-stat-label">Est. median US worker pay · Source: Glassdoor/Comparably</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">Significant</div><div class="worker-stat-label">% of food workers qualify for public assistance</div></div>
+      </div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. Nestlé benefits from USDA commodity purchases, water rights deals, and government contracts — costs covered by taxpayers, profits kept by shareholders.</div>
       <div class="corp-subsidy">⚠ Received billions in government contracts and water rights deals globally. Currently under investigation in multiple countries for monopolistic practices.</div>
     </div>
     <div class="corp-card">
@@ -163,6 +178,13 @@
         <div class="corp-stat"><div class="corp-stat-num">315K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">Pepsi</span><span class="brand-tag">Mountain Dew</span><span class="brand-tag">Gatorade</span><span class="brand-tag">Tropicana</span><span class="brand-tag">Lay's</span><span class="brand-tag">Doritos</span><span class="brand-tag">Cheetos</span><span class="brand-tag">Fritos</span><span class="brand-tag">Ruffles</span><span class="brand-tag">Tostitos</span><span class="brand-tag">SunChips</span><span class="brand-tag">Quaker</span><span class="brand-tag">Cap'n Crunch</span><span class="brand-tag">Life Cereal</span><span class="brand-tag">Rice-A-Roni</span><span class="brand-tag">Aquafina</span><span class="brand-tag">Bubly</span><span class="brand-tag">7UP (intl)</span><span class="brand-tag">Mirinda</span><span class="brand-tag">+ 100 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">538x</div><div class="worker-stat-label">CEO pay vs. median worker · Source: SEC DEF 14A 2024</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$53,551</div><div class="worker-stat-label">Median worker pay · while CEO made $28.8M</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">7.2%</div><div class="worker-stat-label">Of PepsiCo/Frito-Lay sales paid for with SNAP benefits</div></div>
+      </div>
+      <div class="snap-bar"><strong>SNAP = food stamps = your tax dollars.</strong> 7.2% of PepsiCo's sales come from SNAP recipients — people paid too little to afford food without government help. PepsiCo profits from poverty wages and from the assistance those wages make necessary. Source: Numerator Research 2024.</div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. The federal government subsidizes corn, high-fructose corn syrup, and other PepsiCo ingredients — keeping their raw material costs artificially low. You pay at the pump, at the grocery store, and at tax time.</div>
       <div class="corp-subsidy">⚠ Receives hundreds of millions in USDA commodity purchase programs annually. Tax subsidies on corn syrup ingredients exceed $1B/year.</div>
     </div>
     <div class="corp-card">
@@ -186,6 +208,12 @@
         <div class="corp-stat"><div class="corp-stat-num">127K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">Hellmann's</span><span class="brand-tag">Ben & Jerry's</span><span class="brand-tag">Breyers</span><span class="brand-tag">Magnum</span><span class="brand-tag">Klondike</span><span class="brand-tag">Popsicle</span><span class="brand-tag">Lipton</span><span class="brand-tag">Knorr</span><span class="brand-tag">Ragu</span><span class="brand-tag">Bertolli</span><span class="brand-tag">Slim-Fast</span><span class="brand-tag">Talenti</span><span class="brand-tag">Marmite</span><span class="brand-tag">Country Crock</span><span class="brand-tag">Flora</span><span class="brand-tag">I Can't Believe It's Not Butter</span><span class="brand-tag">+ 100 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">Not disclosed</div><div class="worker-stat-label">CEO pay ratio · UK company · no US SEC filing required</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$40K–$50K</div><div class="worker-stat-label">Est. median US worker pay · Source: Glassdoor/Comparably</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">Significant</div><div class="worker-stat-label">% of food workers qualify for public assistance</div></div>
+      </div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. Unilever holds significant government contracts in school lunch and nutrition programs globally — public money funding private profit.</div>
       <div class="corp-subsidy">⚠ Significant government contracts in school lunch programs globally. Lobbied against food waste legislation in EU and UK.</div>
     </div>
     <div class="corp-card">
@@ -209,6 +237,13 @@
         <div class="corp-stat"><div class="corp-stat-num">37K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">Kraft</span><span class="brand-tag">Heinz</span><span class="brand-tag">Oscar Mayer</span><span class="brand-tag">Velveeta</span><span class="brand-tag">Jell-O</span><span class="brand-tag">Kool-Aid</span><span class="brand-tag">Philadelphia</span><span class="brand-tag">Maxwell House</span><span class="brand-tag">Planters</span><span class="brand-tag">Grey Poupon</span><span class="brand-tag">A1 Sauce</span><span class="brand-tag">Capri Sun</span><span class="brand-tag">Lunchables</span><span class="brand-tag">Bagel Bites</span><span class="brand-tag">Ore-Ida</span><span class="brand-tag">Smart Ones</span><span class="brand-tag">+ 50 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">140x</div><div class="worker-stat-label">CEO pay vs. median worker · Source: SEC DEF 14A 2024</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$64,000</div><div class="worker-stat-label">Median worker pay · while CEO made $9M</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">7.5%</div><div class="worker-stat-label">Of Kraft Heinz sales paid for with SNAP benefits</div></div>
+      </div>
+      <div class="snap-bar"><strong>SNAP = food stamps = your tax dollars.</strong> 7.5% of Kraft Heinz sales come from SNAP recipients. Lunchables, Capri Sun, Oscar Mayer — bought with food stamps by people whose wages don't cover food. Source: Numerator Research 2024.</div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. Kraft Heinz received over $1B in USDA commodity purchases — government buying their products with public funds while they cut 13,000 jobs and paid executives millions.</div>
       <div class="corp-subsidy">⚠ Received over $1B in USDA food purchases. Owned by 3G Capital and Berkshire Hathaway — cut 13,000 jobs while reporting record profits.</div>
     </div>
     <div class="corp-card">
@@ -232,6 +267,13 @@
         <div class="corp-stat"><div class="corp-stat-num">35K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">Cheerios</span><span class="brand-tag">Lucky Charms</span><span class="brand-tag">Wheaties</span><span class="brand-tag">Cocoa Puffs</span><span class="brand-tag">Trix</span><span class="brand-tag">Cinnamon Toast Crunch</span><span class="brand-tag">Chex</span><span class="brand-tag">Betty Crocker</span><span class="brand-tag">Bisquick</span><span class="brand-tag">Pillsbury</span><span class="brand-tag">Yoplait</span><span class="brand-tag">Nature Valley</span><span class="brand-tag">Fiber One</span><span class="brand-tag">Annie's</span><span class="brand-tag">Cascadian Farm</span><span class="brand-tag">Larabar</span><span class="brand-tag">Blue Buffalo</span><span class="brand-tag">+ 50 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">~207x</div><div class="worker-stat-label">CEO pay vs. median worker · Source: SEC DEF 14A proxy</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$75,000</div><div class="worker-stat-label">Median worker pay · while CEO made $16M</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">7.3%</div><div class="worker-stat-label">Of General Mills sales paid for with SNAP benefits</div></div>
+      </div>
+      <div class="snap-bar"><strong>SNAP = food stamps = your tax dollars.</strong> 7.3% of General Mills sales — Cheerios, Yoplait, Nature Valley — come from SNAP recipients. Workers paid wages that qualify them for food stamps buying food from the same company that underpays them. Source: Numerator Research 2024.</div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. General Mills receives significant USDA commodity supports for wheat, corn and oats — the raw ingredients in their products — subsidized by taxpayers, profits kept by shareholders.</div>
       <div class="corp-subsidy">⚠ Receives significant USDA commodity supports. Sued consumers attempting to hold them accountable for misleading "natural" labeling.</div>
     </div>
     <div class="corp-card">
@@ -255,6 +297,13 @@
         <div class="corp-stat"><div class="corp-stat-num">18K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">Birds Eye</span><span class="brand-tag">Duncan Hines</span><span class="brand-tag">Hunt's</span><span class="brand-tag">Marie Callender's</span><span class="brand-tag">Healthy Choice</span><span class="brand-tag">Slim Jim</span><span class="brand-tag">Reddi-wip</span><span class="brand-tag">PAM</span><span class="brand-tag">Wesson</span><span class="brand-tag">Orville Redenbacher's</span><span class="brand-tag">Act II</span><span class="brand-tag">Peter Pan</span><span class="brand-tag">Swiss Miss</span><span class="brand-tag">Vlasic</span><span class="brand-tag">Chef Boyardee</span><span class="brand-tag">Frontera</span><span class="brand-tag">+ 40 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">359x</div><div class="worker-stat-label">CEO pay vs. median worker · Source: SEC DEF 14A 2024</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$67,000</div><div class="worker-stat-label">Median worker pay · while CEO made $24M</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">7.7%</div><div class="worker-stat-label">Of Conagra sales paid for with SNAP benefits</div></div>
+      </div>
+      <div class="snap-bar"><strong>SNAP = food stamps = your tax dollars.</strong> Conagra has the highest SNAP dependency of all tracked corporations at 7.7%. Chef Boyardee, Slim Jim, Birds Eye — purchased with food stamps by people who cannot afford food on their wages. Source: Numerator Research 2024.</div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. Conagra receives hundreds of millions in USDA commodity purchases and crop insurance subsidies on their ingredient supply chain — risk socialized, profits privatized.</div>
       <div class="corp-subsidy">⚠ Received hundreds of millions in USDA commodity purchases. Major recipient of crop insurance subsidies on ingredient supply chain.</div>
     </div>
     <div class="corp-card">
@@ -278,6 +327,12 @@
         <div class="corp-stat"><div class="corp-stat-num">150K+</div><div class="corp-stat-label">Employees</div></div>
       </div>
       <div class="corp-brands"><div class="corp-brands-label">Brands They Own</div><div class="brands-list"><span class="brand-tag">M&M's</span><span class="brand-tag">Snickers</span><span class="brand-tag">Twix</span><span class="brand-tag">Milky Way</span><span class="brand-tag">Skittles</span><span class="brand-tag">Starburst</span><span class="brand-tag">Pedigree</span><span class="brand-tag">Whiskas</span><span class="brand-tag">Uncle Ben's</span><span class="brand-tag">Kind</span><span class="brand-tag">Kellogg's</span><span class="brand-tag">Pop-Tarts</span><span class="brand-tag">Cheez-It</span><span class="brand-tag">Pringles</span><span class="brand-tag">Eggo</span><span class="brand-tag">Morningstar Farms</span><span class="brand-tag">Rice Krispies</span><span class="brand-tag">Frosted Flakes</span><span class="brand-tag">Froot Loops</span><span class="brand-tag">Special K</span><span class="brand-tag">Nutri-Grain</span><span class="brand-tag">RXBAR</span><span class="brand-tag">+ 100 more</span></div></div>
+      <div class="worker-context">
+        <div class="worker-stat"><div class="worker-stat-num">Hidden</div><div class="worker-stat-label">CEO pay ratio · Mars privately held · no disclosure required</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">~$45K–$55K</div><div class="worker-stat-label">Est. median worker pay · Source: Glassdoor/Comparably</div></div>
+        <div class="worker-stat"><div class="worker-stat-num">Undisclosed</div><div class="worker-stat-label">SNAP sales % · Mars refuses public financial disclosure</div></div>
+      </div>
+      <div class="subsidy-explainer"><strong>What is a subsidy?</strong> A subsidy is your tax money given directly to a corporation. Mars benefits from USDA commodity supports on sugar, corn and cocoa ingredients while hiding all financial details behind private ownership. Accountability by choice — they chose none.</div>
       <div class="corp-subsidy">⚠ Mars is privately owned — financial details hidden from public. Kellanova acquisition ($36B) consolidates control over breakfast and snack aisles globally.</div>
     </div>
   </div>
@@ -293,6 +348,9 @@
     <p>Waste percentages: EPA Food Recovery Hierarchy, USDA Economic Research Service, company sustainability reports and SEC filings.</p>
     <p>Subsidy data: USDA Agricultural Marketing Service procurement records, Environmental Working Group Farm Subsidy Database, company 10-K filings.</p>
     <p>Executive data: Company press releases, SEC regulatory filings, public news coverage. Verified April 2026. Updated when leadership changes.</p>
+    <p>CEO pay ratios: SEC DEF 14A proxy statements · AFL-CIO Executive Paywatch · Source: public record, required disclosure since 2018.</p>
+    <p>SNAP sales data: Numerator Research 2024 consumer panel data. SNAP = Supplemental Nutrition Assistance Program (food stamps) — federal taxpayer-funded food assistance.</p>
+    <p>Subsidy data explained: Federal farm subsidies flow to commodity crop farmers (corn, soy, wheat) whose crops are primary ingredients for these corporations, artificially lowering their raw material costs at taxpayer expense.</p>
     <p>This page is maintained by the Team and updated daily. To document waste you have witnessed: <a href="/hoarders">Project Themis</a></p>
   </div>
   
