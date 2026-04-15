@@ -98,30 +98,7 @@
     <h1><span>Wealth</span> Hoarders</h1>
     <p>What they waste. What it costs. What it could have fed. Who decided that. Updated daily. This is the record.</p>
   </div>
-  <div class="big-numbers">
-    <div class="big-number-card featured">
-      <div class="big-num">{{ "{:,}".format(stats.total_families_fed | default(0) | int) }}</div>
-      <div class="big-num-label">Families Could Have Been Fed For a Week</div>
-      <div class="big-num-sub">Based on USDA data · 38 lbs/week · Family of 4 · Always rounded down</div>
-    </div>
-    <div class="big-number-card">
-      <div class="big-num">{{ "{:,}".format(stats.total_waste_lbs | default(0) | int) }}</div>
-      <div class="big-num-label">Lbs Wasted</div>
-    </div>
-    <div class="big-number-card">
-      <div class="big-num">${{ stats.total_subsidies | default("47B+") }}</div>
-      <div class="big-num-label">Taxpayer Subsidies</div>
-    </div>
-    <div class="big-number-card">
-      <div class="big-num">{{ stats.corporations | default(7) }}</div>
-      <div class="big-num-label">Corporations Tracked</div>
-      <div class="big-num-sub" style="font-size:10px;margin-top:6px;color:#444;font-style:italic">The list is expanding.</div>
-    </div>
-    <div class="big-number-card">
-      <div class="big-num">{{ stats.total_brands | default("900+") }}</div>
-      <div class="big-num-label">Brands They Hide Behind</div>
-    </div>
-  </div>
+
 
 <div class="section-header">
     <h2>The Corporations</h2>
