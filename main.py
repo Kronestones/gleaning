@@ -81,21 +81,30 @@ async def lifespan(app: FastAPI):
                 {"corporation": "General Mills",  "metric_tons": 200000,  "period": "FY2024", "source_name": "General Mills Global Responsibility Report", "source_url": "https://globalresponsibility.generalmills.com"},
                 {"corporation": "Conagra Brands", "metric_tons": 120000,  "period": "FY2024", "source_name": "Conagra Brands Corporate Responsibility Report", "source_url": "https://www.conagrabrands.com/corporate-responsibility/planet"},
                 {"corporation": "Mars/Kellanova", "metric_tons": 300000,  "period": "2023", "source_name": "Mars Incorporated Sustainability Report", "source_url": "https://www.mars.com/sustainability-plan/reporting-performance"},
+                {"corporation": "Kroger",         "metric_tons": 222522,  "period": "2023", "source_name": "Kroger 2024 ESG Report (Zero Hunger | Zero Waste)", "source_url": "https://www.thekrogerco.com/wp-content/uploads/2025/03/Kroger-Co-2024-ESG-Report.pdf"},
+                {"corporation": "Walmart",        "metric_tons": 0,       "period": "2023", "source_name": "Walmart FY2025 ESG Report — total food waste not publicly disclosed", "source_url": "https://corporate.walmart.com/purpose/esgreport"},
+                {"corporation": "Amazon/Whole Foods", "metric_tons": 0,   "period": "2023", "source_name": "Whole Foods 2023 Impact Report — total food waste not publicly disclosed", "source_url": "https://media.wholefoodsmarket.com/whole-foods-market-releases-2023-impact-report-highlighting-agriculture-as-a-force-for-good/"},
+                {"corporation": "Albertsons",     "metric_tons": 0,       "period": "2022", "source_name": "Albertsons 2023 ESG Report — total food waste not publicly disclosed", "source_url": "https://www.albertsonscompanies.com/newsroom/press-releases/news-details/2023/Albertsons-Companies-Releases-2023-ESG-Report/default.aspx"},
             ]
+            existing_corps = {r.corporation for r in db.query(CorporateWasteRecord).all()}
+            added = 0
             for corp in CORPORATE_WASTE_SEED:
-                lbs = int(corp["metric_tons"] * 2204.62)
-                db.add(CorporateWasteRecord(
-                    corporation = corp["corporation"],
-                    lbs_wasted  = lbs,
-                    source_name = corp["source_name"],
-                    source_url  = corp["source_url"],
-                    period      = corp["period"],
-                    note        = "Seeded from published corporate sustainability reports. WasteWatch updates when new data is published.",
-                ))
-            db.commit()
-            print(f"[GLEANING] Corporate waste data seeded — {len(CORPORATE_WASTE_SEED)} corporations.")
-        else:
-            print(f"[GLEANING] Corporate waste data already present — {existing} records.")
+                if corp["corporation"] not in existing_corps:
+                    lbs = int(corp["metric_tons"] * 2204.62)
+                    db.add(CorporateWasteRecord(
+                        corporation = corp["corporation"],
+                        lbs_wasted  = lbs,
+                        source_name = corp["source_name"],
+                        source_url  = corp["source_url"],
+                        period      = corp["period"],
+                        note        = "Seeded from published corporate sustainability reports. WasteWatch updates when new data is published.",
+                    ))
+                    added += 1
+            if added:
+                db.commit()
+                print(f"[GLEANING] Added {added} new corporation(s) to waste records.")
+            else:
+                print(f"[GLEANING] Corporate waste data already current — {existing} records.")
     finally:
         db.close()
 
