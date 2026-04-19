@@ -278,7 +278,7 @@
 <div class="impact">
 
     <div class="impact-label">Seven corporations. One year of waste.</div>
-    <div class="impact-counter">294,142,721</div>
+    <div class="impact-counter">{{ "{:,}".format(families_fed | default(294142721)) }}</div>
     <div class="impact-sublabel">Families could have been fed for a week</div>
     <div class="impact-methodology">USDA data · 38 lbs/week · Family of 4 · Always rounded down · Never inflated</div>
 

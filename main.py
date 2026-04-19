@@ -136,7 +136,17 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Gleaning"})
+    try:
+        from gleaning.database import CorporateWasteRecord
+        db = next(get_db())
+        waste_rows = db.query(CorporateWasteRecord).filter(
+            CorporateWasteRecord.verified == True
+        ).all()
+        total_lbs = sum(r.total_lbs for r in waste_rows if r.total_lbs)
+        families_fed = int(total_lbs / 38)
+    except Exception:
+        families_fed = 294142721
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Gleaning", "families_fed": families_fed})
 
 @app.get("/wall", response_class=HTMLResponse)
 async def wall_redirect(request: Request):
