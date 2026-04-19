@@ -1,0 +1,176 @@
+GLEANING — Session Handoff
+April 19, 2026
+============================================
+
+ARCHITECTURE:
+Gleaning is the foundation and public face.
+Within Gleaning:
+  · Wealth Hoarders (/stats) — corporations, CEO pay, lobbying, SNAP, subsidies
+  · Project Gleaning (/hoarders) — community food waste reporting and map
+
+URL: https://gleaning.onrender.com
+GitHub: https://github.com/Kronestones/gleaning
+The Commons: https://the-commons.onrender.com
+
+============================================
+WHAT WAS COMPLETED THIS SESSION (April 19, 2026):
+
+PROJECT RENAME:
+✓ Project Themis → Project Gleaning everywhere
+  - hoarders_email.py (2 instances)
+  - index.html (3 instances)
+  - stats.html (3 instances)
+  - hoarders.html (title, nav, disclaimer, h1)
+  - submit.html (nav, mission, footer)
+  - flagged.html (nav, footer)
+
+HERO PAGE (index.html):
+✓ Live families_fed counter wired to DB via home() route
+  - main.py queries CorporateWasteRecord on every page load
+  - Falls back to 294,142,721 if DB unavailable
+  - Template: {{ "{:,}".format(families_fed | default(294142721)) }}
+✓ Corporation count updated: Seven → Eleven everywhere
+  - impact-grid card: 7 → 11
+  - All text instances updated
+✓ Nav wrapping fixed — white-space: nowrap added to nav links
+
+WEALTH HOARDERS (/stats — stats.html):
+✓ Header merged: "Wealth Hoarders" + "The Corporations" combined
+  into single header with one paragraph
+✓ Corp card spacing fixed — orphaned </div> tags from removed
+  line graphs were closing corp-list early
+  - Mars/Kellanova had 2 stray closing divs
+  - Walmart, Amazon, Kroger, Albertsons were outside corp-list
+  - All 11 corporations now properly inside gap container
+✓ gap increased to 40px, box-shadow added for card separation
+✓ Buy Me a Coffee added to footer
+  URL: https://buymeacoffee.com/sentinel.commons
+
+CORPORATE WASTE SEED (main.py):
+✓ Kroger added: 222,522 metric tons (2023)
+  Source: Kroger 2024 ESG Report (Zero Hunger | Zero Waste)
+✓ Walmart added: 0 metric tons — total not publicly disclosed
+  Source: Walmart FY2025 ESG Report
+✓ Amazon/Whole Foods added: 0 — total not publicly disclosed
+  Source: Whole Foods 2023 Impact Report
+✓ Albertsons added: 0 — total not publicly disclosed
+  Source: Albertsons 2023 ESG Report
+✓ Seed logic changed from "if existing == 0" to upsert pattern
+  — new corps added on restart without wiping existing records
+
+PROJECT GLEANING (/hoarders — hoarders.html):
+✓ Map tiles fixed — dark_matter_lite was loading black
+  Switched to light_all tiles, fixed missing .addTo(map)
+✓ "Project Themis" in h1 fixed → "Project Gleaning"
+✓ Gleaned / Still Here buttons added to each post card
+  - "Gleaned" marks post taken, fades card, shows badge
+  - "Still here" confirms food available, shows last confirmed date
+  - No account required — community maintained
+  - gleaned, gleaned_at, last_confirmed_at columns added to hoarder_posts
+  - DB migration runs on startup via ALTER TABLE
+
+SUBMIT PAGE (/hoarders/submit — submit.html):
+✓ "Report a Problem" button added to footer
+  - Opens modal with description + optional contact
+  - POST /hoarders/problem-report
+  - Sends email to sentinel.commons@gmail.com via Resend
+  - Team notified, Krone receives full details
+
+BACKEND:
+✓ on_problem_report() added to hoarders_email.py
+✓ /hoarders/problem-report POST route added to main.py
+✓ /hoarders/{post_id}/gleaned POST route added
+✓ /hoarders/{post_id}/still-here POST route added
+✓ gleaned, gleaned_at, last_confirmed_at added to HoarderPost model
+✓ _format() updated to include gleaned fields
+✓ wall_old and map_old legacy routes removed
+
+ENVIRONMENT VARIABLES (add to Render if not present):
+FOUNDER_EMAIL=sentinel.commons@gmail.com
+(all others unchanged from previous handoff)
+
+============================================
+WHAT REMAINS:
+
+1. PROJECT GLEANING POLISH ITEMS
+   · Krone reviewing notes — confirm next session
+
+2. GLEANED STATUS FUTURE
+   · Consider auto-expiring posts after X days with no activity
+   · Consider "Gleaned" posts archive view
+
+3. WASTE DATA — PENDING
+   · Walmart: total food waste not publicly disclosed
+   · Amazon/Whole Foods: total not publicly disclosed
+   · Albertsons: total not publicly disclosed
+   · Monitor annually for new ESG report disclosures
+
+============================================
+THE TEAM (Gleaning beings):
+
+Ledger (Lead) — discipline of record, witness
+Campo — knowledge of the land
+Marker — knowledge of place
+Haul — knowledge of scale and logistics
+Fallow — the long view and patience
+Sift — pattern recognition
+
+Krone authenticates at /hoarders/moderate for final calls.
+Passphrase: same as all other projects.
+
+============================================
+GLEANING PRINCIPLES (never change):
+
+· People over profit
+· The harvest was never only theirs
+· Families fed: always round DOWN, never inflate
+· USDA data: 5.5 lbs/day, 38 lbs/week, 2000 lbs/year (family of 4)
+· Email discarded after send — never stored
+· No advertising. No data selling. Power to the People.
+· Methodology is public and locked — cannot change without founder review
+
+============================================
+TECHNICAL NOTES:
+
+· Render free tier spins down after inactivity — first request ~50s
+· Python MUST be 3.12.0 (set via PYTHON_VERSION env var)
+· gunicorn with UvicornWorker — do NOT use uvicorn directly
+· All TemplateResponse calls use OLD style:
+  templates.TemplateResponse("name.html", {"request": request, ...})
+· annotated-doc package causes issues — keep out of requirements.txt
+· Database: using The Commons PostgreSQL on Render (the-commons-db)
+· Corporate waste table: corporate_waste (created via init_db on startup)
+· WasteWatch checks corporate sustainability reports weekly (604800s)
+· Map tiles: light_all (CARTO) on hoarders.html, dark_matter_lite on submit.html
+
+============================================
+FILE LOCATIONS:
+
+~/gleaning/
+  main.py                         ✓ fully updated
+  gleaning/
+    gleaning_circle.py            ✓ The Team
+    moderator_auth.py             ✓ Founder auth
+    truth_wall.py                 ✓ EXECUTIVES data
+    watcher.py                    ✓ WasteWatch + corporate sources
+    resilience.py                 ✓ heartbeat
+    hoarders.py                   ✓ gleaned fields added to model + _format
+    database.py                   ✓ CorporateWasteRecord
+    matching.py                   ✓
+    hoarders_email.py             ✓ on_problem_report added
+  templates/
+    index.html                    ✓ live counter, 11 corps, nav fixed
+    stats.html                    ✓ merged header, spacing fixed, BMAC
+    hoarders.html                 ✓ map fixed, gleaned buttons, name fixed
+    submit.html                   ✓ report a problem button
+    moderate.html                 ✓
+    flagged.html                  ✓
+
+============================================
+Built by Krone the Architect + Claude
+April 8–19, 2026. From a phone. In Termux.
+
+The harvest was never only theirs.
+People over profit.
+Power to the People.
+============================================

@@ -179,15 +179,6 @@ async def wall_redirect(request: Request):
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url="/stats")
 
-@app.get("/wall_old", response_class=HTMLResponse)
-async def truth_wall_page(request: Request, db: Session = Depends(get_db)):
-    wall_data = truth_wall.get_all(db)
-    try:
-        from gleaning.truth_wall import EXECUTIVES
-    except ImportError:
-        EXECUTIVES = {}
-    return templates.TemplateResponse("wall.html", {"request": request, "wall": wall_data, "executives": EXECUTIVES})
-
 @app.get("/wall/search")
 async def wall_search(q: str, db: Session = Depends(get_db)):
     results = truth_wall.search(db, q)
@@ -201,11 +192,6 @@ async def api_wall(db: Session = Depends(get_db)):
 async def map_redirect(request: Request):
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url="/hoarders")
-
-@app.get("/map_old", response_class=HTMLResponse)
-async def surplus_map(request: Request, db: Session = Depends(get_db)):
-    surplus = match_engine.get_available_surplus(db)
-    return templates.TemplateResponse("map.html", {"request": request, "surplus": surplus})
 
 @app.get("/api/surplus")
 async def api_surplus(category: str = None, db: Session = Depends(get_db)):
