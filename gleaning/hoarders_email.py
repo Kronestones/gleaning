@@ -128,7 +128,7 @@ def on_approve(to: str, report_id: int, lbs: float) -> bool:
       <p style="font-size:15px;color:#aaa;line-height:1.7;margin-bottom:16px;">
         The Team has reviewed and approved your report.
         It is now visible on the <a href="https://gleaning.onrender.com/hoarders"
-        style="color:#7cb87c;">Project Themis map</a> as a redistribution opportunity.
+        style="color:#7cb87c;">Project Gleaning map</a> as a redistribution opportunity.
       </p>
       <div style="background:#0d1f14;border:1px solid rgba(74,158,107,0.25);
                   border-radius:8px;padding:20px;margin-bottom:24px;text-align:center;">
@@ -175,7 +175,7 @@ def on_deny(to: str, report_id: int) -> bool:
       </h2>
       <p style="font-size:15px;color:#aaa;line-height:1.7;margin-bottom:16px;">
         After review, the Team was not able to approve your report for publication
-        on Project Themis. This may be because the report did not meet our documentation
+        on Project Gleaning. This may be because the report did not meet our documentation
         standards, or the location could not be verified.
       </p>
       <p style="font-size:15px;color:#aaa;line-height:1.7;margin-bottom:16px;">
