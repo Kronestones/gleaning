@@ -383,6 +383,18 @@ async def mark_still_here(post_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"ok": True, "confirmed": True}
 
+@app.post("/hoarders/problem-report")
+async def problem_report(
+    description: str = Form(...),
+    contact:     str = Form(""),
+):
+    try:
+        from gleaning.hoarders_email import on_problem_report
+        on_problem_report(description, contact)
+    except Exception as e:
+        print(f"[GLEANING] Problem report email failed: {e}")
+    return {"ok": True}
+
 @app.get("/hoarders/submit", response_class=HTMLResponse)
 async def hoarders_submit_page(request: Request):
     return templates.TemplateResponse("submit.html", {"request": request})

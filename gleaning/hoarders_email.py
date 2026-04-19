@@ -192,3 +192,29 @@ def on_deny(to: str, report_id: int) -> bool:
     </div>
     """
     return _send(to, subject, html)
+
+
+def on_problem_report(description: str, contact: str = "") -> bool:
+    """
+    Alert the founder and team that a problem has been reported on the submit page.
+    """
+    founder_email = os.environ.get("FOUNDER_EMAIL", "")
+    if not founder_email:
+        print("[EMAIL] FOUNDER_EMAIL not set — problem report not sent.")
+        return False
+
+    subject = "[Gleaning] Problem Report — Submit Page"
+    contact_line = f"<p><strong>Contact:</strong> {contact}</p>" if contact else "<p><strong>Contact:</strong> Not provided</p>"
+    html = f"""
+    <div style="background:#0a0a0a;color:#e8e8e8;font-family:sans-serif;padding:32px;max-width:600px;margin:0 auto">
+      <h2 style="color:#e74c3c;margin-bottom:8px">⚠ Problem Report</h2>
+      <p style="color:#999;margin-bottom:24px">A user reported a problem on the Project Gleaning submit page.</p>
+      <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:20px;margin-bottom:20px">
+        <p><strong>Description:</strong></p>
+        <p style="color:#ccc;margin-top:8px">{description}</p>
+      </div>
+      {contact_line}
+      <p style="color:#666;font-size:12px;margin-top:24px">Gleaning · The Team has been notified · Review at /hoarders/moderate</p>
+    </div>
+    """
+    return _send(founder_email, subject, html)
