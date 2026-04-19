@@ -66,6 +66,11 @@ class HoarderPost(Base):
     posted_at       = Column(DateTime, nullable=False,
                              default=lambda: datetime.now(timezone.utc))
 
+    # Gleaning status — community maintained
+    gleaned         = Column(Boolean, default=False)
+    gleaned_at      = Column(DateTime, nullable=True)
+    last_confirmed_at = Column(DateTime, nullable=True)
+
     # Moderation
     status          = Column(String(50), default=STATUS_PENDING)
     reviewed_by     = Column(String(300), default="")
@@ -382,6 +387,9 @@ class Hoarders:
             "families_years":  fed["years"],
             "status":          post.status,
             "escalated":       post.escalated,
+            "gleaned":         post.gleaned or False,
+            "gleaned_at":      post.gleaned_at,
+            "last_confirmed_at": post.last_confirmed_at,
         }
 
 

@@ -57,6 +57,23 @@ async def lifespan(app: FastAPI):
     # Initialize database — all tables including Hoarders
     init_db()
     Base.metadata.create_all(bind=engine)
+    # Migrate: add gleaning status columns if not present
+    try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            for col, typedef in [
+                ("gleaned",           "BOOLEAN DEFAULT FALSE"),
+                ("gleaned_at",        "TIMESTAMP NULL"),
+                ("last_confirmed_at", "TIMESTAMP NULL"),
+            ]:
+                try:
+                    conn.execute(text(f"ALTER TABLE hoarder_posts ADD COLUMN {col} {typedef}"))
+                    conn.commit()
+                    print(f"[GLEANING] Migrated: added {col} to hoarder_posts")
+                except Exception:
+                    pass  # column already exists
+    except Exception as e:
+        print(f"[GLEANING] Migration check failed: {e}")
 
     # Seed Truth Wall on first run
     from gleaning.database import SessionLocal
@@ -344,6 +361,27 @@ async def hoarders_page(request: Request, db: Session = Depends(get_db)):
             "total_lbs":       totals["total_lbs"],
             "locations_count": len(set(p["location"] for p in posts if p["location"])),
         })
+
+@app.post("/hoarders/{post_id}/gleaned")
+async def mark_gleaned(post_id: int, db: Session = Depends(get_db)):
+    from datetime import datetime, timezone
+    post = db.query(HoarderPost).filter(HoarderPost.id == post_id).first()
+    if not post:
+        return {"ok": False, "error": "Post not found"}
+    post.gleaned    = True
+    post.gleaned_at = datetime.now(timezone.utc)
+    db.commit()
+    return {"ok": True, "gleaned": True}
+
+@app.post("/hoarders/{post_id}/still-here")
+async def mark_still_here(post_id: int, db: Session = Depends(get_db)):
+    from datetime import datetime, timezone
+    post = db.query(HoarderPost).filter(HoarderPost.id == post_id).first()
+    if not post:
+        return {"ok": False, "error": "Post not found"}
+    post.last_confirmed_at = datetime.now(timezone.utc)
+    db.commit()
+    return {"ok": True, "confirmed": True}
 
 @app.get("/hoarders/submit", response_class=HTMLResponse)
 async def hoarders_submit_page(request: Request):
