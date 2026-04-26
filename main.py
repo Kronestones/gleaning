@@ -309,6 +309,35 @@ async def purge_deleted_flags():
     return watcher_coordinator.purge_deleted()
 
 
+@app.get("/resources", response_class=HTMLResponse)
+async def resources_page(request: Request):
+    return templates.TemplateResponse("resources.html", {"request": request})
+
+@app.get("/api/resources")
+async def api_resources(category: str = None, state: str = None, q: str = None):
+    from gleaning.database import SessionLocal
+    from sqlalchemy import text
+    db = SessionLocal()
+    try:
+        query = "SELECT * FROM resources WHERE 1=1"
+        params = {}
+        if category:
+            query += " AND category = :category"
+            params["category"] = category
+        if state:
+            query += " AND state = :state"
+            params["state"] = state.upper()
+        if q:
+            query += " AND (name ILIKE :q OR city ILIKE :q OR services ILIKE :q)"
+            params["q"] = f"%{q}%"
+        query += " ORDER BY name LIMIT 500"
+        rows = db.execute(text(query), params).fetchall()
+        return [dict(r._mapping) for r in rows]
+    except Exception as e:
+        return []
+    finally:
+        db.close()
+
 @app.get("/health")
 async def health(db: Session = Depends(get_db)):
     integrity = verify_log_integrity(db)

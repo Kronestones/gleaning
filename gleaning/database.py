@@ -295,3 +295,24 @@ class CorporateWasteRecord(Base):
     recorded_at   = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     verified      = Column(Boolean, default=True)
     note          = Column(Text, default="")
+
+
+class Resource(Base):
+    __tablename__ = "resources"
+    id          = Column(Integer, primary_key=True, autoincrement=True)
+    name        = Column(String(256), nullable=False)
+    category    = Column(String(64), nullable=False)
+    address     = Column(String(256), nullable=True)
+    city        = Column(String(128), nullable=True)
+    state       = Column(String(8), nullable=True)
+    zip_code    = Column(String(16), nullable=True)
+    lat         = Column(Float, nullable=True)
+    lng         = Column(Float, nullable=True)
+    phone       = Column(String(32), nullable=True)
+    website     = Column(Text, nullable=True)
+    services    = Column(Text, nullable=True)
+    hours       = Column(String(256), nullable=True)
+    is_popup    = Column(Boolean, default=False)
+    verified    = Column(Boolean, default=True)
+    source      = Column(String(256), nullable=True)
+    created_at  = Column(DateTime, default=datetime.utcnow)
