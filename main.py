@@ -18,7 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from gleaning.database import get_db, init_db, verify_log_integrity, Base, engine
+from gleaning.database import get_db, init_db, verify_log_integrity, Base, engine, Resource
 from gleaning.codex import codex
 from gleaning.resilience import ResilienceManager
 from gleaning.truth_wall import truth_wall
