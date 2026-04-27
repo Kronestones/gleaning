@@ -334,7 +334,8 @@ async def api_resources(category: str = None, state: str = None, q: str = None):
         rows = db.execute(text(query), params).fetchall()
         return [dict(r._mapping) for r in rows]
     except Exception as e:
-        return []
+        print(f"[RESOURCES API] Error: {e}")
+        return {"error": str(e)}
     finally:
         db.close()
 
