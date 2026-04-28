@@ -30,6 +30,8 @@
     --safety:    #e74c3c;
     --community: #27ae60;
     --parking:   #95a5a6;
+    --greenbook: #2ecc71;
+    --sundown:   #c0392b;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -299,6 +301,7 @@
       <div class="tab" onclick="switchTab('safety',this)">Safety</div>
       <div class="tab" onclick="switchTab('community',this)">Community</div>
       <div class="tab" onclick="switchTab('parking',this)">Parking</div>
+      <div class="tab" onclick="switchTab('greenbook',this)">🟢 Green Book</div>
     </div>
 
     <div id="legend">
@@ -312,6 +315,26 @@
       <div class="legend-item"><div class="legend-dot" style="background:var(--safety)"></div>Safety</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--community)"></div>Community</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--parking)"></div>Parking</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--greenbook)"></div>Green Book Safe</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--greenbook);border:2px solid var(--sundown)"></div>Sundown Town</div>
+    </div>
+
+    <!-- Green Book Panel -->
+    <div id="greenbook-panel" style="display:none;overflow-y:auto;flex:1;">
+      <div style="padding:14px;background:rgba(46,204,113,0.06);border-bottom:1px solid var(--border);">
+        <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;color:#2ecc71;margin-bottom:8px;">THE GREEN BOOK</div>
+        <div style="font-family:'Inter',sans-serif;font-size:12px;color:var(--text);line-height:1.7;">
+          Victor H. Green published <em>The Negro Motorist Green Book</em> from 1936 to 1966 — a travel guide listing businesses safe for Black Americans during segregation. This layer documents both the history of sundown towns and modern safe spaces.
+        </div>
+      </div>
+      <div style="padding:10px 14px;border-bottom:1px solid var(--border);">
+        <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;color:#2ecc71;margin-bottom:4px;">🟢 GREEN DOT — Safe space · Welcoming community · Black-owned business</div>
+        <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;color:#c0392b;margin-top:6px;">🔴 RED OUTLINE — Documented sundown town · Historical racial exclusion</div>
+      </div>
+      <div style="padding:8px 14px;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:7.5px;color:var(--muted);line-height:1.7;">
+        Source: Loewen/Berrey Sundown Towns Database · Tougaloo College · Wikipedia confirmed list · Green Book Digital Archive · NYPL
+      </div>
+      <div id="greenbook-feed"></div>
     </div>
 
     <div id="feed">
@@ -358,9 +381,30 @@ const CAT_COLORS = {
   safety:    '#e74c3c',
   community: '#27ae60',
   parking:   '#95a5a6',
+  greenbook: '#2ecc71',
+  sundown:   '#c0392b',
 };
 
 // ── Load ──────────────────────────────────────────────────────────────────────
+function renderGreenbookFeed() {
+  const feed  = document.getElementById('greenbook-feed');
+  if (!feed) return;
+  const items = allResources.filter(r => r.category === 'greenbook').slice(0, 100);
+  if (!items.length) {
+    feed.innerHTML = '<div style="padding:16px;font-family:Space Mono,monospace;font-size:9px;color:var(--muted);">Loading Green Book data...</div>';
+    return;
+  }
+  feed.innerHTML = items.map(r => `
+    <div class="feed-card" onclick="flyTo(${r.lat},${r.lng})">
+      <div class="feed-category" style="color:${r.services && r.services.includes('SUNDOWN') ? '#c0392b' : '#2ecc71'}">
+        ${r.services && r.services.includes('SUNDOWN') ? '⚠ SUNDOWN TOWN' : '🟢 SAFE SPACE'}
+      </div>
+      <div class="feed-name">${r.name || ''}</div>
+      <div class="feed-meta">${r.city || ''}, ${r.state || ''}</div>
+    </div>
+  `).join('');
+}
+
 async function loadResources() {
   try {
     const resp = await fetch('/api/resources');
@@ -426,7 +470,7 @@ function renderFeed() {
 function filtered() {
   const q = (document.getElementById('search')?.value || '').toLowerCase().trim();
   let items = activeTab === 'all'
-    ? allResources
+    ? allResources.filter(r => r.category !== 'greenbook')
     : allResources.filter(r => r.category === activeTab);
   if (q) {
     items = items.filter(r =>
@@ -444,6 +488,16 @@ function switchTab(tab, el) {
   activeTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+  const gbPanel = document.getElementById('greenbook-panel');
+  const feed    = document.getElementById('feed');
+  if (tab === 'greenbook') {
+    if (gbPanel) gbPanel.style.display = 'flex';
+    if (feed)    feed.style.display    = 'none';
+    renderGreenbookFeed();
+  } else {
+    if (gbPanel) gbPanel.style.display = 'none';
+    if (feed)    feed.style.display    = 'block';
+  }
   renderMap();
   renderFeed();
 }
