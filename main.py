@@ -168,11 +168,22 @@ async def home(request: Request):
         waste_rows = db.query(CorporateWasteRecord).filter(
             CorporateWasteRecord.verified == True
         ).all()
-        total_lbs = sum(r.total_lbs for r in waste_rows if r.total_lbs)
+        total_lbs    = sum(r.lbs_wasted for r in waste_rows if r.lbs_wasted)
         families_fed = int(total_lbs / 38)
+        corp_count   = len(set(r.corporation for r in waste_rows if r.corporation))
+        lbs_display  = f"{total_lbs / 1_000_000_000:.1f}B+"
     except Exception:
+        total_lbs    = 11_100_000_000
         families_fed = 294142721
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Gleaning", "families_fed": families_fed})
+        corp_count   = 11
+        lbs_display  = "11.1B+"
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Gleaning",
+        "families_fed":       families_fed,
+        "lbs_display":        lbs_display,
+        "corp_count":         corp_count,
+        "subsidies_display":  "$47B+",
+        "brand_count":        "900+",
+    })
 
 @app.get("/wall", response_class=HTMLResponse)
 async def wall_redirect(request: Request):
