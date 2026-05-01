@@ -281,6 +281,59 @@ def seed_unhoused():
     return saved
 # ── Run all ───────────────────────────────────────────────────────────────────
 
+
+# ── Books & Literacy ───────────────────────────────────────────────────────────
+
+BOOKS = [
+    {"name":"Project Gutenberg","city":"","state":"","lat":40.7128,"lng":-74.0059,"phone":"","website":"https://www.gutenberg.org","services":"60,000+ free ebooks · Public domain · No signup required · Download or read online · EPUB · Kindle · HTML formats","category":"education"},
+    {"name":"Open Library — Internet Archive","city":"San Francisco","state":"CA","lat":37.7749,"lng":-122.4194,"phone":"","website":"https://openlibrary.org","services":"Free book borrowing · 4M+ titles · No cost library card · Digital lending · Rare and out of print books","category":"education"},
+    {"name":"LibriVox — Free Audiobooks","city":"","state":"","lat":40.7128,"lng":-74.0059,"phone":"","website":"https://librivox.org","services":"Free public domain audiobooks · Volunteer read · 10,000+ titles · Download MP3 · No account required","category":"education"},
+    {"name":"Little Free Library — Find a Library","city":"Hudson","state":"WI","lat":44.9747,"lng":-92.7573,"phone":"","website":"https://littlefreelibrary.org/ourmap","services":"Find a free book exchange near you · Take a book · Leave a book · 150,000+ locations worldwide · All ages","category":"education"},
+    {"name":"Standard Ebooks — Free Ebooks","city":"","state":"","lat":40.7128,"lng":-74.0059,"phone":"","website":"https://standardebooks.org","services":"Free high quality ebooks · Public domain · Carefully formatted · EPUB · No DRM · No signup required","category":"education"},
+]
+
+def seed_books():
+    print("\n[BOOKS] Seeding books and literacy resources...")
+    session = Session()
+    saved = 0
+    try:
+        for loc in BOOKS:
+            loc["source"]   = "Public records · Organization websites"
+            loc["verified"] = True
+            if save_resource(session, loc):
+                saved += 1
+                print(f"  ✓ {loc['name']}")
+    finally:
+        session.close()
+    print(f"[BOOKS] Done — {saved} saved.")
+    return saved
+
+# ── Free Clinics ───────────────────────────────────────────────────────────────
+
+FREE_CLINICS = [
+    {"name":"Free Clinic Directory — NAFC","city":"Washington","state":"DC","lat":38.9072,"lng":-77.0369,"phone":"703-647-7427","website":"https://www.nafcclinics.org/find-a-clinic","services":"Find free clinic near you · 1,400+ free clinics nationwide · No insurance required · Primary care · Dental · Mental health","category":"health"},
+    {"name":"NeedyMeds — Free Clinic Finder","city":"Gloucester","state":"MA","lat":42.6159,"lng":-70.6619,"phone":"","website":"https://www.needymeds.org/free-clinics","services":"Find free and low cost clinics · Search by zip code · No insurance required · Prescription assistance · Drug discount cards","category":"health"},
+    {"name":"Remote Area Medical — RAM","city":"Knoxville","state":"TN","lat":35.9606,"lng":-83.9207,"phone":"865-579-1530","website":"https://www.ramusa.org","services":"Free pop-up clinics · Dental · Vision · Medical · Uninsured and underinsured · Find upcoming events nationwide","category":"health"},
+    {"name":"Volunteers in Medicine — VIM","city":"Hilton Head","state":"SC","lat":32.1463,"lng":-80.7526,"phone":"843-689-6347","website":"https://vim.org","services":"Free medical care · Uninsured adults · Find local VIM clinic · Primary care · Chronic disease management","category":"health"},
+    {"name":"HealthWell Foundation — Patient Assistance","city":"Gaithersburg","state":"MD","lat":39.1434,"lng":-77.2014,"phone":"800-675-8416","website":"https://www.healthwellfoundation.org","services":"Free assistance with insurance premiums · Copays · Deductibles · Chronic and life-altering conditions · No income too high","category":"health"},
+]
+
+def seed_free_clinics():
+    print("\n[FREE CLINICS] Seeding free clinic resources...")
+    session = Session()
+    saved = 0
+    try:
+        for loc in FREE_CLINICS:
+            loc["source"]   = "Public records · Organization websites"
+            loc["verified"] = True
+            if save_resource(session, loc):
+                saved += 1
+                print(f"  ✓ {loc['name']}")
+    finally:
+        session.close()
+    print(f"[FREE CLINICS] Done — {saved} saved.")
+    return saved
+
 if __name__ == "__main__":
     print("╔══════════════════════════════════════════╗")
     print("║   Gleaning Resources — Seed Script       ║")
@@ -299,6 +352,8 @@ if __name__ == "__main__":
     total += seed_education()
     total += seed_community()
     total += seed_safety()
+    total += seed_books()
+    total += seed_free_clinics()
 
     print(f"\n✓ Total resources seeded: {total}")
     print("Refresh the Resources page to see dots on the map.")
