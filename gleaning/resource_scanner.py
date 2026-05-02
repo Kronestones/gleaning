@@ -49,7 +49,18 @@ def _send_summary(added: list, errors: list):
       <p style="color:#aaa;margin-bottom:16px"><strong style="color:#fff">{len(added)}</strong> new resources added.</p>
       {("<table style='width:100%;border-collapse:collapse'><thead><tr><th style='padding:8px;color:#666;text-align:left'>Name</th><th style='padding:8px;color:#666;text-align:left'>Category</th><th style='padding:8px;color:#666;text-align:left'>Location</th></tr></thead><tbody>" + rows + "</tbody></table>") if added else ""}
       {error_html}
-      <p style="color:#444;font-size:12px;margin-top:24px">Gleaning Resource Scanner · Runs every 24 hours · Escalate to Krone if needed</p>
+      <div style="margin-top:24px;display:flex;gap:12px;">
+        <form method="POST" action="https://gleaning.onrender.com/api/scanner/flag" style="display:inline">
+          <input type="hidden" name="new_count" value="{len(added)}">
+          <input type="hidden" name="errors" value="{", ".join(errors)}">
+          <input type="hidden" name="summary" value="Scanner found {len(added)} new resources.">
+          <button type="submit" style="background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;">⚑ Flag for Review</button>
+        </form>
+        <form method="POST" action="https://gleaning.onrender.com/api/scanner/clear" style="display:inline">
+          <button type="submit" style="background:#2a2a2a;color:#999;border:none;border-radius:8px;padding:10px 20px;font-size:14px;cursor:pointer;">✓ Clear</button>
+        </form>
+      </div>
+      <p style="color:#444;font-size:12px;margin-top:16px">Gleaning Resource Scanner · Runs every 24 hours · Flag sends to /api/scanner/flagged · Escalate to Krone if needed</p>
     </div>
     """
     payload = json.dumps({

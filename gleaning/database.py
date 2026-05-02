@@ -316,3 +316,21 @@ class Resource(Base):
     verified    = Column(Boolean, default=True)
     source      = Column(String(256), nullable=True)
     created_at  = Column(DateTime, default=datetime.utcnow)
+
+
+class ScanReport(Base):
+    """
+    Scanner email reports flagged by the Team for follow-up.
+    Cleared reports are never stored. Only flags persist.
+    — Krone the Architect · 2026
+    """
+    __tablename__ = "scan_reports"
+
+    id          = Column(Integer, primary_key=True, autoincrement=True)
+    scanned_at  = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    flagged_at  = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    summary     = Column(Text, default="")
+    new_count   = Column(Integer, default=0)
+    errors      = Column(Text, default="")
+    resolved    = Column(Boolean, default=False)
+    note        = Column(Text, default="")

@@ -326,6 +326,54 @@ async def purge_deleted_flags():
     return watcher_coordinator.purge_deleted()
 
 
+
+@app.post("/api/scanner/flag")
+async def flag_scan_report(
+    scanned_at: str = Form(""),
+    summary:    str = Form(""),
+    new_count:  int = Form(0),
+    errors:     str = Form(""),
+    db: Session = Depends(get_db)
+):
+    """Team flagged a scanner report for follow-up."""
+    from gleaning.database import ScanReport
+    from datetime import datetime, timezone
+    report = ScanReport(
+        summary   = summary,
+        new_count = new_count,
+        errors    = errors,
+        note      = "Flagged by Team for review.",
+    )
+    db.add(report)
+    db.commit()
+    return {"ok": True, "message": "Report flagged and stored."}
+
+@app.post("/api/scanner/clear")
+async def clear_scan_report():
+    """Team cleared a scanner report — nothing stored."""
+    return {"ok": True, "message": "Report cleared."}
+
+@app.get("/api/scanner/flagged")
+async def get_flagged_scan_reports(db: Session = Depends(get_db)):
+    """Get all unresolved flagged scanner reports."""
+    from gleaning.database import ScanReport
+    reports = db.query(ScanReport).filter(ScanReport.resolved == False).order_by(ScanReport.flagged_at.desc()).all()
+    return {"ok": True, "reports": [
+        {"id": r.id, "scanned_at": str(r.scanned_at), "flagged_at": str(r.flagged_at),
+         "summary": r.summary, "new_count": r.new_count, "errors": r.errors, "note": r.note}
+        for r in reports
+    ]}
+
+@app.post("/api/scanner/flagged/{report_id}/resolve")
+async def resolve_scan_report(report_id: int, db: Session = Depends(get_db)):
+    """Mark a flagged report as resolved."""
+    from gleaning.database import ScanReport
+    report = db.query(ScanReport).filter(ScanReport.id == report_id).first()
+    if report:
+        report.resolved = True
+        db.commit()
+    return {"ok": True}
+
 @app.get("/resources", response_class=HTMLResponse)
 async def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
