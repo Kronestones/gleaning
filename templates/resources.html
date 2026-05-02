@@ -338,7 +338,7 @@
     <div id="disclaimer">
       All resources are sourced from public records and verified listings.
       Gleaning assumes no liability for accuracy of third-party services.
-      If a listing is wrong or outdated — <a href="/hoarders/problem-report" style="color:var(--green);">report it here</a>.
+      If a listing is wrong or outdated — <a href="#" onclick="document.getElementById('res-problem-modal').style.display='flex';return false;" style="color:var(--green);">report it here</a>.
     </div>
       <div style="padding:16px 12px 40px 12px;text-align:center;border-top:1px solid var(--border);margin-top:8px;">
         <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:10px;">Gleaning is free. No ads. No data selling.<br>Donations above operating costs go to the <strong style="color:#888">Commons Wealth Redistribution Fund</strong>.</p>
@@ -522,6 +522,42 @@ setTimeout(fixHeight, 100);
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 loadResources();
+</script>
+
+<div id="res-problem-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:24px;max-width:480px;width:100%">
+    <h3 style="color:#fff;margin-bottom:8px">Report a Problem</h3>
+    <p style="color:#666;font-size:13px;margin-bottom:16px">Describe what's not working. The Team will be notified and Krone will receive an email.</p>
+    <textarea id="res-problem-description" placeholder="What went wrong?" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:8px;color:#e8e8e8;font-size:14px;padding:12px;min-height:100px;resize:vertical;margin-bottom:12px"></textarea>
+    <input id="res-problem-contact" type="text" placeholder="Your email or contact (optional)" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:8px;color:#e8e8e8;font-size:14px;padding:10px;margin-bottom:16px">
+    <div style="display:flex;gap:10px">
+      <button onclick="submitResProblem()" style="flex:1;background:#7cb87c;color:#000;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer">Send Report</button>
+      <button onclick="document.getElementById('res-problem-modal').style.display='none'" style="flex:1;background:#2a2a2a;color:#999;border:none;border-radius:8px;padding:10px;font-size:14px;cursor:pointer">Cancel</button>
+    </div>
+    <p id="res-problem-confirm" style="display:none;color:#7cb87c;font-size:13px;text-align:center;margin-top:12px">✓ Report sent. Thank you.</p>
+  </div>
+</div>
+
+<script>
+async function submitResProblem() {
+  const description = document.getElementById('res-problem-description').value.trim();
+  if (!description) return;
+  const contact = document.getElementById('res-problem-contact').value.trim();
+  const body = new FormData();
+  body.append('description', description);
+  body.append('contact', contact);
+  const res = await fetch('/hoarders/problem-report', {method:'POST', body});
+  const data = await res.json();
+  if (data.ok) {
+    document.getElementById('res-problem-confirm').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('res-problem-modal').style.display = 'none';
+      document.getElementById('res-problem-confirm').style.display = 'none';
+      document.getElementById('res-problem-description').value = '';
+      document.getElementById('res-problem-contact').value = '';
+    }, 2500);
+  }
+}
 </script>
 </body>
 </html>
