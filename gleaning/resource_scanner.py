@@ -244,7 +244,7 @@ def _run_scan():
         finally:
             session.close()
         print(f"[SCANNER] Complete — {len(all_added)} new resources")
-        # Update last_updated on corporate waste so Wealth Hoarders date stays current
+        # Always refresh last_updated so Wealth Hoarders date stays current
         try:
             from gleaning.database import CorporateWasteRecord
             from datetime import datetime, timezone
