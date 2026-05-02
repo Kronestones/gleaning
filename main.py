@@ -130,6 +130,10 @@ async def lifespan(app: FastAPI):
     guardian.startup()
     watcher_coordinator.start()
 
+    # Start resource scanner
+    from gleaning.resource_scanner import start as scanner_start
+    scanner_start()
+
     # Display the Gleaning Circle
     display_team()
 
@@ -143,6 +147,8 @@ async def lifespan(app: FastAPI):
     # ── Shutdown ──────────────────────────────────────────────────────────────
     resilience.stop()
     guardian.stop()
+    from gleaning.resource_scanner import stop as scanner_stop
+    scanner_stop()
     watcher_coordinator.stop()
     
 app = FastAPI(
