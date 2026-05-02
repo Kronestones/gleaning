@@ -243,7 +243,7 @@ def _run_scan():
             a, e = _fetch_211(session);   all_added += a; all_errors += e
         finally:
             session.close()
-        print(f"[SCANNER] Complete — {len(all_added)} new resources}")
+        print(f"[SCANNER] Complete — {len(all_added)} new resources")
         # Update last_updated on corporate waste so Wealth Hoarders date stays current
         try:
             from gleaning.database import CorporateWasteRecord
