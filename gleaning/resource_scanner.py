@@ -243,7 +243,22 @@ def _run_scan():
             a, e = _fetch_211(session);   all_added += a; all_errors += e
         finally:
             session.close()
-        print(f"[SCANNER] Complete — {len(all_added)} new resources")
+        print(f"[SCANNER] Complete — {len(all_added)} new resources}")
+        # Update last_updated on corporate waste so Wealth Hoarders date stays current
+        try:
+            from gleaning.database import CorporateWasteRecord
+            from datetime import datetime, timezone
+            db2 = SessionLocal()
+            try:
+                latest = db2.query(CorporateWasteRecord).order_by(CorporateWasteRecord.recorded_at.desc()).first()
+                if latest:
+                    latest.recorded_at = datetime.now(timezone.utc)
+                    db2.commit()
+                    print("[SCANNER] Wealth Hoarders last_updated refreshed.")
+            finally:
+                db2.close()
+        except Exception as e:
+            print(f"[SCANNER] last_updated refresh failed: {e}")
         _send_summary(all_added, all_errors)
     except Exception as e:
         print(f"[SCANNER] Scan failed: {e}")
