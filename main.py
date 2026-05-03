@@ -429,7 +429,7 @@ async def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
 
 @app.get("/api/resources")
-async def api_resources(category: str = None, state: str = None, q: str = None):
+async def api_resources(category: str = None, state: str = None, q: str = None, popup: str = None):
     from gleaning.database import SessionLocal
     from sqlalchemy import text
     db = SessionLocal()
@@ -445,6 +445,8 @@ async def api_resources(category: str = None, state: str = None, q: str = None):
         if q:
             query += " AND (name ILIKE :q OR city ILIKE :q OR services ILIKE :q)"
             params["q"] = f"%{q}%"
+        if popup:
+            query += " AND is_popup = TRUE"
         query += " ORDER BY name LIMIT 500"
         rows = db.execute(text(query), params).fetchall()
         return [dict(r._mapping) for r in rows]

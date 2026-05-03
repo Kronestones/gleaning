@@ -242,7 +242,117 @@
   @media (max-width: 600px) {
     #sidebar { position: fixed; top: 56px; right: 0; bottom: 0; width: 100vw; display: none; z-index: 800; }
     #sidebar.open { display: flex; }
-    #map-toggle { display: flex; }
+    #popup-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #e67e22;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 900;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  #popup-panel {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 70vh;
+    background: #111;
+    border-top: 2px solid #e67e22;
+    border-radius: 16px 16px 0 0;
+    z-index: 1000;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #popup-panel.open { display: flex; }
+  .popup-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .popup-panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e67e22;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .popup-panel-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .popup-panel-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 8px 0;
+  }
+  .popup-event-card {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .popup-event-card:last-child { border-bottom: none; }
+  .popup-event-category {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #e67e22;
+    margin-bottom: 4px;
+    font-family: monospace;
+  }
+  .popup-event-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .popup-event-location {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .popup-event-time {
+    font-size: 11px;
+    color: #e67e22;
+    margin-bottom: 6px;
+  }
+  .popup-event-services {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .popup-event-link {
+    font-size: 11px;
+    color: var(--green-bright);
+    text-decoration: none;
+  }
+  .popup-empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 20px;
+    font-size: 13px;
+  }
+  @media (min-width: 601px) {
+    #popup-toggle { display: flex !important; }
+  }
+  #map-toggle { display: flex; }
   }
 
   #map-toggle {
@@ -264,6 +374,9 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   }
 
+  @media (max-width: 600px) {
+    #popup-toggle { display: flex; }
+  }
   @media (min-width: 601px) {
     #map-toggle { display: none; }
     #sidebar { display: flex !important; }
@@ -348,6 +461,18 @@
       </div>
   </div>
 </div>
+
+<div id="popup-panel">
+  <div class="popup-panel-header">
+    <span class="popup-panel-title">⚡ Popup Events — Free & Time-Limited</span>
+    <button class="popup-panel-close" onclick="closePopupPanel()">×</button>
+  </div>
+  <div class="popup-panel-list" id="popup-list">
+    <div class="popup-empty">Loading popup events...</div>
+  </div>
+</div>
+
+<button id="popup-toggle" onclick="openPopupPanel()">⚡</button>
 
 <button id="map-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
 
@@ -558,6 +683,45 @@ async function submitResProblem() {
       document.getElementById('res-problem-description').value = '';
       document.getElementById('res-problem-contact').value = '';
     }, 2500);
+  }
+}
+
+// ── Popup Events Panel ────────────────────────────────────────────────────────
+let popupData = [];
+
+async function openPopupPanel() {
+  document.getElementById('popup-panel').classList.add('open');
+  if (popupData.length === 0) {
+    await loadPopupEvents();
+  }
+}
+
+function closePopupPanel() {
+  document.getElementById('popup-panel').classList.remove('open');
+}
+
+async function loadPopupEvents() {
+  const list = document.getElementById('popup-list');
+  try {
+    const resp = await fetch('/api/resources?popup=1');
+    const data = await resp.json();
+    popupData = Array.isArray(data) ? data.filter(r => r.is_popup) : [];
+    if (popupData.length === 0) {
+      list.innerHTML = '<div class="popup-empty">No popup events found right now.<br>Check back soon — the scanner updates daily.</div>';
+      return;
+    }
+    list.innerHTML = popupData.map(r => `
+      <div class="popup-event-card">
+        <div class="popup-event-category">${r.category || 'event'}</div>
+        <div class="popup-event-name">${r.name}</div>
+        <div class="popup-event-location">📍 ${[r.address, r.city, r.state].filter(Boolean).join(', ')}</div>
+        ${r.hours ? `<div class="popup-event-time">🕐 ${r.hours}</div>` : ''}
+        ${r.services ? `<div class="popup-event-services">${r.services.substring(0, 150)}${r.services.length > 150 ? '...' : ''}</div>` : ''}
+        ${r.website ? `<a class="popup-event-link" href="${r.website}" target="_blank">🌐 More info →</a>` : ''}
+      </div>
+    `).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="popup-empty">Could not load popup events.</div>';
   }
 }
 </script>
