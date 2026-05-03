@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timezone
 
-SCAN_INTERVAL_HOURS = 24
+SCAN_INTERVAL_HOURS = 6
 FOUNDER_EMAIL = os.environ.get("FOUNDER_EMAIL", "")
 TEAM_EMAIL = os.environ.get("TEAM_EMAIL", FOUNDER_EMAIL)
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
