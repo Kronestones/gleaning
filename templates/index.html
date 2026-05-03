@@ -29,13 +29,19 @@
             letter-spacing: 0.05em;
         }
 
+        .nav-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 8px;
+            text-align: right;
+        }
         .nav-links a {
             color: #999;
             text-decoration: none;
-            margin-left: 1.5rem;
             font-size: 0.9rem;
             transition: color 0.2s;
             white-space: nowrap;
+            padding: 2px 0;
         }
 
         .nav-links a:hover { color: #7cb87c; }
