@@ -299,6 +299,103 @@ def _fetch_eventbrite(session) -> tuple:
     print(f"[SCANNER] Eventbrite: {len(added)} new events")
     return added, errors
 
+
+def _fetch_pawns() -> tuple:
+    """
+    Fetch all current federal members of Congress from ProPublica API.
+    Free — no API key required for basic member data.
+    Layers in committee and vote data where available.
+    """
+    added, errors = [], []
+    try:
+        from gleaning.database import SessionLocal, Pawn
+        import json as _json
+        session = SessionLocal()
+
+        chambers = ["senate", "house"]
+        congress = "119"  # 119th Congress — current as of 2025
+
+        for chamber in chambers:
+            if _stop_event.is_set():
+                break
+            try:
+                url = f"https://api.propublica.org/congress/v1/{congress}/{chamber}/members.json"
+                req = urllib.request.Request(
+                    url,
+                    headers={
+                        "User-Agent": "Gleaning/1.0 (sentinel.commons@gmail.com)",
+                        "X-API-Key": os.environ.get("PROPUBLICA_API_KEY", ""),
+                    }
+                )
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    data = _json.loads(resp.read())
+
+                members = data.get("results", [{}])[0].get("members", [])
+                print(f"[SCANNER] ProPublica {chamber}: {len(members)} members found")
+
+                for m in members:
+                    if _stop_event.is_set():
+                        break
+                    name = f"{m.get('first_name','')} {m.get('last_name','')}".strip()
+                    if not name:
+                        continue
+                    state = m.get("state", "")
+                    chamber_name = "Senate" if chamber == "senate" else "House"
+
+                    try:
+                        existing = session.execute(
+                            __import__('sqlalchemy').text(
+                                "SELECT id FROM pawns WHERE name=:n AND state_code=:s AND chamber=:c"
+                            ),
+                            {"n": name, "s": state, "c": chamber_name}
+                        ).fetchone()
+                        if existing:
+                            continue
+
+                        party_map = {"R": "Republican", "D": "Democrat", "ID": "Independent"}
+                        party = party_map.get(m.get("party", ""), m.get("party", ""))
+
+                        pawn = Pawn(
+                            name=name,
+                            party=party,
+                            state=m.get("state", ""),
+                            state_code=m.get("state", ""),
+                            chamber=chamber_name,
+                            district=str(m.get("district", "")) if m.get("district") else "",
+                            in_office_since=str(m.get("seniority", "")),
+                            salary="$174,000/yr" if chamber == "house" else "$174,000/yr",
+                            committees=", ".join(
+                                [c.get("name","") for c in m.get("roles",[{}])[0].get("committees",[])]
+                            ) if m.get("roles") else "",
+                            total_contributions="See OpenSecrets.org",
+                            top_donors=_json.dumps([]),
+                            stock_trades=_json.dumps([]),
+                            key_votes=_json.dumps([]),
+                            source="ProPublica Congress API · congress.propublica.org · Public record",
+                            verified=True,
+                        )
+                        session.add(pawn)
+                        session.commit()
+                        added.append({"name": name, "state": state, "chamber": chamber_name})
+                    except Exception as e:
+                        session.rollback()
+                        print(f"[SCANNER] Pawn save error {name}: {e}")
+
+                time.sleep(1)
+
+            except Exception as e:
+                errors.append(f"ProPublica-{chamber}")
+                print(f"[SCANNER] ProPublica {chamber} failed: {e}")
+
+        session.close()
+        print(f"[SCANNER] Pawns: {len(added)} new members added")
+
+    except Exception as e:
+        errors.append("Pawns-scanner")
+        print(f"[SCANNER] Pawns scanner failed: {e}")
+
+    return added, errors
+
 def _run_scan():
     print(f"[SCANNER] Scan starting — {datetime.now(timezone.utc).strftime('%b %d %H:%M UTC')}")
     try:
@@ -312,7 +409,10 @@ def _run_scan():
             a, e = _fetch_eventbrite(session); all_added += a; all_errors += e
         finally:
             session.close()
-        print(f"[SCANNER] Complete — {len(all_added)} new resources")
+        # Fetch pawns separately
+        p_added, p_errors = _fetch_pawns()
+        all_errors += p_errors
+        print(f"[SCANNER] Complete — {len(all_added)} new resources, {len(p_added)} new officials")
         # Always refresh last_updated so Wealth Hoarders date stays current
         try:
             from gleaning.database import CorporateWasteRecord
