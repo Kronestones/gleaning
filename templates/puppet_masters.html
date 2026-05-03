@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puppet Masters — Gleaning</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0a;--card:#111;--border:#1e1e1e;--text:#e8e8e8;
+      --muted:#666;--green-bright:#4a9e6b;--red:#c0392b;--white:#fff;
+      --surface:#141414;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .nav{background:#111;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;position:sticky;top:0;z-index:100}
+    .nav-logo{color:var(--green-bright);font-size:18px;font-weight:700;text-decoration:none;letter-spacing:-0.02em}
+    .nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+    .nav-links::-webkit-scrollbar{display:none}
+    .nav-links a{color:rgba(255,255,255,0.7);font-size:13px;padding:6px 10px;border-radius:6px;white-space:nowrap;transition:all 0.15s;text-decoration:none}
+    .nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08)}
+    .nav-links a.active{color:var(--green-bright)}
+    main{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+    .page-header{margin-bottom:40px;padding-top:16px}
+    .page-header h1{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-0.03em;margin-bottom:10px}
+    .page-header h1 span{color:var(--green-bright)}
+    .page-header p{font-size:15px;color:var(--muted);line-height:1.7}
+    .puppet-list{display:flex;flex-direction:column;gap:40px;margin-bottom:40px}
+    .puppet-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+    .puppet-header{padding:20px 20px 0}
+    .puppet-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .puppet-name{font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.02em}
+    .puppet-badge{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);color:#e74c3c;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:0.05em;flex-shrink:0}
+    .ceo-strip{display:flex;align-items:flex-start;gap:8px;background:rgba(74,158,107,0.08);border:1px solid rgba(74,158,107,0.2);border-radius:8px;padding:10px 14px;margin:12px 20px 0;flex-wrap:wrap}
+    .ceo-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;flex-shrink:0;margin-top:2px}
+    .ceo-name{font-size:14px;font-weight:700;color:var(--green-bright);margin-bottom:2px}
+    .ceo-title{font-size:12px;color:var(--muted);line-height:1.5}
+    .violation-strip{display:flex;align-items:flex-start;gap:8px;background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:10px 14px;margin:8px 20px 0;flex-wrap:wrap}
+    .violation-label{font-size:11px;color:#e74c3c;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;flex-shrink:0;margin-top:2px}
+    .violation-title{font-size:14px;font-weight:700;color:#e74c3c;margin-bottom:2px}
+    .violation-text{font-size:12px;color:var(--muted);line-height:1.5}
+    .puppet-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);margin-top:16px}
+    .puppet-stat{padding:14px 16px;border-right:1px solid var(--border)}
+    .puppet-stat:last-child{border-right:none}
+    .puppet-stat-num{font-size:20px;font-weight:800;color:var(--green-bright);margin-bottom:4px}
+    .puppet-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.4}
+    .holdings-section{padding:16px 20px}
+    .holdings-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:10px}
+    .holdings-grid{display:flex;flex-direction:column;gap:6px}
+    .holding-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 12px}
+    .holding-name{font-size:13px;color:var(--text)}
+    .holding-pct{font-size:13px;font-weight:700;color:var(--green-bright)}
+    .lobbying-strip{margin:0 20px 16px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:12px 14px}
+    .lobbying-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#e74c3c;margin-bottom:4px;font-family:monospace}
+    .lobbying-amt{font-size:16px;font-weight:800;color:#e74c3c;margin-bottom:4px}
+    .lobbying-text{font-size:12px;color:var(--muted);line-height:1.6}
+    .subsidy-explainer{margin:0 20px 16px;background:rgba(192,57,43,0.04);border-left:3px solid rgba(192,57,43,0.4);padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.7}
+    .subsidy-explainer strong{color:#e74c3c}
+    .corp-subsidy{margin:0 20px 16px;background:rgba(192,57,43,0.04);border:1px solid rgba(192,57,43,0.15);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.7}
+    .tax-strip{background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:6px;padding:10px 14px;margin:0 20px 16px;font-size:12px;line-height:1.6;color:var(--text)}
+    .tax-strip strong{color:#e74c3c}
+    .tax-strip-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#e74c3c;margin-bottom:4px;font-family:monospace}
+    .broader-holdings{padding:0 20px 16px}
+    .broader-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:8px}
+    .sector-grid{display:flex;flex-wrap:wrap;gap:6px}
+    .sector-tag{background:rgba(74,158,107,0.08);border:1px solid rgba(74,158,107,0.2);color:var(--green-bright);font-size:11px;padding:4px 10px;border-radius:20px}
+    .methodology{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:40px}
+    .methodology h3{font-size:14px;font-weight:700;color:var(--white);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.08em}
+    .methodology p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px}
+    .methodology p:last-child{margin-bottom:0}
+    .methodology strong{color:var(--text)}
+    .last-updated{text-align:center;font-size:12px;color:var(--muted);margin-bottom:32px}
+    .last-updated span{color:var(--green-bright)}
+    footer{background:#111;border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:24px 16px;font-size:13px;line-height:1.8}
+    footer a{color:var(--green-bright)}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-logo">🌾 Gleaning</a>
+  <div class="nav-links">
+    <a href="/stats">Wealth Hoarders</a>
+    <a href="/puppet-masters" class="active">Puppet Masters</a>
+    <a href="/hoarders">Project Gleaning</a>
+    <a href="/resources">Resources</a>
+  </div>
+</nav>
+<main>
+  <div class="page-header">
+    <h1><span>Puppet</span> Masters</h1>
+    <p>Three firms own the owners. BlackRock, Vanguard, and State Street are the largest shareholders in nearly every corporation on Earth — simultaneously. They own Tyson and Smithfield and Kroger and Nestlé. The same money. Every shelf. Every brand. Named, documented, and held to account. This is the record.</p>
+  </div>
+
+  <div class="puppet-list">
+   <!-- BLACKROCK -->
+    <div class="puppet-card">
+      <div class="puppet-header">
+        <div class="puppet-header-top">
+          <div class="puppet-name">BlackRock</div>
+          <div class="puppet-badge">Largest Asset Manager</div>
+        </div>
+      </div>
+      <div class="ceo-strip">
+        <span class="ceo-label">CEO</span>
+        <div>
+          <div class="ceo-name">Larry Fink</div>
+          <div class="ceo-title">Chairman & Chief Executive Officer · Since 1988 · $26.2M pay in 2023 · Est. net worth ~$1B · Source: SEC DEF 14A 2024</div>
+        </div>
+      </div>
+      <div class="violation-strip">
+        <span class="violation-label">Violations</span>
+        <div>
+          <div class="violation-title">SEC settlement · Misleading ESG claims 2023</div>
+          <div class="violation-text">$2.5M SEC fine for misrepresenting ESG investment criteria in funds · Simultaneously lobbied against ESG disclosure requirements · Source: SEC enforcement action 2023</div>
+        </div>
+      </div>
+      <div class="puppet-stats">
+        <div class="puppet-stat"><div class="puppet-stat-num">$10T+</div><div class="puppet-stat-label">Assets Under Management</div></div>
+        <div class="puppet-stat"><div class="puppet-stat-num">~5-8%</div><div class="puppet-stat-label">Avg Stake in Every S&P 500 Company</div></div>
+        <div class="puppet-stat"><div class="puppet-stat-num">21,000+</div><div class="puppet-stat-label">Employees Worldwide</div></div>
+      </div>
+      <div class="holdings-section">
+        <div class="holdings-label">Their Stakes in Your Wealth Hoarders</div>
+        <div class="holdings-grid">
+          <div class="holding-row"><span class="holding-name">Nestlé</span><span class="holding-pct">~3.2%</span></div>
+          <div class="holding-row"><span class="holding-name">PepsiCo</span><span class="holding-pct">~7.9%</span></div>
+          <div class="holding-row"><span class="holding-name">Unilever</span><span class="holding-pct">~3.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Kraft Heinz</span><span class="holding-pct">~4.1%</span></div>
+          <div class="holding-row"><span class="holding-name">General Mills</span><span class="holding-pct">~7.2%</span></div>
+          <div class="holding-row"><span class="holding-name">Conagra Brands</span><span class="holding-pct">~7.8%</span></div>
+          <div class="holding-row"><span class="holding-name">Kroger</span><span class="holding-pct">~7.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Tyson Foods</span><span class="holding-pct">~5.2%</span></div>
+          <div class="holding-row"><span class="holding-name">Sysco</span><span class="holding-pct">~7.4%</span></div>
+          <div class="holding-row"><span class="holding-name">Mondelēz</span><span class="holding-pct">~6.8%</span></div>
+          <div class="holding-row"><span class="holding-name">Albertsons</span><span class="holding-pct">~4.3%</span></div>
+        </div>
+      </div>
+      <div class="broader-holdings">
+        <div class="broader-label">Broader Empire — What Else They Own</div>
+        <div class="sector-grid">
+          <span class="sector-tag">Apple ~6%</span>
+          <span class="sector-tag">Microsoft ~7%</span>
+          <span class="sector-tag">ExxonMobil ~6%</span>
+          <span class="sector-tag">JPMorgan ~6%</span>
+          <span class="sector-tag">Johnson & Johnson ~7%</span>
+          <span class="sector-tag">Pfizer ~7%</span>
+          <span class="sector-tag">Chevron ~6%</span>
+          <span class="sector-tag">Bank of America ~6%</span>
+          <span class="sector-tag">Lockheed Martin ~6%</span>
+          <span class="sector-tag">Raytheon ~7%</span>
+          <span class="sector-tag">Walt Disney ~7%</span>
+          <span class="sector-tag">Comcast ~7%</span>
+          <span class="sector-tag">+ 5,000 more companies</span>
+        </div>
+      </div>
+      <div class="lobbying-strip">
+        <div class="lobbying-label">Lobbying</div>
+        <div class="lobbying-amt">$3,600,000+ in 2023</div>
+        <div class="lobbying-text">Lobbied against shareholder voting rights · Opposed SEC climate disclosure rules · Fought fiduciary duty reforms · Influenced Federal Reserve policy · Source: OpenSecrets.org · Lobbying Disclosure Act</div>
+      </div>
+      <div class="subsidy-explainer"><strong>How they control without owning:</strong> BlackRock doesn't just invest — it votes. As the largest shareholder in thousands of companies simultaneously, BlackRock votes on executive pay, board appointments, and corporate policy at every annual meeting. When BlackRock votes, companies listen. One firm. Every boardroom.</div>
+      <div class="tax-strip"><div class="tax-strip-label">Taxes (2023)</div>Made <strong>$17.9B</strong> in revenue. Paid approximately statutory rate. Source: BlackRock Annual Report 2023 · SEC 10-K</div>
+    </div>
+<!-- VANGUARD -->
+    <div class="puppet-card">
+      <div class="puppet-header">
+        <div class="puppet-header-top">
+          <div class="puppet-name">Vanguard</div>
+          <div class="puppet-badge">Largest Mutual Fund</div>
+        </div>
+      </div>
+      <div class="ceo-strip">
+        <span class="ceo-label">CEO</span>
+        <div>
+          <div class="ceo-name">Salim Ramji</div>
+          <div class="ceo-title">Chief Executive Officer · Since July 2024 · Pay not publicly disclosed · Privately held structure · Source: Vanguard press release 2024</div>
+        </div>
+      </div>
+      <div class="violation-strip">
+        <span class="violation-label">Violations</span>
+        <div>
+          <div class="violation-title">$106.4M fine — tax disclosure failure 2023</div>
+          <div class="violation-text">SEC fined Vanguard $106.4M for failing to disclose tax consequences of fund changes to retail investors · Millions of ordinary investors hit with unexpected capital gains tax bills · Source: SEC enforcement 2023</div>
+        </div>
+      </div>
+      <div class="puppet-stats">
+        <div class="puppet-stat"><div class="puppet-stat-num">$8T+</div><div class="puppet-stat-label">Assets Under Management</div></div>
+        <div class="puppet-stat"><div class="puppet-stat-num">~5-9%</div><div class="puppet-stat-label">Avg Stake in Every S&P 500 Company</div></div>
+        <div class="puppet-stat"><div class="puppet-stat-num">50M+</div><div class="puppet-stat-label">Investor Accounts</div></div>
+      </div>
+      <div class="holdings-section">
+        <div class="holdings-label">Their Stakes in Your Wealth Hoarders</div>
+        <div class="holdings-grid">
+          <div class="holding-row"><span class="holding-name">Nestlé</span><span class="holding-pct">~2.8%</span></div>
+          <div class="holding-row"><span class="holding-name">PepsiCo</span><span class="holding-pct">~8.4%</span></div>
+          <div class="holding-row"><span class="holding-name">Unilever</span><span class="holding-pct">~2.4%</span></div>
+          <div class="holding-row"><span class="holding-name">Kraft Heinz</span><span class="holding-pct">~3.8%</span></div>
+          <div class="holding-row"><span class="holding-name">General Mills</span><span class="holding-pct">~8.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Conagra Brands</span><span class="holding-pct">~8.6%</span></div>
+          <div class="holding-row"><span class="holding-name">Kroger</span><span class="holding-pct">~8.3%</span></div>
+          <div class="holding-row"><span class="holding-name">Tyson Foods</span><span class="holding-pct">~6.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Sysco</span><span class="holding-pct">~8.2%</span></div>
+          <div class="holding-row"><span class="holding-name">Mondelēz</span><span class="holding-pct">~7.9%</span></div>
+          <div class="holding-row"><span class="holding-name">Albertsons</span><span class="holding-pct">~3.9%</span></div>
+        </div>
+      </div>
+      <div class="broader-holdings">
+        <div class="broader-label">Broader Empire — What Else They Own</div>
+        <div class="sector-grid">
+          <span class="sector-tag">Apple ~8%</span>
+          <span class="sector-tag">Microsoft ~8%</span>
+          <span class="sector-tag">Amazon ~7%</span>
+          <span class="sector-tag">Alphabet/Google ~7%</span>
+          <span class="sector-tag">Meta ~7%</span>
+          <span class="sector-tag">Exxon ~8%</span>
+          <span class="sector-tag">UnitedHealth ~8%</span>
+          <span class="sector-tag">Goldman Sachs ~7%</span>
+          <span class="sector-tag">Northrop Grumman ~8%</span>
+          <span class="sector-tag">Merck ~8%</span>
+          <span class="sector-tag">Netflix ~7%</span>
+          <span class="sector-tag">+ 5,000 more companies</span>
+        </div>
+      </div>
+      <div class="lobbying-strip">
+        <div class="lobbying-label">Lobbying</div>
+        <div class="lobbying-amt">$1,800,000+ in 2023</div>
+        <div class="lobbying-text">Lobbied against retirement account regulations · Opposed fee disclosure requirements · Influenced SEC rulemaking on proxy voting · Source: OpenSecrets.org · Lobbying Disclosure Act</div>
+      </div>
+      <div class="subsidy-explainer"><strong>The owner-owned paradox:</strong> Vanguard is technically owned by its funds, which are owned by its investors. But that structure means Vanguard answers to no one — no public shareholders, no government oversight of its ownership structure. The largest owner of American corporations is itself owned by no one accountable.</div>
+      <div class="tax-strip"><div class="tax-strip-label">Taxes</div>Privately structured — not required to file public financial statements. Tax filings not publicly disclosed. Source: SEC · Vanguard corporate structure</div>
+    </div>
+<!-- STATE STREET -->
+    <div class="puppet-card">
+      <div class="puppet-header">
+        <div class="puppet-header-top">
+          <div class="puppet-name">State Street</div>
+          <div class="puppet-badge">Third Largest Asset Manager</div>
+        </div>
+      </div>
+      <div class="ceo-strip">
+        <span class="ceo-label">CEO</span>
+        <div>
+          <div class="ceo-name">Ron O'Hanley</div>
+          <div class="ceo-title">Chairman & Chief Executive Officer · Since 2019 · $14.2M pay in 2023 · Est. net worth ~$50M · Source: SEC DEF 14A 2024</div>
+        </div>
+      </div>
+      <div class="violation-strip">
+        <span class="violation-label">Violations</span>
+        <div>
+          <div class="violation-title">$115M settlement — pay discrimination 2017</div>
+          <div class="violation-text">Paid $115M to settle DOJ and SEC charges of systematically overcharging clients through hidden fees · Separate $5M settlement for pay discrimination against senior female and Black executives · Source: DOJ · SEC · EEOC 2017</div>
+        </div>
+      </div>
+      <div class="puppet-stats">
+        <div class="puppet-stat"><div class="puppet-stat-num">$4T+</div><div class="puppet-stat-label">Assets Under Management</div></div>
+        <div class="puppet-stat"><div class="puppet-stat-num">~3-5%</div><div class="puppet-stat-label">Avg Stake in Every S&P 500 Company</div></div>
+        <div class="puppet-stat"><div class="puppet-stat-num">46,000+</div><div class="puppet-stat-label">Employees Worldwide</div></div>
+      </div>
+      <div class="holdings-section">
+        <div class="holdings-label">Their Stakes in Your Wealth Hoarders</div>
+        <div class="holdings-grid">
+          <div class="holding-row"><span class="holding-name">Nestlé</span><span class="holding-pct">~1.8%</span></div>
+          <div class="holding-row"><span class="holding-name">PepsiCo</span><span class="holding-pct">~4.2%</span></div>
+          <div class="holding-row"><span class="holding-name">Unilever</span><span class="holding-pct">~1.6%</span></div>
+          <div class="holding-row"><span class="holding-name">Kraft Heinz</span><span class="holding-pct">~2.1%</span></div>
+          <div class="holding-row"><span class="holding-name">General Mills</span><span class="holding-pct">~4.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Conagra Brands</span><span class="holding-pct">~4.3%</span></div>
+          <div class="holding-row"><span class="holding-name">Kroger</span><span class="holding-pct">~4.0%</span></div>
+          <div class="holding-row"><span class="holding-name">Tyson Foods</span><span class="holding-pct">~3.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Sysco</span><span class="holding-pct">~4.1%</span></div>
+          <div class="holding-row"><span class="holding-name">Mondelēz</span><span class="holding-pct">~3.8%</span></div>
+          <div class="holding-row"><span class="holding-name">Albertsons</span><span class="holding-pct">~2.2%</span></div>
+        </div>
+      </div>
+      <div class="broader-holdings">
+        <div class="broader-label">Broader Empire — What Else They Own</div>
+        <div class="sector-grid">
+          <span class="sector-tag">Apple ~4%</span>
+          <span class="sector-tag">Microsoft ~4%</span>
+          <span class="sector-tag">Amazon ~4%</span>
+          <span class="sector-tag">Berkshire Hathaway ~4%</span>
+          <span class="sector-tag">Visa ~4%</span>
+          <span class="sector-tag">Johnson & Johnson ~4%</span>
+          <span class="sector-tag">Boeing ~4%</span>
+          <span class="sector-tag">Citigroup ~4%</span>
+          <span class="sector-tag">Abbott Labs ~4%</span>
+          <span class="sector-tag">Honeywell ~4%</span>
+          <span class="sector-tag">+ 3,000 more companies</span>
+        </div>
+      </div>
+      <div class="lobbying-strip">
+        <div class="lobbying-label">Lobbying</div>
+        <div class="lobbying-amt">$2,100,000+ in 2023</div>
+        <div class="lobbying-text">Lobbied against financial regulation reform · Opposed Dodd-Frank amendments · Influenced SEC proxy voting rules · Fought banking capital requirement increases · Source: OpenSecrets.org · Lobbying Disclosure Act</div>
+      </div>
+      <div class="subsidy-explainer"><strong>The Fearless Girl paradox:</strong> State Street placed the Fearless Girl statue on Wall Street as a statement on corporate diversity — then settled a lawsuit for paying senior women and Black executives less than their white male peers. The same year. The same company. Source: EEOC 2017.</div>
+      <div class="tax-strip"><div class="tax-strip-label">Taxes (2023)</div>Made <strong>$12.1B</strong> in revenue. Paid approximately statutory rate. Source: State Street Annual Report 2023 · SEC 10-K</div>
+    </div>
+
+  </div>
+
+  <div class="methodology">
+    <h3>How We Know This</h3>
+    <p>Shareholding percentages are sourced from <strong>SEC 13F filings</strong> — mandatory quarterly disclosures required of all institutional investors managing over $100M. These are public record.</p>
+    <p>CEO compensation from <strong>SEC DEF 14A proxy statements</strong> — required annual disclosures. Lobbying from <strong>OpenSecrets.org</strong> and the <strong>Lobbying Disclosure Act</strong> database.</p>
+    <p>Violations from SEC enforcement actions, DOJ settlements, and EEOC filings — all public record. <strong>We always round down. We never inflate.</strong></p>
+    <p>This page is maintained by the Team and updated as new filings are published. To document waste you have witnessed: <a href="/hoarders" style="color:var(--green-bright)">Project Gleaning</a></p>
+  </div>
+
+  <div class="last-updated">Data is public record · SEC 13F filings · Updated quarterly · <a href="/hoarders" style="color:var(--green-bright)">Document waste you have seen</a></div>
+
+</main>
+<footer>
+  <p>Gleaning · No advertising · No data selling · Power to the People</p>
+  <p>Founded by Krone the Architect · <a href="/stats">Wealth Hoarders</a> · <a href="/puppet-masters">Puppet Masters</a> · <a href="/">Home</a></p>
+  <p style="margin-top:12px;font-size:12px;color:#666;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.6;">Gleaning is free. No ads. No data selling.<br>Donations above operating costs go to the <strong style="color:#888">Commons Wealth Redistribution Fund</strong>.</p>
+  <p style="margin-top:10px"><a href="https://buymeacoffee.com/sentinel.commons" target="_blank" rel="noopener" style="background:#FFDD00;color:#000;padding:8px 18px;border-radius:6px;font-weight:700;text-decoration:none;font-size:14px;">☕ Support Gleaning</a></p>
+</footer>
+</body>
+</html>

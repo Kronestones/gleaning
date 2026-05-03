@@ -374,6 +374,11 @@ async def resolve_scan_report(report_id: int, db: Session = Depends(get_db)):
         db.commit()
     return {"ok": True}
 
+
+@app.get("/puppet-masters", response_class=HTMLResponse)
+async def puppet_masters(request: Request):
+    return templates.TemplateResponse("puppet_masters.html", {"request": request})
+
 @app.get("/resources", response_class=HTMLResponse)
 async def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
