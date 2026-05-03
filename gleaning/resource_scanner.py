@@ -396,6 +396,159 @@ def _fetch_pawns() -> tuple:
 
     return added, errors
 
+
+# Bills the people want — tracked by roll call ID and keywords
+PEOPLE_WANT = [
+    "minimum wage",
+    "medicare",
+    "medicaid",
+    "drug price",
+    "prescription drug",
+    "student loan",
+    "student debt",
+    "housing assistance",
+    "rental assistance",
+    "snap",
+    "food stamp",
+    "nutrition assistance",
+    "corporate tax",
+    "wealth tax",
+    "billionaire tax",
+    "union",
+    "collective bargaining",
+    "workers",
+    "labor",
+    "living wage",
+    "child care",
+    "paid leave",
+    "climate",
+    "clean energy",
+    "voting rights",
+    "campaign finance",
+]
+
+def _keyword_match(text: str) -> bool:
+    text = text.lower()
+    return any(kw in text for kw in PEOPLE_WANT)
+
+def _fetch_votes() -> tuple:
+    """
+    Fetch recent congressional votes on issues the people want.
+    Updates existing Pawn records with how they voted.
+    ProPublica Votes API — public record.
+    """
+    updated, errors = [], []
+    try:
+        from gleaning.database import SessionLocal, Pawn
+        import json as _json
+        session = SessionLocal()
+
+        chambers = ["senate", "house"]
+        congress = "119"
+
+        for chamber in chambers:
+            if _stop_event.is_set():
+                break
+            try:
+                # Get recent votes
+                url = f"https://api.propublica.org/congress/v1/{congress}/{chamber}/votes/recent.json"
+                req = urllib.request.Request(
+                    url,
+                    headers={
+                        "User-Agent": "Gleaning/1.0 (sentinel.commons@gmail.com)",
+                        "X-API-Key": os.environ.get("PROPUBLICA_API_KEY", ""),
+                    }
+                )
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    data = _json.loads(resp.read())
+
+                votes = data.get("results", {}).get("votes", [])
+                relevant = [
+                    v for v in votes
+                    if _keyword_match(v.get("question", "") + " " + v.get("description", ""))
+                ]
+                print(f"[SCANNER] Votes {chamber}: {len(votes)} total, {len(relevant)} relevant")
+
+                for vote in relevant:
+                    if _stop_event.is_set():
+                        break
+                    bill_name = vote.get("question", vote.get("description", ""))[:200]
+                    vote_url = vote.get("url", "")
+                    date = vote.get("date", "")
+
+                    # Get individual member votes
+                    try:
+                        roll = vote.get("roll_call", vote.get("roll", ""))
+                        session_num = vote.get("session", "1")
+                        detail_url = f"https://api.propublica.org/congress/v1/{congress}/{chamber}/sessions/{session_num}/votes/{roll}.json"
+                        req2 = urllib.request.Request(
+                            detail_url,
+                            headers={
+                                "User-Agent": "Gleaning/1.0 (sentinel.commons@gmail.com)",
+                                "X-API-Key": os.environ.get("PROPUBLICA_API_KEY", ""),
+                            }
+                        )
+                        with urllib.request.urlopen(req2, timeout=15) as resp2:
+                            detail = _json.loads(resp2.read())
+
+                        positions = detail.get("results", {}).get("votes", {}).get("vote", {}).get("positions", [])
+
+                        for pos in positions:
+                            name = f"{pos.get('name', '')}".strip()
+                            vote_pos = pos.get("vote_position", "")
+                            if not name or not vote_pos:
+                                continue
+
+                            # Find matching pawn
+                            pawn = session.execute(
+                                __import__('sqlalchemy').text(
+                                    "SELECT id, key_votes FROM pawns WHERE name ILIKE :n"
+                                ),
+                                {"n": f"%{name}%"}
+                            ).fetchone()
+
+                            if pawn:
+                                existing_votes = _json.loads(pawn.key_votes) if pawn.key_votes else []
+                                # Check if this vote already recorded
+                                already = any(v.get("bill") == bill_name for v in existing_votes)
+                                if not already:
+                                    existing_votes.append({
+                                        "bill": bill_name,
+                                        "vote": vote_pos.upper(),
+                                        "date": date,
+                                        "impact": "Vote tracked against what 70%+ of Americans support · Source: ProPublica · Public record",
+                                        "source_url": vote_url,
+                                    })
+                                    session.execute(
+                                        __import__('sqlalchemy').text(
+                                            "UPDATE pawns SET key_votes=:kv WHERE id=:id"
+                                        ),
+                                        {"kv": _json.dumps(existing_votes), "id": pawn.id}
+                                    )
+                                    session.commit()
+                                    updated.append(name)
+
+                        time.sleep(0.5)
+
+                    except Exception as e:
+                        print(f"[SCANNER] Vote detail failed: {e}")
+                        continue
+
+                time.sleep(1)
+
+            except Exception as e:
+                errors.append(f"Votes-{chamber}")
+                print(f"[SCANNER] Votes {chamber} failed: {e}")
+
+        session.close()
+        print(f"[SCANNER] Votes: {len(updated)} pawns updated")
+
+    except Exception as e:
+        errors.append("Votes-scanner")
+        print(f"[SCANNER] Votes scanner failed: {e}")
+
+    return updated, errors
+
 def _run_scan():
     print(f"[SCANNER] Scan starting — {datetime.now(timezone.utc).strftime('%b %d %H:%M UTC')}")
     try:
@@ -409,10 +562,12 @@ def _run_scan():
             a, e = _fetch_eventbrite(session); all_added += a; all_errors += e
         finally:
             session.close()
-        # Fetch pawns separately
+        # Fetch pawns and their votes
         p_added, p_errors = _fetch_pawns()
         all_errors += p_errors
-        print(f"[SCANNER] Complete — {len(all_added)} new resources, {len(p_added)} new officials")
+        v_updated, v_errors = _fetch_votes()
+        all_errors += v_errors
+        print(f"[SCANNER] Complete — {len(all_added)} new resources, {len(p_added)} new officials, {len(v_updated)} vote records updated")
         # Always refresh last_updated so Wealth Hoarders date stays current
         try:
             from gleaning.database import CorporateWasteRecord
