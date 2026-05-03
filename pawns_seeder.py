@@ -11,15 +11,8 @@ Run: python3 pawns_seeder.py
 import os, sys, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-DB_URL = os.environ.get("DATABASE_URL", "")
-if not DB_URL:
-    # Try to load from .env
-    env = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
-    if os.path.exists(env):
-        for line in open(env):
-            if line.startswith("DATABASE_URL"):
-                DB_URL = line.split("=",1)[1].strip()
-                os.environ["DATABASE_URL"] = DB_URL
+DB_URL = "postgresql://neondb_owner:npg_JIOfQrgA3Li0@ep-silent-band-amurkch1-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+os.environ["DATABASE_URL"] = DB_URL
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
