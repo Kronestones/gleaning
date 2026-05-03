@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barter & Trade — Gleaning</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0a;--card:#111;--border:#1e1e1e;--text:#e8e8e8;
+      --muted:#666;--green-bright:#4a9e6b;--red:#c0392b;--white:#fff;
+      --surface:#141414;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .nav{background:#111;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;position:sticky;top:0;z-index:200}
+    .nav-logo{color:var(--green-bright);font-size:18px;font-weight:700;text-decoration:none;letter-spacing:-0.02em}
+    .nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+    .nav-links::-webkit-scrollbar{display:none}
+    .nav-links a{color:rgba(255,255,255,0.7);font-size:13px;padding:6px 10px;border-radius:6px;white-space:nowrap;transition:all 0.15s;text-decoration:none}
+    .nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08)}
+    .nav-links a.active{color:var(--green-bright)}
+    /* Layout */
+    .page-wrap{display:flex;height:calc(100vh - 56px)}
+    #map{flex:1;z-index:1}
+    #sidebar{width:360px;background:#111;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;z-index:2}
+    /* Search and toolbar */
+    #search-wrap{padding:12px;border-bottom:1px solid var(--border);flex-shrink:0}
+    #search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 12px;font-family:inherit}
+    #search:focus{outline:none;border-color:var(--green-bright)}
+    #tabs{display:flex;overflow-x:auto;scrollbar-width:none;padding:8px 12px;gap:6px;border-bottom:1px solid var(--border);flex-shrink:0}
+    #tabs::-webkit-scrollbar{display:none}
+    .tab{font-size:11px;padding:4px 10px;border-radius:12px;cursor:pointer;white-space:nowrap;color:var(--muted);background:var(--surface);border:1px solid var(--border);transition:all 0.15s}
+    .tab.active{color:#000;background:var(--green-bright);border-color:var(--green-bright)}
+    /* Post button */
+    #post-btn-wrap{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+    #post-btn{width:100%;background:var(--green-bright);color:#000;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer}
+    #commons-required{font-size:11px;color:var(--muted);text-align:center;padding:8px 12px;border-bottom:1px solid var(--border);display:none}
+    /* Feed */
+    #feed{flex:1;overflow-y:auto}
+    .listing-card{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+    .listing-card:hover{background:var(--surface)}
+    .listing-category{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--green-bright);margin-bottom:4px;font-family:monospace}
+    .listing-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+    .listing-meta{font-size:11px;color:var(--muted);margin-bottom:6px}
+    .listing-trade{font-size:12px;color:var(--muted);line-height:1.5}
+    .listing-trade strong{color:var(--text)}
+    .listing-empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:13px}
+    /* Disclaimer */
+    #disclaimer{padding:10px 14px;font-size:10px;color:#444;line-height:1.6;border-top:1px solid var(--border);flex-shrink:0}
+    /* Mobile */
+    #barter-toggle{display:none;position:fixed;bottom:20px;right:20px;background:var(--green-bright);color:#000;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;z-index:900;box-shadow:0 4px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center}
+    @media(max-width:600px){
+      #sidebar{display:none;position:fixed;top:56px;right:0;bottom:0;width:100vw;z-index:800}
+      #sidebar.open{display:flex}
+      #barter-toggle{display:flex}
+      #map{height:calc(100vh - 56px)}
+    }
+    /* Modal */
+    #post-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;padding:16px}
+    #post-modal.open{display:flex}
+    .modal-box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+    .modal-title{font-size:18px;font-weight:800;color:var(--white);margin-bottom:4px}
+    .modal-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+    .form-group{margin-bottom:14px}
+    .form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;display:block}
+    .form-input{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:8px;color:var(--text);font-size:14px;padding:10px 12px;font-family:inherit}
+    .form-input:focus{outline:none;border-color:var(--green-bright)}
+    select.form-input option{background:#1a1a1a}
+    .form-textarea{min-height:80px;resize:vertical}
+    .modal-disclaimer{font-size:11px;color:#444;line-height:1.6;margin:16px 0;padding:12px;background:#111;border-radius:6px;border:1px solid #222}
+    .modal-actions{display:flex;gap:10px;margin-top:16px}
+    .btn-submit{flex:1;background:var(--green-bright);color:#000;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer}
+    .btn-cancel{flex:1;background:#2a2a2a;color:#999;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer}
+    .form-confirm{display:none;color:var(--green-bright);font-size:13px;text-align:center;margin-top:12px}
+    /* Detail panel */
+    #detail-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;padding:16px}
+    #detail-panel.open{display:flex}
+    .detail-box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+    .detail-category{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--green-bright);margin-bottom:8px;font-family:monospace}
+    .detail-title{font-size:20px;font-weight:800;color:var(--white);margin-bottom:4px}
+    .detail-meta{font-size:12px;color:var(--muted);margin-bottom:16px}
+    .detail-section{margin-bottom:14px}
+    .detail-section-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+    .detail-section-text{font-size:14px;color:var(--text);line-height:1.6;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+    .detail-poster{font-size:12px;color:var(--muted);margin-bottom:16px}
+    .detail-poster strong{color:var(--green-bright)}
+    .btn-contact{width:100%;background:var(--green-bright);color:#000;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px}
+    .btn-flag{width:100%;background:#2a2a2a;color:#e74c3c;border:1px solid rgba(192,57,43,0.3);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;margin-bottom:8px}
+    .btn-close-detail{width:100%;background:#1a1a1a;color:#666;border:1px solid #2a2a2a;border-radius:8px;padding:10px;font-size:13px;cursor:pointer}
+    /* Leaflet */
+    .leaflet-popup-content-wrapper{background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+    .leaflet-popup-content{color:var(--text);font-family:-apple-system,sans-serif;margin:10px 14px}
+    .leaflet-popup-tip{background:var(--card)}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-logo">🌾 Gleaning</a>
+  <div class="nav-links">
+    <a href="/stats">Wealth Hoarders</a>
+    <a href="/pawns">Pawns</a>
+    <a href="/hoarders">Project Gleaning</a>
+    <a href="/barter" class="active">Barter & Trade</a>
+    <a href="/resources">Resources</a>
+    <a href="/puppet-masters">💀 Puppet Masters</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div id="map"></div>
+  <div id="sidebar">
+    <div id="search-wrap">
+      <input id="search" type="text" placeholder="Search listings…" oninput="filterListings()"/>
+    </div>
+    <div id="tabs">
+      <div class="tab active" onclick="filterCat('all',this)">All</div>
+      <div class="tab" onclick="filterCat('Food & Produce',this)">🥦 Food</div>
+      <div class="tab" onclick="filterCat('Tools & Equipment',this)">🔧 Tools</div>
+      <div class="tab" onclick="filterCat('Clothing & Accessories',this)">👕 Clothing</div>
+      <div class="tab" onclick="filterCat('Books & Media',this)">📚 Books</div>
+      <div class="tab" onclick="filterCat('Seeds & Plants',this)">🌱 Seeds</div>
+      <div class="tab" onclick="filterCat('Skills & Labor',this)">🤝 Skills</div>
+      <div class="tab" onclick="filterCat('Furniture & Home',this)">🏠 Home</div>
+      <div class="tab" onclick="filterCat('Other',this)">More</div>
+    </div>
+    <div id="post-btn-wrap">
+      <button id="post-btn" onclick="openPostModal()">+ Post a Trade</button>
+    </div>
+    <div id="commons-required">Commons membership required to post · <a href="https://the-commons.onrender.com/register" style="color:var(--green-bright)">Join The Commons →</a></div>
+    <div id="feed">
+      <div class="listing-empty">Loading listings…</div>
+    </div>
+    <div id="disclaimer">
+      Gleaning is the facilitator only. We are not responsible for the accuracy of listings, the condition of items, or the outcome of trades. All trades are between members. Report a problem: <a href="#" onclick="openFlag(null)" style="color:var(--green-bright)">flag it here</a>.
+    </div>
+  </div>
+</div>
+
+<button id="barter-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">🤝</button>
+
+<!-- Post Modal -->
+<div id="post-modal">
+  <div class="modal-box">
+    <div class="modal-title">Post a Trade</div>
+    <div class="modal-sub">Commons members only · No money · No prohibited items</div>
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input id="p-title" class="form-input" placeholder="e.g. Fresh tomatoes from my garden"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select id="p-category" class="form-input">
+        <option value="">Select category…</option>
+        <option>Food & Produce</option>
+        <option>Tools & Equipment</option>
+        <option>Clothing & Accessories</option>
+        <option>Books & Media</option>
+        <option>Seeds & Plants</option>
+        <option>Furniture & Home</option>
+        <option>Baby & Kids</option>
+        <option>Electronics</option>
+        <option>Art & Crafts</option>
+        <option>Skills & Labor</option>
+        <option>Garden & Outdoor</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What I'm offering</label>
+      <textarea id="p-offering" class="form-input form-textarea" placeholder="Describe what you have…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What I'm looking for in trade</label>
+      <textarea id="p-seeking" class="form-input form-textarea" placeholder="What would you like in exchange? (or 'free to good home')"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your city</label>
+      <input id="p-city" class="form-input" placeholder="City"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">State</label>
+      <input id="p-state" class="form-input" placeholder="e.g. CA" maxlength="2" style="text-transform:uppercase"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Commons Token (paste from your Commons profile)</label>
+      <input id="p-token" class="form-input" placeholder="Your Commons auth token" type="password"/>
+    </div>
+    <div class="modal-disclaimer">
+      By posting you confirm this listing contains no prohibited items (no alcohol, drugs, weapons, hate merchandise, or sexual content). Gleaning is the facilitator only and bears no responsibility for trades. The Team will review your listing before it goes live.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-submit" onclick="submitListing()">Submit for Review</button>
+      <button class="btn-cancel" onclick="closePostModal()">Cancel</button>
+    </div>
+    <div id="post-confirm" class="form-confirm">✓ Submitted for Team review. You'll be notified when it's live.</div>
+  </div>
+</div>
+
+<!-- Detail Panel -->
+<div id="detail-panel">
+  <div class="detail-box">
+    <div id="detail-category" class="detail-category"></div>
+    <div id="detail-title" class="detail-title"></div>
+    <div id="detail-meta" class="detail-meta"></div>
+    <div id="detail-poster" class="detail-poster"></div>
+    <div class="detail-section">
+      <div class="detail-section-label">Offering</div>
+      <div id="detail-offering" class="detail-section-text"></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Looking for</div>
+      <div id="detail-seeking" class="detail-section-text"></div>
+    </div>
+    <div id="detail-description-wrap" class="detail-section" style="display:none">
+      <div class="detail-section-label">Details</div>
+      <div id="detail-description" class="detail-section-text"></div>
+    </div>
+    <button class="btn-contact" id="detail-contact-btn">Contact via The Commons</button>
+    <button class="btn-flag" onclick="openFlag(currentListing)">⚑ Flag this listing</button>
+    <button class="btn-close-detail" onclick="closeDetail()">Close</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── Map ───────────────────────────────────────────────────────────────────────
+const map = L.map('map', {center:[39.5,-98.35], zoom:4, zoomControl:false});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 19
+}).addTo(map);
+L.control.zoom({position:'topright'}).addTo(map);
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let allListings = [];
+let markers = [];
+let currentCat = 'all';
+let currentListing = null;
+
+// ── Load listings ─────────────────────────────────────────────────────────────
+async function loadListings() {
+  try {
+    const resp = await fetch('/api/barter');
+    const data = await resp.json();
+    allListings = data.listings || [];
+    renderFeed(allListings);
+    renderMarkers(allListings);
+  } catch(e) {
+    document.getElementById('feed').innerHTML = '<div class="listing-empty">Could not load listings.</div>';
+  }
+}
+
+function renderFeed(listings) {
+  const feed = document.getElementById('feed');
+  if (!listings.length) {
+    feed.innerHTML = '<div class="listing-empty">No listings yet.<br>Be the first to post a trade.</div>';
+    return;
+  }
+  feed.innerHTML = listings.map(l => `
+    <div class="listing-card" onclick="showDetail(${l.id})">
+      <div class="listing-category">${l.category}</div>
+      <div class="listing-title">${l.title}</div>
+      <div class="listing-meta">${l.city || ''}, ${l.state || ''} · ${l.commons_username}</div>
+      <div class="listing-trade">
+        <strong>Offering:</strong> ${l.offering.substring(0,80)}${l.offering.length>80?'…':''}<br>
+        <strong>Seeking:</strong> ${l.seeking.substring(0,80)}${l.seeking.length>80?'…':''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMarkers(listings) {
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  listings.forEach(l => {
+    if (!l.lat || !l.lng) return;
+    const marker = L.circleMarker([l.lat, l.lng], {
+      radius: 8, fillColor: '#4a9e6b', color: '#fff',
+      weight: 2, opacity: 1, fillOpacity: 0.85
+    }).addTo(map);
+    marker.bindPopup(`
+      <div style="font-family:sans-serif">
+        <div style="font-size:9px;color:#4a9e6b;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">${l.category}</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">${l.title}</div>
+        <div style="font-size:11px;color:#666;margin-bottom:6px">${l.city}, ${l.state} · ${l.commons_username}</div>
+        <button onclick="showDetail(${l.id})" style="background:#4a9e6b;color:#000;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;width:100%">View Trade</button>
+      </div>
+    `);
+    markers.push(marker);
+  });
+}
+
+function filterCat(cat, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentCat = cat;
+  applyFilters();
+}
+
+function filterListings() { applyFilters(); }
+
+function applyFilters() {
+  const q = document.getElementById('search').value.toLowerCase();
+  let filtered = allListings;
+  if (currentCat !== 'all') filtered = filtered.filter(l => l.category === currentCat);
+  if (q) filtered = filtered.filter(l =>
+    l.title.toLowerCase().includes(q) ||
+    l.offering.toLowerCase().includes(q) ||
+    l.seeking.toLowerCase().includes(q) ||
+    (l.city||''). toLowerCase().includes(q)
+  );
+  renderFeed(filtered);
+  renderMarkers(filtered);
+}
+
+// ── Post Modal ────────────────────────────────────────────────────────────────
+function openPostModal() {
+  document.getElementById('post-modal').classList.add('open');
+}
+function closePostModal() {
+  document.getElementById('post-modal').classList.remove('open');
+  document.getElementById('post-confirm').style.display = 'none';
+}
+
+async function submitListing() {
+  const title    = document.getElementById('p-title').value.trim();
+  const category = document.getElementById('p-category').value;
+  const offering = document.getElementById('p-offering').value.trim();
+  const seeking  = document.getElementById('p-seeking').value.trim();
+  const city     = document.getElementById('p-city').value.trim();
+  const state    = document.getElementById('p-state').value.trim().toUpperCase();
+  const token    = document.getElementById('p-token').value.trim();
+
+  if (!title || !category || !offering || !seeking || !token) {
+    alert('Please fill in all required fields including your Commons token.');
+    return;
+  }
+
+  const body = new FormData();
+  body.append('title', title);
+  body.append('category', category);
+  body.append('offering', offering);
+  body.append('seeking', seeking);
+  body.append('city', city);
+  body.append('state', state);
+  body.append('token', token);
+
+  const resp = await fetch('/api/barter/post', {method:'POST', body});
+  const data = await resp.json();
+  if (data.ok) {
+    document.getElementById('post-confirm').style.display = 'block';
+    setTimeout(() => { closePostModal(); loadListings(); }, 2500);
+  } else {
+    alert(data.error || 'Could not submit listing.');
+  }
+}
+
+// ── Detail Panel ──────────────────────────────────────────────────────────────
+function showDetail(id) {
+  const l = allListings.find(x => x.id === id);
+  if (!l) return;
+  currentListing = l;
+  document.getElementById('detail-category').textContent = l.category;
+  document.getElementById('detail-title').textContent = l.title;
+  document.getElementById('detail-meta').textContent = `${l.city||''}, ${l.state||''} · Posted ${new Date(l.created_at).toLocaleDateString()}`;
+  document.getElementById('detail-poster').innerHTML = `Posted by <strong>${l.commons_username}</strong> · Commons member`;
+  document.getElementById('detail-offering').textContent = l.offering;
+  document.getElementById('detail-seeking').textContent = l.seeking;
+  if (l.description) {
+    document.getElementById('detail-description-wrap').style.display = '';
+    document.getElementById('detail-description').textContent = l.description;
+  }
+  document.getElementById('detail-contact-btn').onclick = () => {
+    window.open(`https://the-commons.onrender.com/members/${l.commons_username}`, '_blank');
+  };
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+  currentListing = null;
+}
+
+// ── Flag ──────────────────────────────────────────────────────────────────────
+async function openFlag(listing) {
+  const reason = prompt('Why are you flagging this listing? (prohibited item, spam, other)');
+  if (!reason) return;
+  const id = listing ? listing.id : null;
+  const resp = await fetch('/api/barter/flag', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({listing_id: id, reason})
+  });
+  const data = await resp.json();
+  if (data.ok) alert('Thank you. The Team has been notified.');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadListings();
+</script>
+</body>
+</html>

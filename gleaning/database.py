@@ -374,3 +374,37 @@ class Pawn(Base):
     last_updated        = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+
+
+class BarterListing(Base):
+    """
+    Barter and trade listings — Commons members only.
+    No money. No prohibited items. Gleaning is the facilitator only.
+    Team moderates. Escalates to founder if unresolved.
+    Auto-expires 60 days after last activity.
+    — Krone the Architect · 2026
+    """
+    __tablename__ = "barter_listings"
+
+    id              = Column(Integer, primary_key=True, autoincrement=True)
+    commons_username = Column(String(100), nullable=False)
+    commons_user_id  = Column(Integer, nullable=False)
+    title           = Column(String(256), nullable=False)
+    description     = Column(Text, nullable=False)
+    category        = Column(String(64), nullable=False)
+    offering        = Column(Text, nullable=False)   # what they have
+    seeking         = Column(Text, nullable=False)   # what they want in trade
+    city            = Column(String(128), nullable=True)
+    state           = Column(String(8), nullable=True)
+    lat             = Column(Float, nullable=True)
+    lng             = Column(Float, nullable=True)
+    photo_path      = Column(Text, nullable=True)
+    status          = Column(String(32), default="pending")  # pending, active, traded, expired, removed
+    flagged         = Column(Boolean, default=False)
+    flag_reason     = Column(Text, default="")
+    created_at      = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_active     = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    expires_at      = Column(DateTime, nullable=True)
+    moderated_by    = Column(String(100), default="")
+    moderated_at    = Column(DateTime, nullable=True)
+    note            = Column(Text, default="")

@@ -425,6 +425,182 @@ async def pawns_page(request: Request, db: Session = Depends(get_db)):
 async def puppet_masters(request: Request):
     return templates.TemplateResponse("puppet_masters.html", {"request": request})
 
+
+@app.get("/barter", response_class=HTMLResponse)
+async def barter_page(request: Request):
+    return templates.TemplateResponse("barter.html", {"request": request})
+
+@app.get("/api/barter")
+async def api_barter_listings(db: Session = Depends(get_db)):
+    from gleaning.database import BarterListing
+    from gleaning.barter import expire_old_listings
+    try:
+        expire_old_listings(db)
+        listings = db.query(BarterListing).filter(
+            BarterListing.status == "active"
+        ).order_by(BarterListing.created_at.desc()).limit(200).all()
+        return {"listings": [
+            {
+                "id": l.id,
+                "commons_username": l.commons_username,
+                "title": l.title,
+                "category": l.category,
+                "offering": l.offering,
+                "seeking": l.seeking,
+                "description": l.note,
+                "city": l.city,
+                "state": l.state,
+                "lat": l.lat,
+                "lng": l.lng,
+                "created_at": str(l.created_at),
+            }
+            for l in listings
+        ]}
+    except Exception as e:
+        print(f"[BARTER] API error: {e}")
+        return {"listings": []}
+
+@app.post("/api/barter/post")
+async def api_barter_post(
+    title:    str = Form(...),
+    category: str = Form(...),
+    offering: str = Form(...),
+    seeking:  str = Form(...),
+    city:     str = Form(""),
+    state:    str = Form(""),
+    token:    str = Form(...),
+    db: Session = Depends(get_db)
+):
+    from gleaning.database import BarterListing
+    from gleaning.barter import verify_commons_token, check_prohibited, notify_team_new_listing
+    from datetime import datetime, timezone, timedelta
+
+    # Verify Commons token
+    payload = verify_commons_token(token)
+    if not payload:
+        return {"ok": False, "error": "Invalid Commons token. Please check your token and try again."}
+
+    username = payload.get("username", "")
+    user_id  = int(payload.get("sub", 0))
+
+    # Check prohibited content
+    combined = f"{title} {offering} {seeking}"
+    bad = check_prohibited(combined)
+    if bad:
+        return {"ok": False, "error": f"Listing contains prohibited content. Please review our guidelines."}
+
+    # Geocode city/state simply
+    lat, lng = None, None
+    STATE_CENTERS = {
+        "AL":(32.8,-86.8),"AK":(64.2,-153.5),"AZ":(34.3,-111.1),"AR":(34.8,-92.2),
+        "CA":(36.8,-119.4),"CO":(39.0,-105.5),"CT":(41.6,-72.7),"DE":(39.0,-75.5),
+        "FL":(27.8,-81.7),"GA":(32.2,-83.4),"HI":(20.3,-156.4),"ID":(44.3,-114.5),
+        "IL":(40.0,-89.2),"IN":(40.3,-86.1),"IA":(42.0,-93.2),"KS":(38.5,-98.4),
+        "KY":(37.5,-85.3),"LA":(31.2,-91.8),"ME":(45.4,-69.2),"MD":(39.1,-76.8),
+        "MA":(42.3,-71.8),"MI":(44.3,-85.4),"MN":(46.4,-93.1),"MS":(32.7,-89.7),
+        "MO":(38.5,-92.5),"MT":(47.0,-110.5),"NE":(41.5,-99.9),"NV":(39.3,-116.6),
+        "NH":(44.0,-71.6),"NJ":(40.1,-74.5),"NM":(34.5,-106.2),"NY":(42.2,-74.9),
+        "NC":(35.6,-79.8),"ND":(47.5,-100.5),"OH":(40.4,-82.8),"OK":(35.6,-97.5),
+        "OR":(44.6,-122.1),"PA":(40.6,-77.2),"RI":(41.7,-71.5),"SC":(33.9,-80.9),
+        "SD":(44.4,-100.2),"TN":(35.9,-86.7),"TX":(31.5,-99.3),"UT":(39.4,-111.1),
+        "VT":(44.0,-72.7),"VA":(37.8,-78.2),"WA":(47.4,-120.5),"WV":(38.9,-80.5),
+        "WI":(44.3,-89.8),"WY":(43.0,-107.6),"DC":(38.9,-77.0),
+    }
+    if state.upper() in STATE_CENTERS:
+        lat, lng = STATE_CENTERS[state.upper()]
+
+    listing = BarterListing(
+        commons_username = username,
+        commons_user_id  = user_id,
+        title            = title[:256],
+        category         = category,
+        offering         = offering[:1000],
+        seeking          = seeking[:1000],
+        city             = city[:128],
+        state            = state.upper()[:8],
+        lat              = lat,
+        lng              = lng,
+        status           = "pending",
+        expires_at       = datetime.now(timezone.utc) + timedelta(days=60),
+    )
+    db.add(listing)
+    db.commit()
+    db.refresh(listing)
+
+    notify_team_new_listing(listing)
+    return {"ok": True, "id": listing.id}
+
+@app.post("/api/barter/flag")
+async def api_barter_flag(request: Request, db: Session = Depends(get_db)):
+    from gleaning.database import BarterListing
+    from gleaning.barter import notify_team_flag
+    try:
+        data = await request.json()
+        listing_id = data.get("listing_id")
+        reason = data.get("reason", "No reason given")[:500]
+        if listing_id:
+            listing = db.query(BarterListing).filter(BarterListing.id == listing_id).first()
+            if listing:
+                listing.flagged = True
+                listing.flag_reason = reason
+                db.commit()
+                notify_team_flag(listing, reason)
+        return {"ok": True}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+@app.get("/barter/moderate/{listing_id}/{action}", response_class=HTMLResponse)
+async def barter_moderate(listing_id: int, action: str, db: Session = Depends(get_db)):
+    from gleaning.database import BarterListing
+    from datetime import datetime, timezone
+    listing = db.query(BarterListing).filter(BarterListing.id == listing_id).first()
+    if not listing:
+        return HTMLResponse("Listing not found.", status_code=404)
+    if action == "approve":
+        listing.status = "active"
+        listing.moderated_at = datetime.now(timezone.utc)
+        msg = f"✓ Listing '{listing.title}' approved and now live."
+    elif action == "reject":
+        listing.status = "removed"
+        listing.moderated_at = datetime.now(timezone.utc)
+        msg = f"✗ Listing '{listing.title}' rejected and removed."
+    elif action == "remove":
+        listing.status = "removed"
+        listing.moderated_at = datetime.now(timezone.utc)
+        msg = f"Listing '{listing.title}' removed."
+    else:
+        msg = "Unknown action."
+    db.commit()
+    return HTMLResponse(f"""
+    <html><body style="background:#0a0a0a;color:#e8e8e8;font-family:sans-serif;padding:40px;text-align:center">
+    <h2 style="color:#4a9e6b">🌾 Gleaning Barter</h2>
+    <p style="margin-top:20px;font-size:18px">{msg}</p>
+    <p style="margin-top:12px;color:#666;font-size:13px">You can close this tab.</p>
+    </body></html>
+    """)
+
+@app.post("/api/barter/{listing_id}/delete")
+async def api_barter_delete(
+    listing_id: int,
+    token: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    from gleaning.database import BarterListing
+    from gleaning.barter import verify_commons_token
+    payload = verify_commons_token(token)
+    if not payload:
+        return {"ok": False, "error": "Invalid token"}
+    username = payload.get("username", "")
+    listing = db.query(BarterListing).filter(
+        BarterListing.id == listing_id,
+        BarterListing.commons_username == username
+    ).first()
+    if not listing:
+        return {"ok": False, "error": "Listing not found or not yours"}
+    listing.status = "removed"
+    db.commit()
+    return {"ok": True}
+
 @app.get("/resources", response_class=HTMLResponse)
 async def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
