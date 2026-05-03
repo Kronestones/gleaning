@@ -231,6 +231,74 @@ def _fetch_211(session) -> tuple:
     return added, errors
 
 
+
+def _fetch_eventbrite(session) -> tuple:
+    """Fetch free community health and food events from Eventbrite public API."""
+    added, errors = [], []
+    searches = [
+        ("free dental clinic", "health"),
+        ("free health clinic", "health"),
+        ("pop up clinic", "health"),
+        ("free vision clinic", "health"),
+        ("free veterinary clinic", "health"),
+        ("mobile health unit", "health"),
+        ("free food distribution", "food"),
+        ("community food pantry", "food"),
+        ("free meal", "food"),
+        ("food bank", "food"),
+        ("free legal aid clinic", "legal"),
+        ("community resource fair", "community"),
+    ]
+    token = os.environ.get("EVENTBRITE_TOKEN", "")
+    for query, category in searches:
+        if _stop_event.is_set():
+            break
+        try:
+            # Use public search — works without token but token increases limits
+            params = urllib.parse.urlencode({
+                "q": query,
+                "expand": "venue",
+                "price": "free",
+                "status": "live",
+            })
+            url = f"https://www.eventbriteapi.com/v3/events/search/?{params}"
+            headers = {"User-Agent": "Gleaning/1.0 (sentinel.commons@gmail.com)"}
+            if token:
+                headers["Authorization"] = f"Bearer {token}"
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read())
+            for event in data.get("events", []):
+                venue = event.get("venue") or {}
+                addr  = venue.get("address") or {}
+                name  = event.get("name", {}).get("text", "")
+                if not name:
+                    continue
+                r = {
+                    "name":     name[:255],
+                    "category": category,
+                    "address":  addr.get("address_1", ""),
+                    "city":     addr.get("city", ""),
+                    "state":    addr.get("region", ""),
+                    "zip_code": addr.get("postal_code", ""),
+                    "lat":      float(addr["latitude"])  if addr.get("latitude")  else None,
+                    "lng":      float(addr["longitude"]) if addr.get("longitude") else None,
+                    "website":  event.get("url", ""),
+                    "services": f"Free community event · {event.get('description', {}).get('text', '')[:200]}",
+                    "hours":    event.get("start", {}).get("local", ""),
+                    "is_popup": True,
+                    "source":   "Eventbrite public API · Free events",
+                    "verified": True,
+                }
+                if r["city"] and _save_resource(session, r):
+                    added.append(r)
+            time.sleep(1)
+        except Exception as e:
+            errors.append(f"Eventbrite-{query}")
+            print(f"[SCANNER] Eventbrite '{query}' failed: {e}")
+    print(f"[SCANNER] Eventbrite: {len(added)} new events")
+    return added, errors
+
 def _run_scan():
     print(f"[SCANNER] Scan starting — {datetime.now(timezone.utc).strftime('%b %d %H:%M UTC')}")
     try:
@@ -241,6 +309,7 @@ def _run_scan():
             a, e = _fetch_hrsa(session);  all_added += a; all_errors += e
             a, e = _fetch_ram(session);   all_added += a; all_errors += e
             a, e = _fetch_211(session);   all_added += a; all_errors += e
+            a, e = _fetch_eventbrite(session); all_added += a; all_errors += e
         finally:
             session.close()
         print(f"[SCANNER] Complete — {len(all_added)} new resources")
