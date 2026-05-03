@@ -344,6 +344,44 @@ class Pawn(Base):
     — Krone the Architect · 2026
     """
     __tablename__ = "pawns"
+    __table_args__ = {"extend_existing": True}
+
+    id                  = Column(Integer, primary_key=True, autoincrement=True)
+    name                = Column(String(256), nullable=False)
+    party               = Column(String(64), default="")
+    state               = Column(String(64), nullable=False)
+    state_code          = Column(String(4), default="")
+    chamber             = Column(String(64), default="")        # House, Senate, State House, State Senate
+    district            = Column(String(64), default="")
+    in_office_since     = Column(String(32), default="")
+    salary              = Column(String(64), default="")
+    net_worth_entry     = Column(String(64), default="")        # net worth when first elected
+    net_worth_current   = Column(String(64), default="")        # current net worth
+    net_worth_note      = Column(Text, default="")              # the math that doesn't add up
+    top_donors          = Column(Text, default="")              # JSON string
+    total_contributions = Column(String(64), default="")
+    aipac_connected     = Column(Boolean, default=False)
+    aipac_amount        = Column(String(64), default="")
+    aipac_note          = Column(Text, default="")
+    stock_trades        = Column(Text, default="")              # JSON string
+    committees          = Column(Text, default="")
+    key_votes           = Column(Text, default="")              # JSON string
+    corp_connections    = Column(Text, default="")              # connections to Wealth Hoarders
+    puppet_connections  = Column(Text, default="")              # connections to Puppet Masters
+    violations          = Column(Text, default="")
+    source              = Column(Text, default="")
+    verified            = Column(Boolean, default=True)
+    last_updated        = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class Pawn(Base):
+    """
+    Elected officials — federal and state.
+    Named, documented, and held to account.
+    All data from public record — FEC, OpenSecrets, STOCK Act, congress.gov.
+    — Krone the Architect · 2026
+    """
+    __tablename__ = "pawns"
 
     id                  = Column(Integer, primary_key=True, autoincrement=True)
     name                = Column(String(256), nullable=False)
