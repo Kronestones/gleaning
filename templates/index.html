@@ -238,23 +238,28 @@
 
         /* ── Definition ── */
         .definition-section {
-            background: #0d0d0d;
-            border-top: 1px solid #1a1a1a;
-            border-bottom: 1px solid #1a1a1a;
-            padding: 2.5rem 1.5rem;
+            padding: 3rem 1.5rem 2rem;
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 0;
         }
 
         .definition-section p {
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
-            font-size: 0.95rem;
-            color: #555;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: #888;
             line-height: 1.8;
+            font-weight: 300;
+            letter-spacing: 0.01em;
         }
 
-        .definition-section em { color: #7cb87c; font-style: italic; }
+        .definition-section em {
+            color: #7cb87c;
+            font-style: italic;
+            font-size: clamp(1.3rem, 4vw, 1.9rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
 
         footer {
             text-align: center;
