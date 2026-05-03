@@ -375,6 +375,51 @@ async def resolve_scan_report(report_id: int, db: Session = Depends(get_db)):
     return {"ok": True}
 
 
+
+@app.get("/pawns", response_class=HTMLResponse)
+async def pawns_page(request: Request, db: Session = Depends(get_db)):
+    from gleaning.database import Pawn
+    try:
+        pawns = db.query(Pawn).order_by(Pawn.state, Pawn.name).all()
+        states = sorted(set(p.state for p in pawns if p.state))
+        pawn_data = []
+        for p in pawns:
+            party_class = "dem" if "Democrat" in p.party else "rep" if "Republican" in p.party else "ind"
+            pawn_data.append({
+                "name": p.name,
+                "party": p.party,
+                "party_class": party_class,
+                "state": p.state,
+                "state_code": p.state_code,
+                "chamber": p.chamber,
+                "district": p.district,
+                "in_office_since": p.in_office_since,
+                "salary": p.salary,
+                "net_worth_entry": p.net_worth_entry,
+                "net_worth_current": p.net_worth_current,
+                "net_worth_note": p.net_worth_note,
+                "total_contributions": p.total_contributions,
+                "aipac_connected": p.aipac_connected,
+                "aipac_amount": p.aipac_amount,
+                "aipac_note": p.aipac_note,
+                "committees": p.committees,
+                "corp_connections": p.corp_connections,
+                "puppet_connections": p.puppet_connections,
+                "violations": p.violations,
+                "top_donors_list": json.loads(p.top_donors) if p.top_donors else [],
+                "stock_trades_list": json.loads(p.stock_trades) if p.stock_trades else [],
+                "key_votes_list": json.loads(p.key_votes) if p.key_votes else [],
+            })
+    except Exception as e:
+        print(f"[PAWNS] Error: {e}")
+        pawn_data = []
+        states = []
+    return templates.TemplateResponse("pawns.html", {
+        "request": request,
+        "pawns": pawn_data,
+        "states": states,
+    })
+
 @app.get("/puppet-masters", response_class=HTMLResponse)
 async def puppet_masters(request: Request):
     return templates.TemplateResponse("puppet_masters.html", {"request": request})
