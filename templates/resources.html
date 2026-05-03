@@ -690,11 +690,14 @@ async function submitResProblem() {
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const popupBtn = document.getElementById('popup-toggle');
+  const attribution = document.querySelector('.leaflet-control-attribution');
   sidebar.classList.toggle('open');
   if (sidebar.classList.contains('open')) {
     if (popupBtn) popupBtn.style.display = 'none';
+    if (attribution) attribution.style.zIndex = '1';
   } else {
     if (popupBtn) popupBtn.style.display = 'flex';
+    if (attribution) attribution.style.zIndex = '';
   }
 }
 
