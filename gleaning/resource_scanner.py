@@ -302,9 +302,10 @@ def _fetch_eventbrite(session) -> tuple:
 
 def _fetch_pawns() -> tuple:
     """
-    Fetch all current federal members of Congress from ProPublica API.
-    Free — no API key required for basic member data.
-    Layers in committee and vote data where available.
+    Fetch all current federal members of Congress.
+    Source: unitedstates.github.io/congress-legislators — free, no key required.
+    Includes name, party, state, chamber, phone, address, OpenSecrets ID.
+    — Krone the Architect · 2026
     """
     added, errors = [], []
     try:
@@ -312,80 +313,104 @@ def _fetch_pawns() -> tuple:
         import json as _json
         session = SessionLocal()
 
-        chambers = ["senate", "house"]
-        congress = "119"  # 119th Congress — current as of 2025
+        url = "https://unitedstates.github.io/congress-legislators/legislators-current.json"
+        req = urllib.request.Request(
+            url,
+            headers={"User-Agent": "Gleaning/1.0 (sentinel.commons@gmail.com)"}
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            members = _json.loads(resp.read())
 
-        for chamber in chambers:
+        print(f"[SCANNER] Pawns: {len(members)} current members fetched")
+
+        STATE_CENTERS = {
+            "AL":(32.8,-86.8),"AK":(64.2,-153.5),"AZ":(34.3,-111.1),"AR":(34.8,-92.2),
+            "CA":(36.8,-119.4),"CO":(39.0,-105.5),"CT":(41.6,-72.7),"DE":(39.0,-75.5),
+            "FL":(27.8,-81.7),"GA":(32.2,-83.4),"HI":(20.3,-156.4),"ID":(44.3,-114.5),
+            "IL":(40.0,-89.2),"IN":(40.3,-86.1),"IA":(42.0,-93.2),"KS":(38.5,-98.4),
+            "KY":(37.5,-85.3),"LA":(31.2,-91.8),"ME":(45.4,-69.2),"MD":(39.1,-76.8),
+            "MA":(42.3,-71.8),"MI":(44.3,-85.4),"MN":(46.4,-93.1),"MS":(32.7,-89.7),
+            "MO":(38.5,-92.5),"MT":(47.0,-110.5),"NE":(41.5,-99.9),"NV":(39.3,-116.6),
+            "NH":(44.0,-71.6),"NJ":(40.1,-74.5),"NM":(34.5,-106.2),"NY":(42.2,-74.9),
+            "NC":(35.6,-79.8),"ND":(47.5,-100.5),"OH":(40.4,-82.8),"OK":(35.6,-97.5),
+            "OR":(44.6,-122.1),"PA":(40.6,-77.2),"RI":(41.7,-71.5),"SC":(33.9,-80.9),
+            "SD":(44.4,-100.2),"TN":(35.9,-86.7),"TX":(31.5,-99.3),"UT":(39.4,-111.1),
+            "VT":(44.0,-72.7),"VA":(37.8,-78.2),"WA":(47.4,-120.5),"WV":(38.9,-80.5),
+            "WI":(44.3,-89.8),"WY":(43.0,-107.6),"DC":(38.9,-77.0),
+        }
+
+        for m in members:
             if _stop_event.is_set():
                 break
             try:
-                url = f"https://api.propublica.org/congress/v1/{congress}/{chamber}/members.json"
-                req = urllib.request.Request(
-                    url,
-                    headers={
-                        "User-Agent": "Gleaning/1.0 (sentinel.commons@gmail.com)",
-                        "X-API-Key": os.environ.get("PROPUBLICA_API_KEY", ""),
-                    }
+                name = m.get("name", {}).get("official_full", "")
+                if not name:
+                    first = m.get("name", {}).get("first", "")
+                    last  = m.get("name", {}).get("last", "")
+                    name  = f"{first} {last}".strip()
+                if not name:
+                    continue
+
+                # Get most recent term
+                terms = m.get("terms", [])
+                if not terms:
+                    continue
+                current = terms[-1]
+                state      = current.get("state", "")
+                party      = current.get("party", "")
+                term_type  = current.get("type", "")
+                chamber    = "Senate" if term_type == "sen" else "House"
+                district   = str(current.get("district", "")) if current.get("district") else ""
+                phone      = current.get("phone", "")
+                address    = current.get("address", "")
+                start_year = current.get("start", "")[:4] if current.get("start") else ""
+                opensecrets = m.get("id", {}).get("opensecrets", "")
+                wikipedia   = m.get("id", {}).get("wikipedia", "")
+
+                # Check if already exists
+                existing = session.execute(
+                    __import__('sqlalchemy').text(
+                        "SELECT id FROM pawns WHERE name=:n AND state_code=:s AND chamber=:c"
+                    ),
+                    {"n": name, "s": state, "c": chamber}
+                ).fetchone()
+                if existing:
+                    continue
+
+                donors_note = []
+                if opensecrets:
+                    donors_note = [{"donor": f"See OpenSecrets.org/politicians/summary?cid={opensecrets}", "amount": "Full donor data →"}]
+
+                pawn = Pawn(
+                    name             = name,
+                    party            = party,
+                    state            = state,
+                    state_code       = state,
+                    chamber          = chamber,
+                    district         = district,
+                    in_office_since  = start_year,
+                    salary           = "$174,000/yr",
+                    net_worth_entry  = "See financial disclosures",
+                    net_worth_current= "See financial disclosures",
+                    net_worth_note   = f"Financial disclosures: clerk.house.gov · senate.gov · Source: public record",
+                    top_donors       = _json.dumps(donors_note),
+                    total_contributions = f"See OpenSecrets.org · ID: {opensecrets}" if opensecrets else "See OpenSecrets.org",
+                    stock_trades     = _json.dumps([{"date": "See STOCK Act filings", "trade": f"clerk.house.gov · senate.gov/financial-disclosures · Public record"}]),
+                    key_votes        = _json.dumps([]),
+                    committees       = "See congress.gov for committee assignments",
+                    corp_connections = "See OpenSecrets.org for donor connections",
+                    puppet_connections = "See OpenSecrets.org for asset manager connections",
+                    violations       = "",
+                    source           = f"unitedstates.github.io · OpenSecrets {opensecrets} · Wikipedia: {wikipedia} · Public record",
+                    verified         = True,
                 )
-                with urllib.request.urlopen(req, timeout=15) as resp:
-                    data = _json.loads(resp.read())
-
-                members = data.get("results", [{}])[0].get("members", [])
-                print(f"[SCANNER] ProPublica {chamber}: {len(members)} members found")
-
-                for m in members:
-                    if _stop_event.is_set():
-                        break
-                    name = f"{m.get('first_name','')} {m.get('last_name','')}".strip()
-                    if not name:
-                        continue
-                    state = m.get("state", "")
-                    chamber_name = "Senate" if chamber == "senate" else "House"
-
-                    try:
-                        existing = session.execute(
-                            __import__('sqlalchemy').text(
-                                "SELECT id FROM pawns WHERE name=:n AND state_code=:s AND chamber=:c"
-                            ),
-                            {"n": name, "s": state, "c": chamber_name}
-                        ).fetchone()
-                        if existing:
-                            continue
-
-                        party_map = {"R": "Republican", "D": "Democrat", "ID": "Independent"}
-                        party = party_map.get(m.get("party", ""), m.get("party", ""))
-
-                        pawn = Pawn(
-                            name=name,
-                            party=party,
-                            state=m.get("state", ""),
-                            state_code=m.get("state", ""),
-                            chamber=chamber_name,
-                            district=str(m.get("district", "")) if m.get("district") else "",
-                            in_office_since=str(m.get("seniority", "")),
-                            salary="$174,000/yr" if chamber == "house" else "$174,000/yr",
-                            committees=", ".join(
-                                [c.get("name","") for c in m.get("roles",[{}])[0].get("committees",[])]
-                            ) if m.get("roles") else "",
-                            total_contributions="See OpenSecrets.org",
-                            top_donors=_json.dumps([]),
-                            stock_trades=_json.dumps([]),
-                            key_votes=_json.dumps([]),
-                            source="ProPublica Congress API · congress.propublica.org · Public record",
-                            verified=True,
-                        )
-                        session.add(pawn)
-                        session.commit()
-                        added.append({"name": name, "state": state, "chamber": chamber_name})
-                    except Exception as e:
-                        session.rollback()
-                        print(f"[SCANNER] Pawn save error {name}: {e}")
-
-                time.sleep(1)
+                session.add(pawn)
+                session.commit()
+                added.append({"name": name, "state": state, "chamber": chamber})
 
             except Exception as e:
-                errors.append(f"ProPublica-{chamber}")
-                print(f"[SCANNER] ProPublica {chamber} failed: {e}")
+                session.rollback()
+                print(f"[SCANNER] Pawn save error {name}: {e}")
 
         session.close()
         print(f"[SCANNER] Pawns: {len(added)} new members added")

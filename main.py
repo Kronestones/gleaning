@@ -423,7 +423,7 @@ async def pawns_page(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/puppet-masters", response_class=HTMLResponse)
 async def puppet_masters(request: Request):
-    return templates.TemplateResponse("puppet_masters.html", {"request": request})
+    return RedirectResponse(url="/stats")
 
 
 @app.get("/barter", response_class=HTMLResponse)
