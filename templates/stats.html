@@ -85,6 +85,35 @@
     footer{background:#111;border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:24px 16px;font-size:13px;line-height:1.8}
     footer a{color:var(--green-bright)}
     @media(max-width:480px){.big-num{font-size:32px}.big-number-card.featured .big-num{font-size:40px}.ceo-since{display:none}}
+
+    .puppet-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+    .puppet-header{padding:20px 20px 0}
+    .puppet-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .puppet-name{font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.02em}
+    .puppet-badge{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);color:#e74c3c;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:0.05em;flex-shrink:0}
+    .puppet-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);margin-top:16px}
+    .puppet-stat{padding:14px 16px;border-right:1px solid var(--border)}
+    .puppet-stat:last-child{border-right:none}
+    .puppet-stat-num{font-size:20px;font-weight:800;color:var(--green-bright);margin-bottom:4px}
+    .puppet-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.4}
+    .holdings-section{padding:16px 20px}
+    .holdings-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:10px}
+    .holdings-grid{display:flex;flex-direction:column;gap:6px}
+    .holding-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 12px}
+    .holding-name{font-size:13px;color:var(--text)}
+    .holding-pct{font-size:13px;font-weight:700;color:var(--green-bright)}
+    .broader-holdings{padding:0 20px 16px}
+    .broader-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:8px}
+    .sector-grid{display:flex;flex-wrap:wrap;gap:6px}
+    .sector-tag{background:rgba(74,158,107,0.08);border:1px solid rgba(74,158,107,0.2);color:var(--green-bright);font-size:11px;padding:4px 10px;border-radius:20px}
+    .violation-strip{display:flex;align-items:flex-start;gap:8px;background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:10px 14px;margin:8px 20px 0;flex-wrap:wrap}
+    .violation-label{font-size:11px;color:#e74c3c;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;flex-shrink:0;margin-top:2px}
+    .violation-title{font-size:14px;font-weight:700;color:#e74c3c;margin-bottom:2px}
+    .violation-text{font-size:12px;color:var(--muted);line-height:1.5}
+    .lobbying-strip{margin:0 20px 16px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:12px 14px}
+    .lobbying-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#e74c3c;margin-bottom:4px;font-family:monospace}
+    .lobbying-amt{font-size:16px;font-weight:800;color:#e74c3c;margin-bottom:4px}
+    .lobbying-text{font-size:12px;color:var(--muted);line-height:1.6}
   </style>
 </head>
 <body>
