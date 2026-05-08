@@ -145,7 +145,7 @@ def expire_old_listings(db) -> int:
     """Auto-expire listings with no activity for 60 days."""
     from sqlalchemy import text
     try:
-        cutoff = datetime.now(timezone.utc) - timedelta(days=60)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
         result = db.execute(text("""
             UPDATE barter_listings
             SET status = 'expired'
