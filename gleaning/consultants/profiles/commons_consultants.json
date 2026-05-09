@@ -1,0 +1,190 @@
+[
+  {
+    "id": "ch_member_trust",
+    "name": "Member Trust Specialist",
+    "domain": "community_health",
+    "focus": "trust",
+    "failure_modes": [
+      "good faith member misidentified as bad actor",
+      "pattern matching too aggressive",
+      "new member penalized for normal behavior"
+    ],
+    "checks": [
+      "account age considered",
+      "submission history reviewed",
+      "single flag vs pattern of flags"
+    ],
+    "notes": "Most members are good faith. A single flag rarely means a bad actor. Look for patterns not incidents."
+  },
+  {
+    "id": "ch_new_member",
+    "name": "New Member Specialist",
+    "domain": "community_health",
+    "focus": "onboarding",
+    "failure_modes": [
+      "new member confused by platform",
+      "first post flagged incorrectly",
+      "Commons token not working for barter"
+    ],
+    "checks": [
+      "account created successfully",
+      "email verified",
+      "JWT token retrievable from Commons profile"
+    ],
+    "notes": "New members need patience. First barter listing often has format issues \u2014 guide don't punish."
+  },
+  {
+    "id": "ch_repeat_offender",
+    "name": "Repeat Offender Specialist",
+    "domain": "community_health",
+    "focus": "repeat",
+    "failure_modes": [
+      "member creates new account after ban",
+      "coordinated flag campaigns",
+      "sockpuppet accounts"
+    ],
+    "checks": [
+      "IP and email patterns",
+      "submission timing",
+      "similar usernames or bios"
+    ],
+    "notes": "Banned members sometimes return. Look for similar writing patterns, timing, and content themes."
+  },
+  {
+    "id": "ch_vulnerable_member",
+    "name": "Vulnerable Member Specialist",
+    "domain": "community_health",
+    "focus": "vulnerable",
+    "failure_modes": [
+      "crisis situation not recognized",
+      "member in danger dismissed",
+      "DV situation mishandled"
+    ],
+    "checks": [
+      "language indicating distress",
+      "requests touching safety resources",
+      "barter listings suggesting homelessness or crisis"
+    ],
+    "notes": "The Commons serves vulnerable people. When in doubt assume a member may be in a difficult situation. Escalate safety concerns immediately."
+  },
+  {
+    "id": "bm_prohibited",
+    "name": "Prohibited Content Specialist",
+    "domain": "barter_moderation",
+    "focus": "prohibited",
+    "failure_modes": [
+      "prohibited keyword in description not caught",
+      "image contains prohibited item",
+      "listing title clean but description problematic"
+    ],
+    "checks": [
+      "full text scan title + offering + seeking",
+      "image review if photo present",
+      "prohibited list: alcohol drugs weapons hate-merchandise sexual-content tobacco"
+    ],
+    "notes": "Prohibited keyword list in barter.py. Image review is manual. When in doubt escalate to Covenant."
+  },
+  {
+    "id": "bm_food_safety",
+    "name": "Food Safety Barter Specialist",
+    "domain": "barter_moderation",
+    "focus": "food_safety",
+    "failure_modes": [
+      "homemade food without safety disclosure",
+      "recalled products listed for trade",
+      "expired food listed as fresh"
+    ],
+    "checks": [
+      "homemade food listings include safety note",
+      "no recalled products",
+      "expiry dates disclosed if applicable"
+    ],
+    "notes": "Food traded on the platform carries risk. Homemade food should include ingredients list. Allergens must be disclosed."
+  },
+  {
+    "id": "bm_fair_trade",
+    "name": "Fair Trade Specialist",
+    "domain": "barter_moderation",
+    "focus": "fairness",
+    "failure_modes": [
+      "exploitative exchange ratios",
+      "listing targeting desperate members",
+      "multiple listings monopolizing categories"
+    ],
+    "checks": [
+      "trade ratio reasonable for both parties",
+      "no targeting of specific vulnerable groups",
+      "member not flooding category with listings"
+    ],
+    "notes": "Barter should benefit both parties. A listing offering nothing of value for something needed is predatory."
+  },
+  {
+    "id": "bm_location",
+    "name": "Barter Location Specialist",
+    "domain": "barter_moderation",
+    "focus": "location",
+    "failure_modes": [
+      "location too vague to enable trade",
+      "fake state/county",
+      "listing appears to be shipping not local trade"
+    ],
+    "checks": [
+      "state and county plausible",
+      "trade feasible at listed location",
+      "not clearly a national shipping listing"
+    ],
+    "notes": "Barter is local. State-center coordinates used when no precise location given. Listings with no location are less useful."
+  },
+  {
+    "id": "fi_donation",
+    "name": "Donation Integrity Specialist",
+    "domain": "fund_integrity",
+    "focus": "donations",
+    "failure_modes": [
+      "duplicate donation recorded",
+      "donation amount mismatch",
+      "donor info not discarded after processing"
+    ],
+    "checks": [
+      "each donation has unique transaction ID",
+      "amount matches payment processor record",
+      "donor email discarded after confirmation sent"
+    ],
+    "notes": "All donations go to Commons redistribution fund. No donor data retained. Transaction IDs are audit trail."
+  },
+  {
+    "id": "fi_redistribution",
+    "name": "Redistribution Specialist",
+    "domain": "fund_integrity",
+    "focus": "redistribution",
+    "failure_modes": [
+      "redistribution not logged",
+      "recipient info retained after distribution",
+      "amount does not match logged total"
+    ],
+    "checks": [
+      "every distribution logged with timestamp",
+      "recipient info discarded after transfer",
+      "running total matches sum of distributions"
+    ],
+    "notes": "Redistribution fund is sacred. Every dollar in and out logged. No exceptions. Escalate any anomaly immediately to Register then Covenant then Gleaning Team."
+  },
+  {
+    "id": "fi_operating",
+    "name": "Operating Cost Specialist",
+    "domain": "fund_integrity",
+    "focus": "operating",
+    "failure_modes": [
+      "operating costs exceed donation revenue",
+      "costs not documented",
+      "costs claimed above actual"
+    ],
+    "checks": [
+      "Render cost documented",
+      "Neon cost documented",
+      "Resend cost documented",
+      "domain cost documented"
+    ],
+    "notes": "Donations above operating costs go to redistribution. Operating costs must be documented and transparent. Current platform costs: Render free tier, Neon free tier, Resend free tier."
+  }
+]

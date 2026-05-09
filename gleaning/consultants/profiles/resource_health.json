@@ -1,0 +1,224 @@
+[
+  {
+    "id": "rh_hrsa",
+    "name": "HRSA Feed Specialist",
+    "domain": "data_source",
+    "source": "HRSA",
+    "check_url": "https://findahealthcenter.hrsa.gov/api/geolocate",
+    "expected_min": 50,
+    "failure_modes": [
+      "API returns empty results",
+      "SSL certificate error",
+      "rate limit hit before all states processed"
+    ],
+    "notes": "50 states + DC. pageSize=100. 0.5s delay between states. Fails silently on some states \u2014 check for empty results not just errors."
+  },
+  {
+    "id": "rh_211",
+    "name": "211.org Feed Specialist",
+    "domain": "data_source",
+    "source": "211",
+    "check_url": "https://api.211.org/search/v1/search",
+    "expected_min": 5,
+    "failure_modes": [
+      "API key required for some endpoints",
+      "returns different schema by region",
+      "rate limits after ~50 requests"
+    ],
+    "notes": "10 search terms. 1s delay between. Schema varies \u2014 check for both records and results keys."
+  },
+  {
+    "id": "rh_eventbrite",
+    "name": "Eventbrite Feed Specialist",
+    "domain": "data_source",
+    "source": "Eventbrite",
+    "check_url": "https://www.eventbriteapi.com/v3/events/search/",
+    "expected_min": 1,
+    "failure_modes": [
+      "token expired",
+      "rate limited without token",
+      "returns past events"
+    ],
+    "notes": "EVENTBRITE_TOKEN env var optional but recommended. Filter status=live. Free events only. 12 search terms."
+  },
+  {
+    "id": "rh_congress",
+    "name": "Congress Legislators Feed Specialist",
+    "domain": "data_source",
+    "source": "unitedstates.github.io",
+    "check_url": "https://unitedstates.github.io/congress-legislators/legislators-current.json",
+    "expected_min": 500,
+    "failure_modes": [
+      "GitHub Pages down",
+      "JSON schema changed",
+      "returns cached stale data"
+    ],
+    "notes": "No API key needed. Returns 516 current members. Check both first/last name fields and official_full. Most reliable source we use."
+  },
+  {
+    "id": "rh_ram",
+    "name": "RAM Clinic Feed Specialist",
+    "domain": "data_source",
+    "source": "RAM",
+    "check_url": "https://www.ramusa.org/events/",
+    "expected_min": 1,
+    "failure_modes": [
+      "HTML structure changed",
+      "no upcoming events listed",
+      "regex fails on new markup"
+    ],
+    "notes": "Scraper not API. Fragile. Check ramusa.org manually if scanner returns 0 RAM events. Annual Wise VA event is most reliable."
+  },
+  {
+    "id": "rh_neon",
+    "name": "Neon Database Specialist",
+    "domain": "platform_system",
+    "focus": "database",
+    "failure_modes": [
+      "connection pool exhausted",
+      "SSL handshake timeout",
+      "channel_binding=require causing auth failure",
+      "too many connections on free tier"
+    ],
+    "checks": [
+      "pool_pre_ping=True set",
+      "connection string includes sslmode=require&channel_binding=require",
+      "max_connections not exceeded"
+    ],
+    "commands": {
+      "test": "python3 -c \"from gleaning.database import engine; print(engine.execute('SELECT 1').scalar())\""
+    },
+    "notes": "Neon free tier has connection limits. pool_pre_ping catches stale connections. DB URL in seed scripts hardcoded \u2014 Render uses env var."
+  },
+  {
+    "id": "rh_render",
+    "name": "Render Deployment Specialist",
+    "domain": "platform_system",
+    "focus": "render",
+    "failure_modes": [
+      "free tier spin-down breaks scanner",
+      "gunicorn worker timeout",
+      "build fails on requirements.txt",
+      "environment variable missing"
+    ],
+    "checks": [
+      "scanner starts 30s after lifespan startup",
+      "SCAN_INTERVAL_HOURS=6 survives restarts",
+      "all required env vars set in Render dashboard"
+    ],
+    "notes": "Free tier spins down after inactivity. Scanner must start within 30s of startup. Check Render logs for lifespan errors first."
+  },
+  {
+    "id": "rh_resend",
+    "name": "Resend Email Specialist",
+    "domain": "platform_system",
+    "focus": "email",
+    "failure_modes": [
+      "RESEND_API_KEY not set",
+      "FROM_ADDRESS domain not verified",
+      "rate limit on free tier",
+      "FOUNDER_EMAIL or TEAM_EMAIL not set"
+    ],
+    "checks": [
+      "env vars present",
+      "domain verified in Resend dashboard",
+      "email not going to spam"
+    ],
+    "notes": "Free tier: 100 emails/day. FROM_ADDRESS must match verified domain. TEAM_EMAIL falls back to FOUNDER_EMAIL if not set."
+  },
+  {
+    "id": "ps_scanner",
+    "name": "Resource Scanner Specialist",
+    "domain": "platform_system",
+    "focus": "scanner",
+    "failure_modes": [
+      "syntax error crashes lifespan",
+      "thread dies silently",
+      "DB session not closed after scan",
+      "stop event not respected"
+    ],
+    "checks": [
+      "gleaning/resource_scanner.py imports cleanly",
+      "_stop_event.set() called on shutdown",
+      "session.close() in finally block",
+      "SCAN_INTERVAL_HOURS=6"
+    ],
+    "notes": "Scanner runs as daemon thread. If it crashes the app continues \u2014 check logs for [SCANNER] output. Last_updated refresh happens after every scan."
+  },
+  {
+    "id": "ps_barter",
+    "name": "Barter System Specialist",
+    "domain": "platform_system",
+    "focus": "barter",
+    "failure_modes": [
+      "SECRET_KEY mismatch between Commons and Gleaning",
+      "JWT token expired",
+      "prohibited keyword false positive",
+      "barter_listings table not created"
+    ],
+    "checks": [
+      "SECRET_KEY same on both Render services",
+      "BarterListing table exists in Neon",
+      "verify_commons_token returns payload not None",
+      "30 day expiry set correctly"
+    ],
+    "notes": "Coming soon until Commons is ready. Backend complete. JWT verification uses same SECRET_KEY as The Commons HS256."
+  },
+  {
+    "id": "ps_pawns",
+    "name": "Pawns System Specialist",
+    "domain": "platform_system",
+    "focus": "pawns",
+    "failure_modes": [
+      "json import missing from main.py",
+      "pawns table extend_existing not set",
+      "top_donors_list parse error",
+      "unitedstates.github.io returns different schema"
+    ],
+    "checks": [
+      "import json at top of main.py",
+      "__table_args__ = extend_existing True on Pawn model",
+      "json.loads wrapped in try/except",
+      "check both official_full and first+last name fields"
+    ],
+    "notes": "6 detailed manually seeded. 510+ from scanner. Scanner uses unitedstates.github.io \u2014 no API key needed."
+  },
+  {
+    "id": "ps_map",
+    "name": "Map System Specialist",
+    "domain": "platform_system",
+    "focus": "map",
+    "failure_modes": [
+      "Leaflet CDN down",
+      "popup events panel not loading",
+      "attribution z-index covering buttons",
+      "toggleSidebar function missing"
+    ],
+    "checks": [
+      "Leaflet 1.9.4 loading from unpkg CDN",
+      "toggleSidebar() defined in resources.html",
+      "popup-toggle hidden when sidebar open",
+      "Leaflet attribution hidden behind sidebar"
+    ],
+    "notes": "Resources page uses dark CARTO tiles. Popup events filter ?popup=1 in API. Z-index managed via JS toggleSidebar function."
+  },
+  {
+    "id": "ps_auth",
+    "name": "Authentication Specialist",
+    "domain": "platform_system",
+    "focus": "auth",
+    "failure_modes": [
+      "SECRET_KEY regenerated on Render restart",
+      "JWT algorithm mismatch",
+      "token expired after 7 days",
+      "Commons auth not compatible with Gleaning barter"
+    ],
+    "checks": [
+      "SECRET_KEY set as permanent env var not generated",
+      "algorithm=HS256 in both systems",
+      "token expiry 7 days",
+      "SECRET_KEY identical on both Render services"
+    ],
+    "notes": "Commons uses python-jose for JWT. Gleaning barter.py uses same library. SECRET_KEY must never rotate without coordinating both services."
+  }
+]

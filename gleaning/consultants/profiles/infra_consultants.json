@@ -1,0 +1,218 @@
+[
+  {
+    "id": "is_fastapi",
+    "name": "FastAPI Specialist",
+    "domain": "infra_system",
+    "focus": "fastapi",
+    "failure_modes": [
+      "lifespan error prevents startup",
+      "route decorator conflict",
+      "dependency injection failure",
+      "async function called without await"
+    ],
+    "checks": [
+      "all routes have unique paths",
+      "lifespan yields exactly once",
+      "Depends() used correctly",
+      "async routes use await"
+    ],
+    "notes": "Startup errors show in Render logs before app binds to port. Lifespan errors are fatal. Check for SyntaxError in imported modules first."
+  },
+  {
+    "id": "is_sqlalchemy",
+    "name": "SQLAlchemy Specialist",
+    "domain": "infra_system",
+    "focus": "database",
+    "failure_modes": [
+      "model defined twice without extend_existing",
+      "session not closed in finally",
+      "migration needed for new column",
+      "connection pool exhausted"
+    ],
+    "checks": [
+      "extend_existing=True on tables that may already exist",
+      "every session.close() in finally block",
+      "Base.metadata.create_all() run after model changes",
+      "pool_pre_ping=True on engine"
+    ],
+    "notes": "New columns require ALTER TABLE or create_all(). The Pawn model needed extend_existing=True. Always close sessions in finally blocks."
+  },
+  {
+    "id": "is_security",
+    "name": "Security Specialist",
+    "domain": "infra_system",
+    "focus": "security",
+    "failure_modes": [
+      "SECRET_KEY in git repository",
+      "DB URL in committed code",
+      "API key exposed in logs",
+      "SQL injection via unparameterized query"
+    ],
+    "checks": [
+      "no secrets in git (check seed scripts)",
+      "all queries use parameterized text()",
+      "API keys only in Render env vars",
+      "rate limiting on auth endpoints"
+    ],
+    "notes": "DB URL is hardcoded in seed scripts \u2014 acceptable since seeds run locally not on server. All server secrets in Render env vars only. Never log tokens or keys."
+  },
+  {
+    "id": "is_merger",
+    "name": "Commons-Gleaning Merger Specialist",
+    "domain": "infra_system",
+    "focus": "merger",
+    "failure_modes": [
+      "schema conflicts between Commons and Gleaning DB",
+      "JWT secret mismatch",
+      "duplicate user tables",
+      "URL routing conflicts after merger"
+    ],
+    "checks": [
+      "SECRET_KEY identical on both Render services",
+      "no table name conflicts between Commons and Gleaning models",
+      "/gleaning redirect added to The Commons main.py",
+      "barter auth works with Commons JWT"
+    ],
+    "notes": "The /gleaning redirect in The Commons is still missing. SECRET_KEY must match. Barter verify_commons_token() already built and ready. Merger needs shared DB or cross-service API."
+  },
+  {
+    "id": "is_performance",
+    "name": "Performance Specialist",
+    "domain": "infra_system",
+    "focus": "performance",
+    "failure_modes": [
+      "scanner blocking main thread",
+      "resource API slow on large result sets",
+      "Pawns page slow with 500+ records",
+      "map rendering slow with many markers"
+    ],
+    "checks": [
+      "scanner runs as daemon thread",
+      "API queries use LIMIT",
+      "Pawns query ordered and limited",
+      "Leaflet uses circle markers not full markers"
+    ],
+    "notes": "Scanner is daemon thread \u2014 won't block app. Resource API limited to 500. Pawns loads all records \u2014 may need pagination when list grows beyond 1000."
+  },
+  {
+    "id": "is_monitoring",
+    "name": "Monitoring Specialist",
+    "domain": "infra_system",
+    "focus": "monitoring",
+    "failure_modes": [
+      "/health endpoint not returning 200",
+      "resilience heartbeat stopped",
+      "guardian not running",
+      "watcher coordinator stalled"
+    ],
+    "checks": [
+      "GET /health returns 200",
+      "[RESILIENCE] Heartbeat in logs",
+      "[GUARDIAN] Guardian is active in logs",
+      "[WATCHERS] All watchers running in logs"
+    ],
+    "notes": "Check Render logs after deploy. All four systems should show startup messages. If any missing check for import errors in gleaning_circle.py and related files."
+  },
+  {
+    "id": "sh_hrsa_all_states",
+    "name": "HRSA All-States Coverage Specialist",
+    "domain": "scanner_health",
+    "focus": "hrsa_coverage",
+    "failure_modes": [
+      "some states return 0 results",
+      "API changes endpoint",
+      "rate limit cuts scan short"
+    ],
+    "checks": [
+      "51 state codes processed (50 + DC)",
+      "results logged per state",
+      "0.5s delay between states respected"
+    ],
+    "notes": "HRSA should return results for most states. States with 0 results: check if state code is valid, check if API endpoint changed."
+  },
+  {
+    "id": "sh_vote_tracker",
+    "name": "Vote Tracker Specialist",
+    "domain": "scanner_health",
+    "focus": "votes",
+    "failure_modes": [
+      "ProPublica API returns 401 without key",
+      "vote detail endpoint different from search",
+      "member name matching fails"
+    ],
+    "checks": [
+      "PROPUBLICA_API_KEY set in Render env",
+      "vote positions array not empty",
+      "name matching uses ILIKE not exact match"
+    ],
+    "notes": "Vote tracking currently limited without ProPublica key. Free key at propublica.org/datastore/api. Keyword list in resource_scanner.py PEOPLE_WANT variable."
+  },
+  {
+    "id": "sh_popup_events",
+    "name": "Popup Events Specialist",
+    "domain": "scanner_health",
+    "focus": "popup_events",
+    "failure_modes": [
+      "Eventbrite returns no free events",
+      "is_popup=True not set on scanner results",
+      "popup panel shows 0 events"
+    ],
+    "checks": [
+      "EVENTBRITE_TOKEN set in Render env",
+      "is_popup=True set in _fetch_eventbrite",
+      "?popup=1 query param filters correctly in API"
+    ],
+    "notes": "26 manually seeded popup events. Scanner adds more. Get free Eventbrite token at eventbrite.com/platform to increase results."
+  },
+  {
+    "id": "gp_resources",
+    "name": "Resource Expansion Specialist",
+    "domain": "growth",
+    "focus": "resources",
+    "failure_modes": [
+      "duplicate resources seeded",
+      "resource in wrong category",
+      "resource URL dead"
+    ],
+    "checks": [
+      "save_resource checks name+city+state uniqueness",
+      "category is valid value",
+      "URL tested before seeding"
+    ],
+    "notes": "Valid categories: food health housing legal lgbtq unhoused education safety community parking greenbook. Check for duplicates before large seed batches."
+  },
+  {
+    "id": "gp_pawns",
+    "name": "Pawns Expansion Specialist",
+    "domain": "growth",
+    "focus": "pawns",
+    "failure_modes": [
+      "net worth data missing for most members",
+      "key votes empty for scanner-added members",
+      "state-level officials not yet included"
+    ],
+    "checks": [
+      "6 detailed manually seeded pawns have full data",
+      "510+ scanner pawns have OpenSecrets links",
+      "ProPublica key needed for vote data"
+    ],
+    "notes": "State officials need a separate data source. ProPublica free key dramatically improves vote tracking. OpenSecrets IDs in scanner data enable direct links."
+  },
+  {
+    "id": "gp_technical_debt",
+    "name": "Technical Debt Specialist",
+    "domain": "growth",
+    "focus": "tech_debt",
+    "failure_modes": [
+      "puppet_masters.html exists but unused",
+      "multiple corp-list divs cause confusion",
+      "barter.html coming soon indefinitely"
+    ],
+    "checks": [
+      "puppet_masters.html can be deleted after Commons merger",
+      "stats.html corp-list structure documented",
+      "barter full UI planned for post-Commons launch"
+    ],
+    "notes": "Known debt: puppet_masters.html unused, barter coming soon. Neither is breaking anything. Clean up during merger."
+  }
+]

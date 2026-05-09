@@ -489,6 +489,13 @@ class RepairConsultation:
         }
 
 
+try:
+    from gleaning.consultants.pool import ConsultantPool
+    consultants = ConsultantPool()
+except Exception as e:
+    print(f"[COMMONS TEAM] Consultant pool unavailable: {e}")
+    consultants = None
+
 deliberation    = CommonsDeliberation()
 auto_deliberate = AutoDeliberation()
 repair          = RepairConsultation()

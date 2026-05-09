@@ -1,0 +1,138 @@
+[
+  {
+    "id": "fw_produce",
+    "name": "Produce Waste Specialist",
+    "domain": "food_waste",
+    "focus": "produce",
+    "failure_modes": [
+      "staged photos using props",
+      "inflated weight estimates for small volumes",
+      "misidentified food type"
+    ],
+    "checks": [
+      "visible rot or damage consistent with waste",
+      "plausible volume for claimed weight",
+      "location consistent with produce source"
+    ],
+    "notes": "Produce waste is the most common submission. 38 lbs/week family baseline. Leafy greens weigh less than claimed more often than not."
+  },
+  {
+    "id": "fw_bakery",
+    "name": "Bakery Waste Specialist",
+    "domain": "food_waste",
+    "focus": "bakery",
+    "failure_modes": [
+      "end-of-day photos not representing actual waste",
+      "bread weighed with packaging",
+      "single-store submissions inflated"
+    ],
+    "checks": [
+      "consistent with bakery closing time",
+      "packaging visible or absent",
+      "volume matches claimed weight"
+    ],
+    "notes": "Bakery waste is predictable \u2014 end of day, daily. Photos at opening time are suspicious."
+  },
+  {
+    "id": "fw_dairy",
+    "name": "Dairy Waste Specialist",
+    "domain": "food_waste",
+    "focus": "dairy",
+    "failure_modes": [
+      "expired product not yet discarded",
+      "photos of product still on shelf",
+      "weight includes liquid"
+    ],
+    "checks": [
+      "product visibly discarded not shelved",
+      "expiry dates visible if possible",
+      "container counts consistent with weight"
+    ],
+    "notes": "Dairy waste often involves liquid weight. 1 gallon milk = 8.6 lbs. Count containers."
+  },
+  {
+    "id": "fw_meat",
+    "name": "Meat and Protein Waste Specialist",
+    "domain": "food_waste",
+    "focus": "meat",
+    "failure_modes": [
+      "photos of packaging not product",
+      "claimed weights significantly exceed visible volume",
+      "location inconsistent with meat processing"
+    ],
+    "checks": [
+      "packaging or product visible",
+      "weight plausible for visible volume",
+      "source location makes sense"
+    ],
+    "notes": "Meat waste is high value and high weight. 1 lb of meat is roughly the size of a fist. Scale claims carefully."
+  },
+  {
+    "id": "fw_prepared",
+    "name": "Prepared Food Waste Specialist",
+    "domain": "food_waste",
+    "focus": "prepared",
+    "failure_modes": [
+      "restaurant end-of-day photos staged",
+      "weight includes containers",
+      "single meal counts inflated to bulk weight"
+    ],
+    "checks": [
+      "containers consistent with claimed volume",
+      "restaurant or institutional source plausible",
+      "time of submission consistent with service hours"
+    ],
+    "notes": "Prepared food waste from restaurants and institutions. Container weight can be 30-40% of total."
+  },
+  {
+    "id": "fw_corporate",
+    "name": "Corporate Waste Specialist",
+    "domain": "food_waste",
+    "focus": "corporate",
+    "failure_modes": [
+      "single store vs distribution center confusion",
+      "sustainability report numbers vs actual waste",
+      "redistribution labeled as waste"
+    ],
+    "checks": [
+      "source identified as corporate facility",
+      "scale consistent with corporate operation",
+      "not labeled as donated or redistributed"
+    ],
+    "notes": "Corporate waste reports are highest value. Distribution centers can generate thousands of lbs daily. Verify source type."
+  },
+  {
+    "id": "fw_grocery",
+    "name": "Grocery Retail Waste Specialist",
+    "domain": "food_waste",
+    "focus": "grocery",
+    "failure_modes": [
+      "competitor sabotage submissions",
+      "photos from dumpster not loading dock",
+      "weight includes non-food items"
+    ],
+    "checks": [
+      "store identified plausibly",
+      "waste consistent with grocery categories",
+      "no non-food items in claimed weight"
+    ],
+    "notes": "Grocery waste is consistent and predictable. Produce, bakery, deli, dairy in that order by volume."
+  },
+  {
+    "id": "fw_school",
+    "name": "School and Institutional Food Waste Specialist",
+    "domain": "food_waste",
+    "focus": "institutional",
+    "failure_modes": [
+      "cafeteria tray waste vs bulk waste confusion",
+      "photos during service not after",
+      "claimed weights exceed institutional capacity"
+    ],
+    "checks": [
+      "source identified as school or institution",
+      "waste visible after service hours",
+      "volume consistent with institution size"
+    ],
+    "notes": "School food waste is significant and systematic. USDA school lunch waste is documented and chronic."
+  }
+]

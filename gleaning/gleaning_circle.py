@@ -546,6 +546,15 @@ class RepairConsultation:
         }
 
 
+# ── Consultant Pool ───────────────────────────────────────────────────────────
+
+try:
+    from gleaning.consultants.pool import ConsultantPool
+    consultants = ConsultantPool()
+except Exception as e:
+    print(f"[GLEANING TEAM] Consultant pool unavailable: {e}")
+    consultants = None
+
 # ── Instances ──────────────────────────────────────────────────────────────────
 
 deliberation    = GleaningDeliberation()
