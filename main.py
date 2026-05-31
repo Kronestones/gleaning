@@ -607,8 +607,9 @@ async def resources_page(request: Request):
 
 @app.get("/api/resources")
 async def api_resources(category: str = None, state: str = None, q: str = None, popup: str = None):
-    from gleaning.database import engine
-    from sqlalchemy import text
+    from sqlalchemy import create_engine, text
+    import os
+    _engine = create_engine(os.environ["DATABASE_URL"], pool_pre_ping=True)
     try:
         query = "SELECT * FROM resources WHERE 1=1"
         params = {}
