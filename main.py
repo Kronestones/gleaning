@@ -81,8 +81,7 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         truth_wall.seed(db)
-    finally:
-        db.close()
+
 
     # Seed corporate waste data on first run
     from gleaning.database import CorporateWasteRecord
