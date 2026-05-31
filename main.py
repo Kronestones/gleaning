@@ -81,7 +81,8 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         truth_wall.seed(db)
-
+    except Exception as e:
+        print(f"[GLEANING] Truth wall seed failed: {e}")
 
     # Seed corporate waste data on first run
     from gleaning.database import CorporateWasteRecord
