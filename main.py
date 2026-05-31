@@ -607,9 +607,8 @@ async def resources_page(request: Request):
 
 @app.get("/api/resources")
 async def api_resources(category: str = None, state: str = None, q: str = None, popup: str = None):
-    from gleaning.database import SessionLocal
+    from gleaning.database import engine
     from sqlalchemy import text
-    db = SessionLocal()
     try:
         query = "SELECT * FROM resources WHERE 1=1"
         params = {}
@@ -624,9 +623,10 @@ async def api_resources(category: str = None, state: str = None, q: str = None, 
             params["q"] = f"%{q}%"
         if popup:
             query += " AND is_popup = TRUE"
-        query += " ORDER BY name LIMIT 500"
-        rows = db.execute(text(query), params).fetchall()
-        return [dict(r._mapping) for r in rows]
+        query += " ORDER BY name LIMIT 700"
+        with engine.connect() as conn:
+            rows = conn.execute(text(query), params).fetchall()
+            return [dict(r._mapping) for r in rows]
     except Exception as e:
         print(f"[RESOURCES API] Error: {e}")
         return {"error": str(e)}
