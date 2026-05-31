@@ -629,8 +629,6 @@ async def api_resources(category: str = None, state: str = None, q: str = None, 
     except Exception as e:
         print(f"[RESOURCES API] Error: {e}")
         return {"error": str(e)}
-    finally:
-        db.close()
 
 @app.get("/health")
 async def health(db: Session = Depends(get_db)):
