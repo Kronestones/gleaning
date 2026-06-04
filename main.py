@@ -641,7 +641,7 @@ async def debug_db():
         _engine = create_engine(url, pool_pre_ping=True)
         with _engine.connect() as conn:
             count = conn.execute(text("SELECT COUNT(*) FROM resources")).scalar()
-            return {"db_url_set": bool(url), "resource_count": count}
+            return {"db_url_set": bool(url), "resource_count": count, "url_host": url.split("@")[1].split("/")[0] if "@" in url else "unknown"}
     except Exception as e:
         return {"error": str(e)}
 
