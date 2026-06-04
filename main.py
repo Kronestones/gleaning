@@ -632,6 +632,19 @@ async def api_resources(category: str = None, state: str = None, q: str = None, 
         print(f"[RESOURCES API] Error: {e}")
         return {"error": str(e)}
 
+@app.get("/debug-db")
+async def debug_db():
+    from sqlalchemy import create_engine, text
+    import os
+    url = os.environ.get("DATABASE_URL", "NOT SET")
+    try:
+        _engine = create_engine(url, pool_pre_ping=True)
+        with _engine.connect() as conn:
+            count = conn.execute(text("SELECT COUNT(*) FROM resources")).scalar()
+            return {"db_url_set": bool(url), "resource_count": count}
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/health")
 async def health(db: Session = Depends(get_db)):
     integrity = verify_log_integrity(db)
