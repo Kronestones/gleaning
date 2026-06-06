@@ -624,25 +624,12 @@ async def api_resources(category: str = None, state: str = None, q: str = None, 
             params["q"] = f"%{q}%"
         if popup:
             query += " AND is_popup = TRUE"
-        query += " ORDER BY name LIMIT 700"
+        query += " ORDER BY name LIMIT 2000"
         with engine.connect() as conn:
             rows = conn.execute(text(query), params).fetchall()
             return [dict(r._mapping) for r in rows]
     except Exception as e:
         print(f"[RESOURCES API] Error: {e}")
-        return {"error": str(e)}
-
-@app.get("/debug-db")
-async def debug_db():
-    from sqlalchemy import create_engine, text
-    import os
-    url = os.environ.get("DATABASE_URL", "NOT SET")
-    try:
-        _engine = create_engine(url, pool_pre_ping=True)
-        with _engine.connect() as conn:
-            count = conn.execute(text("SELECT COUNT(*) FROM resources")).scalar()
-            return {"db_url_set": bool(url), "resource_count": count, "url_host": url.split("@")[1].split("/")[0] if "@" in url else "unknown"}
-    except Exception as e:
         return {"error": str(e)}
 
 @app.get("/health")
