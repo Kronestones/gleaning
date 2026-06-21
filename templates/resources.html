@@ -32,6 +32,8 @@
     --parking:   #95a5a6;
     --greenbook: #2ecc71;
     --sundown:   #c0392b;
+    --indigenous: #b5651d;
+    --harmreduction: #6c3483;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -416,6 +418,8 @@
       <div class="tab" onclick="switchTab('safety',this)">Safety</div>
       <div class="tab" onclick="switchTab('community',this)">Community</div>
       <div class="tab" onclick="switchTab('parking',this)">Parking</div>
+      <div class="tab" onclick="switchTab('indigenous',this)">Indigenous</div>
+      <div class="tab" onclick="switchTab('harm_reduction',this)">Harm Reduction</div>
       <div class="tab" onclick="switchTab('greenbook',this)">🟢 Green Book</div>
     </div>
 
@@ -430,6 +434,8 @@
       <div class="legend-item"><div class="legend-dot" style="background:var(--safety)"></div>Safety</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--community)"></div>Community</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--parking)"></div>Parking</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--indigenous)"></div>Indigenous</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--harmreduction)"></div>Harm Reduction</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--greenbook)"></div>Green Book Safe</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--greenbook);border:2px solid var(--sundown)"></div>Sundown Town</div>
     </div>
@@ -508,6 +514,8 @@ const CAT_COLORS = {
   parking:   '#95a5a6',
   greenbook: '#2ecc71',
   sundown:   '#c0392b',
+  indigenous: '#b5651d',
+  harm_reduction: '#6c3483',
 };
 
 // ── Load ──────────────────────────────────────────────────────────────────────
