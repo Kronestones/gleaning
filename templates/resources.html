@@ -20,19 +20,19 @@
     --red:      #c0392b;
 
     /* Category colors */
-    --food:      #e67e22;
-    --health:    #e74c3c;
-    --housing:   #3498db;
-    --legal:     #9b59b6;
-    --lgbtq:     #ff69b4;
-    --unhoused:  #1abc9c;
-    --education: #f1c40f;
-    --safety:    #e74c3c;
-    --community: #27ae60;
-    --parking:   #95a5a6;
-    --greenbook: #2ecc71;
-    --sundown:   #c0392b;
-    --indigenous: #b5651d;
+    --food:          #e67e22;
+    --health:        #e74c3c;
+    --housing:       #3498db;
+    --legal:         #8e44ad;
+    --lgbtq:         #ff69b4;
+    --unhoused:      #1abc9c;
+    --education:     #f1c40f;
+    --safety:        #ff6b35;
+    --community:     #2980b9;
+    --parking:       #95a5a6;
+    --greenbook:     #2ecc71;
+    --sundown:       #c0392b;
+    --indigenous:    #b5651d;
     --harmreduction: #6c3483;
   }
 
@@ -424,20 +424,20 @@
     </div>
 
     <div id="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--food)"></div>Food</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--health)"></div>Health</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--housing)"></div>Housing</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--legal)"></div>Legal</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--lgbtq)"></div>LGBTQ+</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--unhoused)"></div>Unhoused</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--education)"></div>Education</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--safety)"></div>Safety</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--community)"></div>Community</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--parking)"></div>Parking</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--indigenous)"></div>Indigenous</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--harmreduction)"></div>Harm Reduction</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--greenbook)"></div>Green Book Safe</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--greenbook);border:2px solid var(--sundown)"></div>Sundown Town</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🥖</span>Food</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🏥</span>Health</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🏘️</span>Housing</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">⚖️</span>Legal</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🏳️‍🌈</span>LGBTQ+</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">☂️</span>Unhoused</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">✏️</span>Education</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🛡️</span>Safety</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🌍</span>Community</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🅿️</span>Parking</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">🪶</span>Indigenous</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">💊</span>Harm Reduction</div>
+      <div class="legend-item"><span style="font-size:13px;margin-right:6px;">📗</span>Green Book Safe</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--sundown)"></div>Sundown Town</div>
     </div>
 
     <!-- Green Book Panel -->
@@ -557,13 +557,41 @@ function renderMap() {
   filtered().forEach(r => {
     if (!r.lat || !r.lng) return;
     const color = CAT_COLORS[r.category] || '#888';
-    const circle = L.circleMarker([r.lat, r.lng], {
-      radius:      6,
-      fillColor:   color,
-      color:       color,
-      weight:      0,
-      fillOpacity: 0.85,
-    });
+    const CAT_EMOJI = {
+      food:           '🥖',
+      lgbtq:          '🏳️‍🌈',
+      housing:        '🏘️',
+      parking:        '🅿️',
+      legal:          '⚖️',
+      education:      '✏️',
+      unhoused:       '☂️',
+      community:      '🌍',
+      indigenous:     '🪶',
+      harm_reduction: '💊',
+      health:         '🏥',
+      safety:         '🛡️',
+      greenbook:      '📗',
+    };
+    const emoji = CAT_EMOJI[r.category];
+    let circle;
+    if (emoji) {
+      circle = L.marker([r.lat, r.lng], {
+        icon: L.divIcon({
+          html: `<span style="font-size:14px;line-height:1;">${emoji}</span>`,
+          className: '',
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
+        })
+      });
+    } else {
+      circle = L.circleMarker([r.lat, r.lng], {
+        radius:      6,
+        fillColor:   color,
+        color:       color,
+        weight:      0,
+        fillOpacity: 0.85,
+      });
+    }
     circle.bindPopup(`
       <div class="popup-category" style="color:${color}">${r.category || ''}</div>
       <div class="popup-name">${r.name || ''}</div>
