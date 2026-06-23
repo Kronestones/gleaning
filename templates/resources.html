@@ -573,9 +573,13 @@ function renderMap() {
       greenbook:      '📗',
     };
     const emoji = CAT_EMOJI[r.category];
+    // Small deterministic jitter so stacked markers separate slightly
+    const jitter = 0.0015;
+    const jLat = r.lat + (((r.id * 127) % 100) / 100 - 0.5) * jitter;
+    const jLng = r.lng + (((r.id * 311) % 100) / 100 - 0.5) * jitter;
     let circle;
     if (emoji) {
-      circle = L.marker([r.lat, r.lng], {
+      circle = L.marker([jLat, jLng], {
         icon: L.divIcon({
           html: `<span style="font-size:14px;line-height:1;">${emoji}</span>`,
           className: '',
@@ -584,7 +588,7 @@ function renderMap() {
         })
       });
     } else {
-      circle = L.circleMarker([r.lat, r.lng], {
+      circle = L.circleMarker([jLat, jLng], {
         radius:      6,
         fillColor:   color,
         color:       color,
