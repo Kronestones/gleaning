@@ -143,7 +143,7 @@
 <div id="post-modal">
   <div class="modal-box">
     <div class="modal-title">Post a Trade</div>
-    <div class="modal-sub">Commons members only · No money · No prohibited items</div>
+    <div class="modal-sub">Open to everyone · No money · No prohibited items</div>
     <div class="form-group">
       <label class="form-label">Title</label>
       <input id="p-title" class="form-input" placeholder="e.g. Fresh tomatoes from my garden"/>
@@ -183,8 +183,8 @@
       <input id="p-state" class="form-input" placeholder="e.g. CA" maxlength="2" style="text-transform:uppercase"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Commons Token (paste from your Commons profile)</label>
-      <input id="p-token" class="form-input" placeholder="Your Commons auth token" type="password"/>
+      <label class="form-label">Your name or handle</label>
+      <input id="p-handle" class="form-input" placeholder="What should we call you? (e.g. Maria, GardenFolk, Anonymous)"/>
     </div>
     <div class="modal-disclaimer">
       By posting you confirm this listing contains no prohibited items (no alcohol, drugs, weapons, hate merchandise, or sexual content). Gleaning is the facilitator only and bears no responsibility for trades. The Team will review your listing before it goes live.
@@ -330,10 +330,10 @@ async function submitListing() {
   const seeking  = document.getElementById('p-seeking').value.trim();
   const city     = document.getElementById('p-city').value.trim();
   const state    = document.getElementById('p-state').value.trim().toUpperCase();
-  const token    = document.getElementById('p-token').value.trim();
+  const handle   = document.getElementById('p-handle').value.trim() || 'Anonymous';
 
-  if (!title || !category || !offering || !seeking || !token) {
-    alert('Please fill in all required fields including your Commons token.');
+  if (!title || !category || !offering || !seeking) {
+    alert('Please fill in title, category, offering and what you are looking for.');
     return;
   }
 
@@ -344,7 +344,7 @@ async function submitListing() {
   body.append('seeking', seeking);
   body.append('city', city);
   body.append('state', state);
-  body.append('token', token);
+  body.append('handle', handle);
 
   const resp = await fetch('/api/barter/post', {method:'POST', body});
   const data = await resp.json();
@@ -364,7 +364,7 @@ function showDetail(id) {
   document.getElementById('detail-category').textContent = l.category;
   document.getElementById('detail-title').textContent = l.title;
   document.getElementById('detail-meta').textContent = `${l.city||''}, ${l.state||''} · Posted ${new Date(l.created_at).toLocaleDateString()}`;
-  document.getElementById('detail-poster').innerHTML = `Posted by <strong>${l.commons_username}</strong> · Commons member`;
+  document.getElementById('detail-poster').innerHTML = `Posted by <strong>${l.commons_username || 'Anonymous'}</strong>`;
   document.getElementById('detail-offering').textContent = l.offering;
   document.getElementById('detail-seeking').textContent = l.seeking;
   if (l.description) {

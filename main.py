@@ -468,20 +468,15 @@ async def api_barter_post(
     seeking:  str = Form(...),
     city:     str = Form(""),
     state:    str = Form(""),
-    token:    str = Form(...),
+    handle:   str = Form("Anonymous"),
     db: Session = Depends(get_db)
 ):
     from gleaning.database import BarterListing
-    from gleaning.barter import verify_commons_token, check_prohibited, notify_team_new_listing
+    from gleaning.barter import check_prohibited, notify_team_new_listing
     from datetime import datetime, timezone, timedelta
 
-    # Verify Commons token
-    payload = verify_commons_token(token)
-    if not payload:
-        return {"ok": False, "error": "Invalid Commons token. Please check your token and try again."}
-
-    username = payload.get("username", "")
-    user_id  = int(payload.get("sub", 0))
+    username = handle.strip()[:64] if handle.strip() else "Anonymous"
+    user_id  = 0
 
     # Check prohibited content
     combined = f"{title} {offering} {seeking}"
