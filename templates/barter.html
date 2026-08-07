@@ -98,12 +98,9 @@
 <nav class="nav">
   <a href="/" class="nav-logo">🌾 Gleaning</a>
   <div class="nav-links">
-    <a href="/stats">Wealth Hoarders</a>
-    <a href="/pawns">Pawns</a>
+    <a href="/resources">Resources</a>
     <a href="/hoarders">Project Gleaning</a>
     <a href="/barter" class="active">Barter & Trade</a>
-    <a href="/resources">Resources</a>
-    <a href="/puppet-masters">💀 Puppet Masters</a>
   </div>
 </nav>
 
@@ -220,9 +217,10 @@
       <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Send a message to this trader</div>
       <input id="contact-name" class="form-input" placeholder="Your name or handle" style="margin-bottom:8px;"/>
       <textarea id="contact-msg" class="form-input form-textarea" placeholder="What would you like to trade? How can you connect?" style="min-height:70px;margin-bottom:8px;"></textarea>
-      <input id="contact-email" class="form-input" placeholder="Your email (optional — for them to reply)" style="margin-bottom:8px;"/>
-      <button class="btn-contact" onclick="sendContactMessage()">Send Message</button>
-      <div id="contact-confirm" style="display:none;color:var(--green-bright);font-size:13px;text-align:center;margin-top:8px;">✓ Message sent to the trader!</div>
+      <input id="contact-email" class="form-input" placeholder="Your email (required — so they can reply to you)" style="margin-bottom:8px;"/>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5;">Your email is only shared with the trader — never public. Works like Craigslist.</div>
+      <button class="btn-contact" onclick="sendContactMessage()">📬 Send Message to Trader</button>
+      <div id="contact-confirm" style="display:none;color:var(--green-bright);font-size:13px;text-align:center;margin-top:8px;">✓ Message sent! The trader will reply to your email directly.</div>
     </div>
     <button class="btn-flag" onclick="openFlag(currentListing)">⚑ Report a problem</button>
     <button class="btn-close-detail" onclick="closeDetail()">Close</button>
@@ -397,6 +395,7 @@ async function sendContactMessage() {
   const msg   = document.getElementById('contact-msg').value.trim();
   const email = document.getElementById('contact-email').value.trim();
   if (!msg) { alert('Please write a message first.'); return; }
+  if (!email) { alert('Please enter your email so the trader can reply to you.'); return; }
   const resp = await fetch('/api/barter/contact', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},

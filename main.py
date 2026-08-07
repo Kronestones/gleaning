@@ -538,19 +538,39 @@ async def api_barter_contact(request: Request, db: Session = Depends(get_db)):
         listing = db.query(BarterListing).filter(BarterListing.id == listing_id).first()
         if not listing:
             return {"ok": False, "error": "Listing not found"}
-        subject = f"🤝 Barter message for: {listing.title}"
+        subject = f"🤝 Someone wants to trade — {listing.title}"
+        # Email goes to team who forwards to poster — keeps both emails private like Craigslist
         html = f"""
-        <h2>Someone wants to trade with {listing.commons_username}</h2>
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+        <h2 style="color:#4a9e6b">🤝 New Trade Message on Gleaning</h2>
         <p><strong>Listing:</strong> {listing.title}</p>
-        <p><strong>From:</strong> {sender_name} {f'({sender_email})' if sender_email else ''}</p>
-        <p><strong>Message:</strong></p>
-        <blockquote style="border-left:3px solid #4a9e6b;padding-left:12px;color:#666">{message}</blockquote>
-        <hr/>
-        <p style="font-size:12px;color:#999">Forward this to {listing.commons_username} or reply to connect them.
-        If this message is inappropriate <a href="{TEAM_EMAIL}">report it</a>.</p>
+        <p><strong>Posted by:</strong> {listing.commons_username}</p>
+        <p><strong>Message from:</strong> {sender_name}</p>
+        <p><strong>Their email:</strong> {sender_email if sender_email else 'not provided'}</p>
+        <div style="background:#1a1a1a;border-left:3px solid #4a9e6b;padding:12px 16px;margin:16px 0;border-radius:4px">
+        <p style="color:#e8e8e8;line-height:1.6">{message}</p>
+        </div>
+        <p style="color:#666;font-size:12px">Please forward this to {listing.commons_username} so they can reply directly to {sender_email if sender_email else 'the interested trader'}.
+        <br>If this message is inappropriate please remove the listing.</p>
+        </div>
         """
         _send_email(TEAM_EMAIL, subject, html)
-        return {"ok": True}
+        # Also send confirmation to sender if they provided email
+        if sender_email:
+            confirm_html = f"""
+            <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+            <h2 style="color:#4a9e6b">🤝 Your message was sent — Gleaning Barter & Trade</h2>
+            <p>Hi {sender_name},</p>
+            <p>Your message about <strong>{listing.title}</strong> has been sent to the trader. They will reply to this email when they are ready to connect.</p>
+            <div style="background:#f5f5f5;border-left:3px solid #4a9e6b;padding:12px 16px;margin:16px 0;border-radius:4px">
+            <p style="color:#333;line-height:1.6">{message}</p>
+            </div>
+            <p style="color:#999;font-size:12px">Gleaning Barter & Trade — No money. No corporations. Community exchange.<br>
+            <a href="https://gleaning.onrender.com/barter" style="color:#4a9e6b">View listings</a></p>
+            </div>
+            """
+            _send_email(sender_email, f"✓ Message sent to trader — {listing.title}", confirm_html)
+        return {{"ok": True}}
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
