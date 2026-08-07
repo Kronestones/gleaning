@@ -8,9 +8,9 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     :root{
-      --bg:#0a0a0a;--card:#111;--border:#1e1e1e;--text:#e8e8e8;
-      --muted:#666;--green-bright:#4a9e6b;--red:#c0392b;--white:#fff;
-      --surface:#141414;
+      --bg:#0d0d0d;--card:#1a1a1a;--border:#2a2a2a;--text:#f0f0f0;
+      --muted:#888;--green-bright:#4a9e6b;--red:#c0392b;--white:#fff;
+      --surface:#1e1e1e;
     }
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
     .nav{background:#111;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;position:sticky;top:0;z-index:200}
@@ -132,7 +132,7 @@
       <div class="listing-empty">Loading listings…</div>
     </div>
     <div id="disclaimer">
-      Gleaning is the facilitator only. We are not responsible for the accuracy of listings, the condition of items, or the outcome of trades. All trades are between members. Report a problem: <a href="#" onclick="openFlag(null)" style="color:var(--green-bright)">flag it here</a>.
+      Gleaning is the facilitator only. We are not responsible for the accuracy of listings, the condition of items, or the outcome of trades. <a href="#" onclick="openFlag(null)" style="color:var(--green-bright)">Report a problem</a>.
     </div>
   </div>
 </div>
@@ -216,8 +216,15 @@
       <div class="detail-section-label">Details</div>
       <div id="detail-description" class="detail-section-text"></div>
     </div>
-    <button class="btn-contact" id="detail-contact-btn">Contact via The Commons</button>
-    <button class="btn-flag" onclick="openFlag(currentListing)">⚑ Flag this listing</button>
+    <div id="contact-form-wrap" style="margin-bottom:10px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Send a message to this trader</div>
+      <input id="contact-name" class="form-input" placeholder="Your name or handle" style="margin-bottom:8px;"/>
+      <textarea id="contact-msg" class="form-input form-textarea" placeholder="What would you like to trade? How can you connect?" style="min-height:70px;margin-bottom:8px;"></textarea>
+      <input id="contact-email" class="form-input" placeholder="Your email (optional — for them to reply)" style="margin-bottom:8px;"/>
+      <button class="btn-contact" onclick="sendContactMessage()">Send Message</button>
+      <div id="contact-confirm" style="display:none;color:var(--green-bright);font-size:13px;text-align:center;margin-top:8px;">✓ Message sent to the trader!</div>
+    </div>
+    <button class="btn-flag" onclick="openFlag(currentListing)">⚑ Report a problem</button>
     <button class="btn-close-detail" onclick="closeDetail()">Close</button>
   </div>
 </div>
@@ -371,9 +378,11 @@ function showDetail(id) {
     document.getElementById('detail-description-wrap').style.display = '';
     document.getElementById('detail-description').textContent = l.description;
   }
-  document.getElementById('detail-contact-btn').onclick = () => {
-    window.open(`https://the-commons.onrender.com/members/${l.commons_username}`, '_blank');
-  };
+  // reset contact form
+  document.getElementById('contact-name').value = '';
+  document.getElementById('contact-msg').value = '';
+  document.getElementById('contact-email').value = '';
+  document.getElementById('contact-confirm').style.display = 'none';
   document.getElementById('detail-panel').classList.add('open');
 }
 
@@ -382,9 +391,33 @@ function closeDetail() {
   currentListing = null;
 }
 
+// ── Contact ───────────────────────────────────────────────────────────────────
+async function sendContactMessage() {
+  const name  = document.getElementById('contact-name').value.trim() || 'Anonymous';
+  const msg   = document.getElementById('contact-msg').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  if (!msg) { alert('Please write a message first.'); return; }
+  const resp = await fetch('/api/barter/contact', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      listing_id: currentListing.id,
+      sender_name: name,
+      sender_email: email,
+      message: msg
+    })
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    document.getElementById('contact-confirm').style.display = 'block';
+  } else {
+    alert('Could not send message. Please try again.');
+  }
+}
+
 // ── Flag ──────────────────────────────────────────────────────────────────────
 async function openFlag(listing) {
-  const reason = prompt('Why are you flagging this listing? (prohibited item, spam, other)');
+  const reason = prompt('What is the problem with this listing? (prohibited item, spam, incorrect info, other)');
   if (!reason) return;
   const id = listing ? listing.id : null;
   const resp = await fetch('/api/barter/flag', {

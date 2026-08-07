@@ -525,6 +525,35 @@ async def api_barter_post(
     notify_team_new_listing(listing)
     return {"ok": True, "id": listing.id}
 
+@app.post("/api/barter/contact")
+async def api_barter_contact(request: Request, db: Session = Depends(get_db)):
+    try:
+        from gleaning.database import BarterListing
+        from gleaning.barter import _send_email, TEAM_EMAIL
+        data = await request.json()
+        listing_id   = data.get("listing_id")
+        sender_name  = data.get("sender_name", "Anonymous")[:64]
+        sender_email = data.get("sender_email", "")[:128]
+        message      = data.get("message", "")[:1000]
+        listing = db.query(BarterListing).filter(BarterListing.id == listing_id).first()
+        if not listing:
+            return {"ok": False, "error": "Listing not found"}
+        subject = f"🤝 Barter message for: {listing.title}"
+        html = f"""
+        <h2>Someone wants to trade with {listing.commons_username}</h2>
+        <p><strong>Listing:</strong> {listing.title}</p>
+        <p><strong>From:</strong> {sender_name} {f'({sender_email})' if sender_email else ''}</p>
+        <p><strong>Message:</strong></p>
+        <blockquote style="border-left:3px solid #4a9e6b;padding-left:12px;color:#666">{message}</blockquote>
+        <hr/>
+        <p style="font-size:12px;color:#999">Forward this to {listing.commons_username} or reply to connect them.
+        If this message is inappropriate <a href="{TEAM_EMAIL}">report it</a>.</p>
+        """
+        _send_email(TEAM_EMAIL, subject, html)
+        return {"ok": True}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
 @app.post("/api/barter/flag")
 async def api_barter_flag(request: Request, db: Session = Depends(get_db)):
     from gleaning.database import BarterListing
