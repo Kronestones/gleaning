@@ -184,9 +184,9 @@
       <input id="p-handle" class="form-input" placeholder="What should we call you? (e.g. Maria, GardenFolk, Anonymous)"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Contact email (optional)</label>
-      <input id="p-email" class="form-input" placeholder="So interested traders can reach you" type="email"/>
-      <div style="font-size:11px;color:#555;margin-top:4px;">Not displayed publicly — interested traders click a contact link that opens their email app directly.</div>
+      <label class="form-label">Contact email <span style="color:#e74c3c">*</span></label>
+      <input id="p-email" class="form-input" placeholder="Required — so traders can reach you" type="email" required/>
+      <div style="font-size:11px;color:#555;margin-top:4px;">Never displayed publicly — interested traders click a contact link that opens their email app directly.</div>
     </div>
     <div class="modal-disclaimer">
       By posting you confirm this listing contains no prohibited items (no alcohol, drugs, weapons, hate merchandise, or sexual content). Gleaning is the facilitator only and bears no responsibility for trades. The Team will review your listing before it goes live.
@@ -334,8 +334,8 @@ async function submitListing() {
   const state    = document.getElementById('p-state').value.trim().toUpperCase();
   const handle   = document.getElementById('p-handle').value.trim() || 'Anonymous';
 
-  if (!title || !category || !offering || !seeking) {
-    alert('Please fill in title, category, offering and what you are looking for.');
+  if (!title || !category || !offering || !seeking || !posterEmail) {
+    alert('Please fill in all fields including your contact email so traders can reach you.');
     return;
   }
 
