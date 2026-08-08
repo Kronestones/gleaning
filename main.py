@@ -443,6 +443,7 @@ async def api_barter_listings(db: Session = Depends(get_db)):
             {
                 "id": l.id,
                 "commons_username": l.commons_username,
+                "contact_email": l.contact_email if hasattr(l, "contact_email") and l.contact_email else "",
                 "title": l.title,
                 "category": l.category,
                 "offering": l.offering,
@@ -469,6 +470,7 @@ async def api_barter_post(
     city:     str = Form(""),
     state:    str = Form(""),
     handle:   str = Form("Anonymous"),
+    contact_email: str = Form(""),
     db: Session = Depends(get_db)
 ):
     from gleaning.database import BarterListing
@@ -507,6 +509,7 @@ async def api_barter_post(
     listing = BarterListing(
         commons_username = username,
         commons_user_id  = user_id,
+        contact_email    = contact_email[:128] if contact_email else "",
         title            = title[:256],
         category         = category,
         offering         = offering[:1000],

@@ -402,6 +402,7 @@ class BarterListing(Base):
     status          = Column(String(32), default="pending")  # pending, active, traded, expired, removed
     flagged         = Column(Boolean, default=False)
     flag_reason     = Column(Text, default="")
+    contact_email   = Column(String(128), default="")
     created_at      = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_active     = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     expires_at      = Column(DateTime, nullable=True)

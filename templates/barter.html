@@ -183,6 +183,11 @@
       <label class="form-label">Your name or handle</label>
       <input id="p-handle" class="form-input" placeholder="What should we call you? (e.g. Maria, GardenFolk, Anonymous)"/>
     </div>
+    <div class="form-group">
+      <label class="form-label">Contact email (optional)</label>
+      <input id="p-email" class="form-input" placeholder="So interested traders can reach you" type="email"/>
+      <div style="font-size:11px;color:#555;margin-top:4px;">Not displayed publicly — interested traders click a contact link that opens their email app directly.</div>
+    </div>
     <div class="modal-disclaimer">
       By posting you confirm this listing contains no prohibited items (no alcohol, drugs, weapons, hate merchandise, or sexual content). Gleaning is the facilitator only and bears no responsibility for trades. The Team will review your listing before it goes live.
     </div>
@@ -213,15 +218,7 @@
       <div class="detail-section-label">Details</div>
       <div id="detail-description" class="detail-section-text"></div>
     </div>
-    <div id="contact-form-wrap" style="margin-bottom:10px;">
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Send a message to this trader</div>
-      <input id="contact-name" class="form-input" placeholder="Your name or handle" style="margin-bottom:8px;"/>
-      <textarea id="contact-msg" class="form-input form-textarea" placeholder="What would you like to trade? How can you connect?" style="min-height:70px;margin-bottom:8px;"></textarea>
-      <input id="contact-email" class="form-input" placeholder="Your email (required — so they can reply to you)" style="margin-bottom:8px;"/>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5;">Your email is only shared with the trader — never public. Works like Craigslist.</div>
-      <button class="btn-contact" onclick="sendContactMessage()">📬 Send Message to Trader</button>
-      <div id="contact-confirm" style="display:none;color:var(--green-bright);font-size:13px;text-align:center;margin-top:8px;">✓ Message sent! The trader will reply to your email directly.</div>
-    </div>
+    <div id="contact-wrap" style="margin-bottom:10px;"></div>
     <button class="btn-flag" onclick="openFlag(currentListing)">⚑ Report a problem</button>
     <button class="btn-close-detail" onclick="closeDetail()">Close</button>
   </div>
@@ -350,6 +347,8 @@ async function submitListing() {
   body.append('city', city);
   body.append('state', state);
   body.append('handle', handle);
+  const posterEmail = document.getElementById('p-email').value.trim();
+  body.append('contact_email', posterEmail);
 
   const resp = await fetch('/api/barter/post', {method:'POST', body});
   const data = await resp.json();
@@ -370,6 +369,14 @@ function showDetail(id) {
   document.getElementById('detail-title').textContent = l.title;
   document.getElementById('detail-meta').textContent = `${l.city||''}, ${l.state||''} · Posted ${new Date(l.created_at).toLocaleDateString()}`;
   document.getElementById('detail-poster').innerHTML = `Posted by <strong>${l.commons_username || 'Anonymous'}</strong>`;
+  const contactWrap = document.getElementById('contact-wrap');
+  if (l.contact_email) {
+    const subj = encodeURIComponent(`Trade interest: ${l.title}`);
+    const bod  = encodeURIComponent(`Hi ${l.commons_username || 'there'},\n\nI saw your listing on Gleaning Barter & Trade and I am interested.\n\nListing: ${l.title}\nYou are offering: ${l.offering}\nYou are seeking: ${l.seeking}\n\n`);
+    contactWrap.innerHTML = `<a class="btn-contact" href="mailto:${l.contact_email}?subject=${subj}&body=${bod}" style="display:block;text-align:center;text-decoration:none;margin-bottom:8px;">📬 Contact Trader</a>`;
+  } else {
+    contactWrap.innerHTML = `<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;background:var(--surface);border-radius:8px;margin-bottom:8px;">This trader did not provide a contact email.</div>`;
+  }
   document.getElementById('detail-offering').textContent = l.offering;
   document.getElementById('detail-seeking').textContent = l.seeking;
   if (l.description) {
