@@ -519,27 +519,30 @@ async def api_barter_post(
     if state.upper() in STATE_CENTERS:
         lat, lng = STATE_CENTERS[state.upper()]
 
-    listing = BarterListing(
-        commons_username = username,
-        commons_user_id  = user_id,
-        contact_email    = contact_email[:128] if contact_email else "",
-        title            = title[:256],
-        category         = category,
-        offering         = offering[:1000],
-        seeking          = seeking[:1000],
-        city             = city[:128],
-        state            = state.upper()[:8],
-        lat              = lat,
-        lng              = lng,
-        status           = "pending",
-        expires_at       = datetime.now(timezone.utc) + timedelta(days=60),
-    )
-    db.add(listing)
-    db.commit()
-    db.refresh(listing)
-
-    notify_team_new_listing(listing)
-    return {"ok": True, "id": listing.id}
+    try:
+        listing = BarterListing(
+            commons_username = username,
+            commons_user_id  = user_id,
+            contact_email    = contact_email[:128] if contact_email else "",
+            title            = title[:256],
+            category         = category,
+            offering         = offering[:1000],
+            seeking          = seeking[:1000],
+            city             = city[:128],
+            state            = state.upper()[:8],
+            lat              = lat,
+            lng              = lng,
+            status           = "pending",
+            expires_at       = datetime.now(timezone.utc) + timedelta(days=60),
+        )
+        db.add(listing)
+        db.commit()
+        db.refresh(listing)
+        notify_team_new_listing(listing)
+        return {"ok": True, "id": listing.id}
+    except Exception as e:
+        print(f"[BARTER POST] Error: {e}")
+        return {"ok": False, "error": str(e)}
 
 @app.post("/api/barter/contact")
 async def api_barter_contact(request: Request, db: Session = Depends(get_db)):
