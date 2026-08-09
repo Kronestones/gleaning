@@ -76,6 +76,19 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"[GLEANING] Migration check failed: {e}")
 
+    # Migrate: add contact_email to barter_listings if not present
+    try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            try:
+                conn.execute(text("ALTER TABLE barter_listings ADD COLUMN contact_email VARCHAR(128) DEFAULT ''"))
+                conn.commit()
+                print("[GLEANING] Migrated: added contact_email to barter_listings")
+            except Exception:
+                pass  # column already exists
+    except Exception as e:
+        print(f"[GLEANING] Barter migration failed: {e}")
+
     # Seed Truth Wall on first run
     from gleaning.database import SessionLocal
     db = SessionLocal()
