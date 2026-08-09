@@ -192,7 +192,7 @@
       By posting you confirm this listing contains no prohibited items (no alcohol, drugs, weapons, hate merchandise, or sexual content). Gleaning is the facilitator only and bears no responsibility for trades. The Team will review your listing before it goes live.
     </div>
     <div class="modal-actions">
-      <button class="btn-submit" onclick="submitListing()">Submit for Review</button>
+      <button class="btn-submit" onclick="submitListing()">Post Trade</button>
       <button class="btn-cancel" onclick="closePostModal()">Cancel</button>
     </div>
     <div id="post-confirm" class="form-confirm">✓ Submitted for Team review. You'll be notified when it's live.</div>
@@ -326,13 +326,14 @@ function closePostModal() {
 }
 
 async function submitListing() {
-  const title    = document.getElementById('p-title').value.trim();
-  const category = document.getElementById('p-category').value;
-  const offering = document.getElementById('p-offering').value.trim();
-  const seeking  = document.getElementById('p-seeking').value.trim();
-  const city     = document.getElementById('p-city').value.trim();
-  const state    = document.getElementById('p-state').value.trim().toUpperCase();
-  const handle   = document.getElementById('p-handle').value.trim() || 'Anonymous';
+  const title       = document.getElementById('p-title').value.trim();
+  const category    = document.getElementById('p-category').value;
+  const offering    = document.getElementById('p-offering').value.trim();
+  const seeking     = document.getElementById('p-seeking').value.trim();
+  const city        = document.getElementById('p-city').value.trim();
+  const state       = document.getElementById('p-state').value.trim().toUpperCase();
+  const handle      = document.getElementById('p-handle').value.trim() || 'Anonymous';
+  const posterEmail = document.getElementById('p-email').value.trim();
 
   if (!title || !category || !offering || !seeking || !posterEmail) {
     alert('Please fill in all fields including your contact email so traders can reach you.');
@@ -347,7 +348,6 @@ async function submitListing() {
   body.append('city', city);
   body.append('state', state);
   body.append('handle', handle);
-  const posterEmail = document.getElementById('p-email').value.trim();
   body.append('contact_email', posterEmail);
 
   const resp = await fetch('/api/barter/post', {method:'POST', body});
