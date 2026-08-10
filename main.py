@@ -525,6 +525,7 @@ async def api_barter_post(
             commons_user_id  = user_id,
             contact_email    = contact_email[:128] if contact_email else "",
             title            = title[:256],
+            description      = "",
             category         = category,
             offering         = offering[:1000],
             seeking          = seeking[:1000],
