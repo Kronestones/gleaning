@@ -533,13 +533,12 @@ async def api_barter_post(
             state            = state.upper()[:8],
             lat              = lat,
             lng              = lng,
-            status           = "pending",
+            status           = "active",
             expires_at       = datetime.now(timezone.utc) + timedelta(days=60),
         )
         db.add(listing)
         db.commit()
         db.refresh(listing)
-        notify_team_new_listing(listing)
         return {"ok": True, "id": listing.id}
     except Exception as e:
         print(f"[BARTER POST] Error: {e}")
